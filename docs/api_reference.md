@@ -58,6 +58,55 @@ class BasePipeline(ABC):
     def load_state(self, path: str)
 ```
 
+## frameworm.core.registry
+
+### Registry
+```python
+class Registry:
+    def __init__(self, name: str)
+    def register(self, name: str, cls: Type, override: bool = False, **metadata) -> Type
+    def get(self, name: str) -> Type
+    def has(self, name: str) -> bool
+    def list(self) -> List[str]
+    def remove(self, name: str)
+    def clear()
+    def get_metadata(self, name: str) -> Dict[str, Any]
+```
+
+### Decorators
+```python
+@register_model(name: str, **metadata)
+@register_trainer(name: str, **metadata)
+@register_pipeline(name: str, **metadata)
+@register_dataset(name: str, **metadata)
+```
+
+### Getters
+```python
+get_model(name: str, auto_discover: bool = None) -> Type
+get_trainer(name: str, auto_discover: bool = None) -> Type
+get_pipeline(name: str, auto_discover: bool = None) -> Type
+get_dataset(name: str, auto_discover: bool = None) -> Type
+```
+
+### Discovery
+```python
+discover_plugins(plugins_dir: PathLike = "plugins", recursive: bool = True, force: bool = False)
+reset_discovery()
+set_auto_discover(enabled: bool)
+```
+
+### Search
+```python
+search_models(query: str) -> List[str]
+search_trainers(query: str) -> List[str]
+```
+
+### Utilities
+```python
+print_registry_summary()
+create_model_from_config(config) -> Any
+
 ## frameworm.trainers
 
 ### BaseTrainer

@@ -3,4 +3,8 @@ core
 data
 experiment
 models
+optimization
+pipelines
+plugins
+trainers
 utils

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, validator
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, Type
 import yaml
-
+from core.registry import get_model
 
 class ConfigNode(dict):
     """
@@ -448,4 +448,31 @@ class ConfigSchema(BaseModel):
         """
         return schema(**self.to_dict())
 
-    
+def create_model_from_config(cfg: "Config"):
+    """
+    Create a model instance from configuration.
+
+    Expected format:
+
+    model:
+        type: model_name
+        other_params: ...
+
+    Returns:
+        Instantiated model
+    """
+    if not hasattr(cfg, "model"):
+        raise ValueError("Config must contain a 'model' section")
+
+    model_cfg = cfg.model
+
+    if not hasattr(model_cfg, "type"):
+        raise ValueError("Config.model must contain a 'type' field")
+
+    model_type = model_cfg.type
+
+    # Get model class from registry
+    model_cls = get_model(model_type)
+
+    # IMPORTANT: pass full config object to model
+    return model_cls(model_cfg)

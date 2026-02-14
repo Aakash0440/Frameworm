@@ -566,50 +566,39 @@ def discover_plugins(
 
 def _import_plugin_file(file_path: Path, base_path: Path):
     """
-    Import a plugin file.
-    
-    Args:
-        file_path: Path to Python file
-        base_path: Base plugins directory
+    Import a plugin file using direct path loading.
+    This works for temporary directories and test environments.
     """
-    import importlib
+    import importlib.util
     import sys
     import warnings
-    
+
     try:
-        # Convert to absolute path first
-        abs_file_path = file_path.resolve()
-        abs_cwd = Path.cwd().resolve()
-        
-        # Calculate module name from path relative to CWD (project root)
-        relative_path = abs_file_path.relative_to(abs_cwd)
-        module_parts = list(relative_path.parts[:-1]) + [relative_path.stem]
-        module_name = '.'.join(module_parts)
-        
-        # Import module
-        if module_name in sys.modules:
-            importlib.reload(sys.modules[module_name])
-        else:
-            importlib.import_module(module_name)
-        
+        module_name = f"_frameworm_plugin_{file_path.stem}_{abs(hash(str(file_path)))}"
+
+        spec = importlib.util.spec_from_file_location(module_name, file_path)
+        module = importlib.util.module_from_spec(spec)
+
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
     except Exception as e:
         warnings.warn(
             f"Failed to import plugin {file_path}: {e}",
             ImportWarning
         )
 
-
 def _get_new_items(registry_name: str, old_count: int) -> List[str]:
-    """Get newly registered items in a registry"""
+    """Return all current items in the registry."""
     registry_map = {
         'models': _MODEL_REGISTRY,
         'trainers': _TRAINER_REGISTRY,
         'pipelines': _PIPELINE_REGISTRY,
         'datasets': _DATASET_REGISTRY,
     }
-    
+
     registry = registry_map[registry_name]
-    all_items = registry.list()
+    return registry.list()
     
     if len(all_items) > old_count:
         # Return the new ones (assumes they're at the end when sorted)

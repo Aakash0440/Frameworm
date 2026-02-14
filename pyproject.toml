@@ -52,7 +52,7 @@ frameworm = "frameworm.cli.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core", "models", "data", "utils", "benchmark", "experiment"]
+include = ["core*", "models*", "data*", "utils*", "benchmark*", "experiment*", "trainers*", "pipelines*", "optimization*", "plugins*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

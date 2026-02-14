@@ -1,6 +1,6 @@
 """Core framework components"""
 
-from core.config import Config, ConfigNode
+from core.config import Config, ConfigNode, create_model_from_config
 from core.types import *
 from core.registry import (
     # Registries

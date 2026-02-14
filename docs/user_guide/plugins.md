@@ -162,6 +162,57 @@ All `.py` files are discovered recursively.
 
 ## Troubleshooting
 
+## Testing Plugins
+
+### Unit Testing
+```python
+# tests/plugins/test_my_plugin.py
+from frameworm.core import register_model, get_model
+from frameworm.models import BaseModel
+
+def test_my_plugin():
+    @register_model("test-plugin")
+    class TestPlugin(BaseModel):
+        def __init__(self, config):
+            super().__init__(config)
+        def forward(self, x):
+            return x
+    
+    model_class = get_model("test-plugin")
+    assert model_class is not None
+```
+
+### Integration Testing
+```python
+def test_plugin_with_config():
+    model_class = get_model("my-plugin")
+    model = model_class(config)
+    
+    # Test functionality
+    output = model(input_data)
+    assert output.shape == expected_shape
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Plugin not discovered:**
+```python
+from frameworm.core import reset_discovery, discover_plugins
+reset_discovery()
+discover_plugins(force=True)
+```
+
+**Import errors:**
+- Check plugin file has no syntax errors
+- Ensure all dependencies are installed
+- Verify plugin inherits from correct base class
+
+**Validation errors:**
+- Ensure required methods are implemented
+- Check method signatures match base class
+
 ### Plugin Not Found
 ```python
 # Check if plugin was discovered
