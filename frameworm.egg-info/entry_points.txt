@@ -1,0 +1,2 @@
+[console_scripts]
+frameworm = frameworm.cli.main:cli

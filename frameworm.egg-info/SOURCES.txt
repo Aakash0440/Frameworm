@@ -1,0 +1,7 @@
+pyproject.toml
+frameworm.egg-info/PKG-INFO
+frameworm.egg-info/SOURCES.txt
+frameworm.egg-info/dependency_links.txt
+frameworm.egg-info/entry_points.txt
+frameworm.egg-info/requires.txt
+frameworm.egg-info/top_level.txt
