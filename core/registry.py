@@ -22,6 +22,11 @@ from pathlib import Path
 import warnings
 import sys
 import os
+from core.exceptions import (
+    ModelNotFoundError,
+    PluginError,
+    PluginValidationError,
+)
 
 
 class Registry:
@@ -91,26 +96,19 @@ class Registry:
         return cls
     
     def get(self, name: str) -> Type:
-        """
-        Get a registered class by name.
-        
-        Args:
-            name: Registered name
-            
-        Returns:
-            Registered class
-            
-        Raises:
-            KeyError: If name not found
-        """
         if name not in self._registry:
-            available = ', '.join(self.list())
+            available = self.list()
+        
+        if self.name == "models":
+            from core.exceptions import ModelNotFoundError
+            raise ModelNotFoundError(name, available=available)
+        else:
             raise KeyError(
                 f"'{name}' not found in {self.name} registry. "
-                f"Available: {available}"
+                f"Available: {', '.join(available)}"
             )
-        
         return self._registry[name]
+
     
     def has(self, name: str) -> bool:
         """
@@ -208,16 +206,19 @@ class ModelRegistry(Registry):
         super().__init__(name="models")
     
     def _validate(self, cls: Type):
-        """Validate model class"""
         super()._validate(cls)
-        
-        # Check for required methods
+
         required_methods = ['forward']
-        for method in required_methods:
-            if not hasattr(cls, method):
-                raise TypeError(
-                    f"Model class {cls.__name__} must implement {method}() method"
-                )
+        missing = [m for m in required_methods if not hasattr(cls, m)]
+
+        if missing:
+            from core.exceptions import PluginValidationError
+            raise PluginValidationError(
+                f"Model class validation failed",
+                plugin_name=cls.__name__,
+                missing_methods=missing
+            )
+
 
 
 class TrainerRegistry(Registry):
@@ -599,7 +600,7 @@ def _get_new_items(registry_name: str, old_count: int) -> List[str]:
 
     registry = registry_map[registry_name]
     return registry.list()
-    
+
     if len(all_items) > old_count:
         # Return the new ones (assumes they're at the end when sorted)
         return all_items[old_count:]

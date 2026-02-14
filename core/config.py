@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, Type
 import yaml
 from core.registry import get_model
+from core.exceptions import ConfigInheritanceError
 
 class ConfigNode(dict):
     """
@@ -155,10 +156,8 @@ class Config:
         self._config_path = config_path
         
         if not config_path.exists():
-            raise FileNotFoundError(
-                f"Config file not found: {config_path}\n"
-                f"Current directory: {Path.cwd()}"
-            )
+            from core.exceptions import ConfigNotFoundError
+            raise ConfigNotFoundError(str(config_path))
         
         # Load YAML
         with open(config_path, 'r') as f:
@@ -194,20 +193,22 @@ class Config:
     def _resolve_base_path(self, current_path: Path, base: str) -> Path:
         """
         Resolve the path to a base config.
-        
-        Args:
-            current_path: Path to current config file
-            base: Base path string (absolute or relative)
-            
-        Returns:
-            Resolved absolute path to base config
+        Raises ConfigInheritanceError if base config is missing.
         """
         if base.startswith('/'):
-            # Absolute path
-            return Path(base)
+            base_path = Path(base)
         else:
-            # Relative to current config
-            return (current_path.parent / base).resolve()
+            base_path = (current_path.parent / base).resolve()
+
+        if not base_path.exists():
+            from core.exceptions import ConfigInheritanceError
+            raise ConfigInheritanceError(
+            f"Base config not found: {base}",
+            base_config=str(base)
+        )
+    
+        return base_path
+
     
     def _merge_configs(
         self, 

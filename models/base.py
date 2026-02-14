@@ -5,7 +5,7 @@ from typing import Any, Dict
 import torch
 import torch.nn as nn
 from core import Config
-
+from core.exceptions import DimensionMismatchError
 
 class BaseModel(nn.Module, ABC):
     """

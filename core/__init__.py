@@ -31,6 +31,22 @@ from core.registry import (
     has_dataset,
 )
 
+# Import exceptions
+from core.exceptions import (
+    FramewormError,
+    ConfigurationError,
+    ConfigNotFoundError,
+    ConfigValidationError,
+    ConfigInheritanceError,
+    ModelError,
+    DimensionMismatchError,
+    ModelNotFoundError,
+    TrainingError,
+    ConvergenceError,
+    PluginError,
+    PluginValidationError,
+)
+
 __all__ = [
     # Config
     'Config',
