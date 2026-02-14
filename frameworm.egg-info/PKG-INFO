@@ -16,6 +16,7 @@ Classifier: Programming Language :: Python :: 3.10
 Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
+License-File: LICENSE
 Requires-Dist: torch>=2.0.0
 Requires-Dist: torchvision>=0.15.0
 Requires-Dist: pyyaml>=6.0
@@ -31,3 +32,37 @@ Requires-Dist: pytest-cov>=4.0; extra == "dev"
 Requires-Dist: black>=23.0; extra == "dev"
 Requires-Dist: flake8>=6.0; extra == "dev"
 Requires-Dist: mypy>=1.0; extra == "dev"
+Dynamic: license-file
+
+# FRAMEWORM 🐛
+
+> Advanced Generative AI Framework
+
+**Status:** 🚧 Day 1 - Building Core Architecture
+
+## Setup
+```bash
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -e ".[dev]"
+```
+
+## Progress
+
+- [ ] Config system
+- [ ] Plugin system
+- [ ] Dependency graph
+- [ ] Training infrastructure
+- [ ] Hyperparameter search
+- [ ] Benchmark suite
+
+## Development
+```bash
+# Run tests
+pytest
+
+# Format code
+black frameworm tests
+```
+
+Built with ❤️ during a 4-week intensive build.

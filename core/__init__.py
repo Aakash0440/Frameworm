@@ -1,8 +1,9 @@
-"""Core framework components"""
+"""Core module initialization"""
 
-from core.config import Config, ConfigNode
+from .config import Config, ConfigNode, ConfigSchema
 
 __all__ = [
     'Config',
-    'ConfigNode',
+    'ConfigNode', 
+    'ConfigSchema',
 ]

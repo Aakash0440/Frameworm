@@ -8,8 +8,9 @@ Features:
 - Immutable after loading
 """
 
+from pydantic import BaseModel, Field, validator
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Type
 import yaml
 
 
@@ -93,6 +94,11 @@ class ConfigNode(dict):
             else:
                 result[key] = value
         return result
+
+    def validate(self, schema: Type[BaseModel]) -> BaseModel:
+        return schema(**self.to_dict())
+
+        
 
 class Config:
     """
@@ -178,6 +184,7 @@ class Config:
                 base_config._data.to_dict(),
                 data
             )
+            merged = self._interpolate_env_vars(merged)
             self._data = ConfigNode(merged)
         else:
             self._data = ConfigNode(data)
@@ -236,6 +243,41 @@ class Config:
                 result[key] = value
         
         return result
+        
+    def _interpolate_env_vars(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Replace ${VAR_NAME} with environment variable values.
+        
+        Args:
+            data: Configuration dictionary
+            
+        Returns:
+            Dictionary with env vars interpolated
+        """
+        import os
+        import re
+        
+        def interpolate_value(value: Any) -> Any:
+            if isinstance(value, str):
+                # Find ${VAR_NAME} patterns
+                pattern = r'\$\{([^}]+)\}'
+                matches = re.findall(pattern, value)
+                
+                for var_name in matches:
+                    env_value = os.environ.get(var_name)
+                    if env_value is None:
+                        raise ValueError(
+                            f"Environment variable ${{{var_name}}} not set"
+                        )
+                    value = value.replace(f'${{{var_name}}}', env_value)
+            elif isinstance(value, dict):
+                return {k: interpolate_value(v) for k, v in value.items()}
+            elif isinstance(value, list):
+                return [interpolate_value(item) for item in value]
+            
+            return value
+        
+        return interpolate_value(data)
     
     def freeze(self):
         """
@@ -311,3 +353,99 @@ class Config:
         """String representation"""
         frozen_str = " (frozen)" if self._frozen else ""
         return f"Config({len(self.keys())} keys{frozen_str})"
+
+    @staticmethod
+    def from_cli_args(
+        base_config: Union[str, Path],
+        overrides: List[str]
+    ) -> 'Config':
+        """
+        Create config from file with CLI overrides.
+        
+        Args:
+            base_config: Path to base config file
+            overrides: List of override strings like 'model.dim=256' or 'training.epochs=500'
+            
+        Returns:
+            Config with overrides applied
+            
+        Example:
+            >>> cfg = Config.from_cli_args(
+            ...     'config.yaml',
+            ...     ['model.dim=256', 'training.epochs=500']
+            ... )
+        """
+        cfg = Config(base_config)
+        
+        for override in overrides:
+            if '=' not in override:
+                raise ValueError(
+                    f"Invalid override '{override}'. Expected format: key=value"
+                )
+            
+            key_path, value = override.split('=', 1)
+            keys = key_path.split('.')
+            
+            # Try to convert value to appropriate type
+            try:
+                # Try int
+                value = int(value)
+            except ValueError:
+                try:
+                    # Try float
+                    value = float(value)
+                except ValueError:
+                    # Try bool
+                    if value.lower() in ('true', 'false'):
+                        value = value.lower() == 'true'
+                    # Otherwise keep as string
+            
+            # Navigate to the right nested dict and set value
+            current = cfg._data
+            for key in keys[:-1]:
+                if key not in current:
+                    current[key] = ConfigNode({})
+                current = current[key]
+            
+            current[keys[-1]] = value
+        
+        return cfg
+
+class ConfigSchema(BaseModel):
+    """
+    Base class for config validation schemas.
+    
+    Inherit from this to define validation schemas for your configs.
+    """
+    class Config:
+        # Allow extra fields not in schema
+        extra = 'allow'
+        # Allow arbitrary types
+        arbitrary_types_allowed = True
+
+
+# Add this method to the Config class
+# Place it after the dump() method
+
+    def validate(self, schema: Type[BaseModel]) -> BaseModel:
+        """
+        Validate configuration against a Pydantic schema.
+        
+        Args:
+            schema: Pydantic BaseModel class defining the schema
+            
+        Returns:
+            Validated config as schema instance
+            
+        Raises:
+            ValidationError: If config doesn't match schema
+            
+        Example:
+            >>> class ModelConfig(BaseModel):
+            ...     name: str
+            ...     dim: int
+            >>> cfg.validate(ModelConfig)
+        """
+        return schema(**self.to_dict())
+
+    
