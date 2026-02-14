@@ -1,3 +1,4 @@
+.coverage
 LICENSE
 README.md
 Readme.md
@@ -7,7 +8,12 @@ pyproject.toml
 requirements-dev.txt
 requirements.txt
 test_config_script.py
+test_env.py
+test_env.yaml
+test_validation_script.py
+__pycache__/__init__.cpython-314.pyc
 __pycache__/__version__.cpython-314.pyc
+__pycache__/test_validation_script.cpython-314.pyc
 benchmark/__init__.py
 benchmark/metrics/__init__.py
 cli/__init__.py
@@ -21,6 +27,7 @@ configs/models/vae/__init__.py
 core/__init__.py
 core/config.py
 core/testconfig.py
+core/types.py
 core/__pycache__/__init__.cpython-314.pyc
 core/__pycache__/config.cpython-314.pyc
 core/__pycache__/testconfig.cpython-314.pyc
@@ -41,8 +48,12 @@ pipelines/__init__.py
 plugins/__init__.py
 test_configs/test.yaml
 tests/__init__.py
+tests/__pycache__/__init__.cpython-314.pyc
 tests/benchmark/__init__.py
 tests/integration/__init__.py
 tests/unit/__init__.py
+tests/unit/test_config.py
+tests/unit/__pycache__/__init__.cpython-314.pyc
+tests/unit/__pycache__/test_config.cpython-314-pytest-9.0.2.pyc
 trainers/__init__.py
 utils/__init__.py
