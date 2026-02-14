@@ -1,0 +1,20 @@
+_base_: ../../base.yaml
+
+model:
+  type: dcgan
+  latent_dim: 100
+  image_size: 64
+  channels: 3
+  
+  ngf: 64  # Generator feature maps
+  ndf: 64  # Discriminator feature maps
+
+training:
+  epochs: 200
+  batch_size: 128
+  device: cuda
+  
+optimizer:
+  type: adam
+  lr: 0.0002
+  betas: [0.5, 0.999]

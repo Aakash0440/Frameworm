@@ -1,8 +1,7 @@
-
 """Base classes for all models"""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 import torch
 import torch.nn as nn
 from core import Config
@@ -26,70 +25,60 @@ class BaseModel(nn.Module, ABC):
     
     @abstractmethod
     def forward(self, *args, **kwargs) -> Any:
-        """
-        Forward pass of the model.
-        
-        Must be implemented by subclasses.
-        """
+        """Forward pass of the model. Must be implemented by subclasses."""
         pass
     
     def build(self):
-        """
-        Build the model architecture.
-        
-        Override this to lazily construct model layers.
-        """
+        """Build the model architecture. Override for lazy building."""
         self._is_built = True
     
     def get_config(self) -> Dict[str, Any]:
-        """
-        Get model configuration.
-        
-        Returns:
-            Configuration dictionary
-        """
+        """Get model configuration."""
         return self.config.to_dict() if hasattr(self.config, 'to_dict') else dict(self.config)
     
     def summary(self):
-        """
-        Print model summary.
-        """
+        """Print model summary."""
         print(f"\n{self.__class__.__name__} Summary")
         print("=" * 60)
-        
-        # Count parameters
-        total_params = sum(p.numel() for p in self.parameters())
-        trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
-        
+        total_params = self.count_parameters()
         print(f"Total parameters: {total_params:,}")
-        print(f"Trainable parameters: {trainable_params:,}")
-        print(f"Non-trainable parameters: {total_params - trainable_params:,}")
         print("=" * 60)
         print()
     
     def save(self, path: str):
-        """
-        Save model weights.
-        
-        Args:
-            path: Path to save weights
-        """
+        """Save model weights."""
         torch.save({
             'model_state_dict': self.state_dict(),
             'config': self.get_config(),
         }, path)
     
     def load(self, path: str):
-        """
-        Load model weights.
-        
-        Args:
-            path: Path to load weights from
-        """
+        """Load model weights."""
         checkpoint = torch.load(path)
         self.load_state_dict(checkpoint['model_state_dict'])
+
+    # -----------------------
+    # New utility methods
+    # -----------------------
+
+    def get_device(self) -> torch.device:
+        """Return the device of the model's parameters."""
+        try:
+            return next(self.parameters()).device
+        except StopIteration:
+            # Model has no parameters yet
+            return torch.device('cpu')
+
+    def to_device(self, device: str):
+        """Move the model to the specified device (CPU/GPU)."""
+        self.to(device)
+        return self
+
+    def count_parameters(self) -> int:
+        """Return the total number of trainable parameters."""
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
     
     def __repr__(self) -> str:
         """String representation"""
-        num_params = sum(p.numel() for p in self.parameters())
+        num_params = self.count_parameters()
         return f"{self.__class__.__name__}(params={num_params:,})"
