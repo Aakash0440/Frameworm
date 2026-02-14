@@ -57,4 +57,12 @@ __all__ = [
     'has_trainer',
     'has_pipeline',
     'has_dataset',
+    'discover_plugins',
+    'auto_discover',
+    'reset_discovery',
+    'set_auto_discover',
+    'search_models',
+    'search_trainers',
+    'print_registry_summary',
+    'create_model_from_config',
 ]
