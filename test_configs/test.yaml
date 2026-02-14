@@ -1,0 +1,6 @@
+model:
+  name: test-model
+  dim: 128
+training:
+  epochs: 100
+  batch_size: 32
