@@ -70,3 +70,59 @@ class MyModel(BaseModel):
     def forward(self, x):
         return self.net(x)
 ```
+
+### VAE (Variational Autoencoder)
+
+Learn a latent representation and generate new samples.
+
+**Usage:**
+```python
+from frameworm.core import Config, get_model
+import torch
+
+# Load config
+cfg = Config('configs/models/vae/vanilla.yaml')
+
+# Get model
+vae = get_model("vae")(cfg)
+
+# Reconstruct images
+images = torch.rand(4, 3, 64, 64)
+reconstructed = vae.reconstruct(images)
+
+# Generate new samples
+samples = vae.sample(16)
+
+# Training
+recon, mu, logvar = vae(images)
+loss_dict = vae.compute_loss(images, recon, mu, logvar)
+loss = loss_dict['loss']
+```
+
+**Config Options:**
+```yaml
+model:
+  type: vae
+  latent_dim: 128      # Latent space dimension
+  image_size: 64       # Input image size
+  channels: 3          # Color channels
+  beta: 1.0           # β coefficient (>1 for β-VAE)
+```
+
+**β-VAE:**
+
+Use β > 1 for better disentanglement:
+```yaml
+model:
+  beta: 4.0  # Emphasizes KL divergence
+```
+
+**Architecture:**
+- Encoder: 4 conv layers → latent distribution
+- Reparameterization: z = μ + σ * ε  
+- Decoder: 4 transposed conv layers → reconstruction
+
+**Loss:**
+- Reconstruction: MSE between input and output
+- KL Divergence: Regularization to N(0, I)
+- Total: recon_loss + β * kl_loss

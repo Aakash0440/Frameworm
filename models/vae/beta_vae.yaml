@@ -1,0 +1,7 @@
+_base_: ./vanilla.yaml
+
+model:
+  beta: 4.0  # β-VAE for disentanglement
+
+training:
+  epochs: 500

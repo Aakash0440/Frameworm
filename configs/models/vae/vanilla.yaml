@@ -1,0 +1,16 @@
+model:
+  type: vae
+  channels: 3       # RGB images
+  latent_dim: 16    # Dimensionality of latent space
+  hidden_dims: [32, 64, 128, 256]  # Encoder conv layers
+
+training:
+  batch_size: 32
+  lr: 0.001
+  epochs: 10
+
+device: cpu  # or 'cuda' for GPU
+
+sample:
+  num_samples: 16
+  image_size: 64
