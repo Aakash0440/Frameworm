@@ -1,0 +1,21 @@
+training:
+  epochs: 100
+  batch_size: 32
+  num_workers: 4
+  device: cuda
+  seed: 42
+
+optimizer:
+  type: adam
+  lr: 0.0002
+  betas: [0.5, 0.999]
+  weight_decay: 0.0
+
+logging:
+  log_interval: 10
+  save_interval: 1000
+  checkpoint_dir: ./checkpoints
+  
+paths:
+  output_dir: ./outputs
+  data_dir: ./data

@@ -1,0 +1,12 @@
+model:
+  type: gan
+  latent_dim: 100
+  image_size: 64
+  channels: 3
+
+training:
+  epochs: 200  # override base
+  gan_mode: vanilla
+
+optimizer:
+  lr: 0.0001  # override base

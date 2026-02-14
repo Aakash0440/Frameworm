@@ -1,0 +1,17 @@
+_base_: ./base_gan.yaml
+
+model:
+  type: dcgan
+  latent_dim: 128  # override
+  
+  generator:
+    ngf: 64
+    num_layers: 4
+  
+  discriminator:
+    ndf: 64
+    num_layers: 4
+
+training:
+  epochs: 300  # override again
+  batch_size: 64  # override
