@@ -58,8 +58,10 @@ include = ["core*", "models*", "data*", "utils*", "benchmark*", "experiment*", "
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
+pythonpath = ["."]
 addopts = "--cov=frameworm --cov-report=html --cov-report=term-missing"
 
 [tool.black]
 line-length = 100
 target-version = ['py38']
+
