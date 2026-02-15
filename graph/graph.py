@@ -9,6 +9,8 @@ from typing import Dict, List, Optional, Any, Set
 from collections import defaultdict, deque
 from graph.node import Node, NodeStatus
 from core.exceptions import FramewormError
+from pathlib import Path
+
 
 
 class GraphError(FramewormError):
@@ -208,8 +210,10 @@ class Graph:
                 if dep not in self.nodes:
                     raise GraphError(f"Dependency '{dep}' doesn't exist")
 
-        if self.has_cycle():
-            raise CycleDetectedError("Graph contains a cycle")
+        cycle = self.find_cycle()
+        if cycle:
+            raise CycleDetectedError(cycle)
+
             
             # Calculate in-degree (number of dependencies)
         in_degree = {node_id: 0 for node_id in self.nodes}
@@ -276,3 +280,328 @@ class Graph:
     def __repr__(self) -> str:
         """String representation"""
         return f"Graph(nodes={len(self.nodes)})"
+    # Add execute method to Graph class for convenience
+# Add this method to the Graph class:
+
+    def execute(
+        self,
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        continue_on_error: bool = False,
+        skip_nodes: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Execute the graph.
+        
+        Convenience method that creates an ExecutionEngine and runs it.
+        
+        Args:
+            initial_inputs: Initial values
+            continue_on_error: Continue even if nodes fail
+            skip_nodes: Nodes to skip
+            
+        Returns:
+            Dictionary of results
+        """
+        engine = ExecutionEngine(self)
+        return engine.execute(
+            initial_inputs=initial_inputs,
+            continue_on_error=continue_on_error,
+            skip_nodes=skip_nodes
+        )
+    
+    def get_last_execution_summary(self) -> Dict[str, Any]:
+        """Get summary of last execution"""
+        engine = ExecutionEngine(self)
+        # Copy results from nodes
+        for node_id, node in self.nodes.items():
+            if node.result is not None:
+                engine.results[node_id] = node.result
+            if node.error is not None:
+                engine.errors[node_id] = node.error
+        
+        return engine.get_execution_summary()
+
+    
+    
+        
+class ExecutionEngine:
+    """
+    Engine for executing dependency graphs.
+    
+    Handles node execution, result passing, and error management.
+    """
+    
+    def __init__(self, graph: Graph):
+        self.graph = graph
+        self.results: Dict[str, Any] = {}
+        self.errors: Dict[str, Exception] = {}
+
+    def execute(
+        self,
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        continue_on_error: bool = False,
+        skip_nodes: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Execute all nodes in the graph.
+        
+        Args:
+            initial_inputs: Initial values for nodes (for nodes with no dependencies)
+            continue_on_error: If True, continue execution even if nodes fail
+            skip_nodes: List of node IDs to skip
+            
+        Returns:
+            Dictionary mapping node_id → result
+            
+        Raises:
+            GraphError: If execution fails and continue_on_error=False
+        """
+        initial_inputs = initial_inputs or {}
+        skip_nodes = skip_nodes or []
+        
+        # Reset state
+        self.results = {}
+        self.errors = {}
+        self.graph.reset()
+        
+        # Get execution order
+        try:
+            execution_order = self.graph.get_execution_order()
+        except CycleDetectedError as e:
+            raise GraphError(f"Cannot execute graph with cycle: {e}")
+        
+        # Execute nodes in order
+        for node_id in execution_order:
+            node = self.graph.get_node(node_id)
+
+            # If node has no dependencies and initial input is provided,
+            # use it instead of executing the node
+            if not node.depends_on and node_id in initial_inputs:
+                self.results[node_id] = initial_inputs[node_id]
+                node.status = NodeStatus.COMPLETED
+                continue
+            # Check if should skip
+
+            if node_id in skip_nodes:
+                self.graph.get_node(node_id).status = NodeStatus.SKIPPED
+                continue
+            
+            # Check if dependencies failed
+            node = self.graph.get_node(node_id)
+            failed_deps = [dep for dep in node.depends_on if dep in self.errors]
+            skipped_deps = [dep for dep in node.depends_on if self.graph.get_node(dep).status == NodeStatus.SKIPPED]
+
+            if failed_deps:
+                node.status = NodeStatus.SKIPPED
+                self.errors[node_id] = GraphError(
+                    f"Dependencies failed: {failed_deps}"
+                )
+                if not continue_on_error:
+                    raise self.errors[node_id]
+                continue
+
+            if skipped_deps:
+                # Downstream of a skipped node → skip silently
+                node.status = NodeStatus.SKIPPED
+                continue
+
+            
+            # Prepare inputs
+            inputs = self._prepare_inputs(node, initial_inputs)
+            
+            # Execute node
+            try:
+                result = node.execute(inputs)
+                self.results[node_id] = result
+            except Exception as e:
+                self.errors[node_id] = e
+                
+                if not continue_on_error:
+                    raise GraphError(
+                        f"Node '{node_id}' failed: {e}",
+                        node_id=node_id,
+                        original_error=e
+                    )
+        
+        return self.results
+    
+    
+    def _prepare_inputs(
+        self,
+        node: Node,
+        initial_inputs: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Prepare inputs for node execution.
+        
+        Args:
+            node: Node to prepare inputs for
+            initial_inputs: Initial values provided by user
+            
+        Returns:
+            Dictionary of inputs for the node
+        """
+        inputs = {}
+        
+        for dep_id in node.depends_on:
+            # Check if dependency result is available
+            if dep_id in self.results:
+                inputs[dep_id] = self.results[dep_id]
+            elif dep_id in initial_inputs:
+                inputs[dep_id] = initial_inputs[dep_id]
+            else:
+                # This shouldn't happen if topological sort is correct
+                raise GraphError(
+                    f"Missing input for dependency '{dep_id}' of node '{node.node_id}'"
+                )
+        
+        return inputs
+    
+    def get_failed_nodes(self) -> List[str]:
+        """Get list of failed node IDs"""
+        return list(self.errors.keys())
+    
+    def get_completed_nodes(self) -> List[str]:
+        """Get list of successfully completed node IDs"""
+        return list(self.results.keys())
+    
+    def get_execution_summary(self) -> Dict[str, Any]:
+        """
+        Get summary of execution.
+        
+        Returns:
+            Dictionary with execution statistics
+        """
+        total_nodes = len(self.graph)
+        completed = len(self.results)
+        failed = len(self.errors)
+        skipped = total_nodes - completed - failed
+        
+        # Calculate total duration
+        total_duration = sum(
+            node.get_duration() or 0
+            for node in self.graph.nodes.values()
+            if node.status == NodeStatus.COMPLETED
+        )
+        
+        return {
+            'total_nodes': total_nodes,
+            'completed': completed,
+            'failed': failed,
+            'skipped': skipped,
+            'total_duration': total_duration,
+            'errors': {node_id: str(err) for node_id, err in self.errors.items()}
+        }
+
+class CachedGraph(Graph):
+    """
+    Graph with result caching.
+    
+    Caches node results based on function hash and input hash.
+    """
+    
+    def __init__(self, cache_dir: Optional[str] = None):
+        super().__init__()
+        self.cache_dir = Path(cache_dir) if cache_dir else Path(".graph_cache")
+        self.cache_dir.mkdir(exist_ok=True)
+    
+    def _get_cache_key(self, node: Node, inputs: Dict[str, Any]) -> str:
+        """Generate cache key for node execution"""
+        import hashlib
+        import pickle
+        
+        # Hash node function
+        node_hash = node.get_hash()
+        
+        # Hash inputs
+        try:
+            input_bytes = pickle.dumps(sorted(inputs.items()))
+            input_hash = hashlib.sha256(input_bytes).hexdigest()[:16]
+        except:
+            # If inputs can't be pickled, no caching
+            return None
+        
+        return f"{node.node_id}_{node_hash}_{input_hash}"
+    
+    def _load_from_cache(self, cache_key: str) -> Optional[Any]:
+        """Load result from cache"""
+        cache_file = self.cache_dir / f"{cache_key}.pkl"
+        
+        if not cache_file.exists():
+            return None
+        
+        try:
+            import pickle
+            with open(cache_file, 'rb') as f:
+                return pickle.load(f)
+        except Exception:
+            return None
+    
+    def _save_to_cache(self, cache_key: str, result: Any):
+        """Save result to cache"""
+        cache_file = self.cache_dir / f"{cache_key}.pkl"
+        
+        try:
+            import pickle
+            with open(cache_file, 'wb') as f:
+                pickle.dump(result, f)
+        except Exception:
+            # If result can't be pickled, skip caching
+            pass
+    
+    def execute(
+        self,
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        use_cache: bool = True,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Execute with caching"""
+        if not use_cache:
+            return super().execute(initial_inputs, **kwargs)
+        
+        # Custom execution with cache checks
+        initial_inputs = initial_inputs or {}
+        results = {}
+        
+        execution_order = self.get_execution_order()
+        
+        for node_id in execution_order:
+            node = self.get_node(node_id)
+            
+            # Prepare inputs
+            inputs = {}
+            for dep_id in node.depends_on:
+                if dep_id in results:
+                    inputs[dep_id] = results[dep_id]
+                elif dep_id in initial_inputs:
+                    inputs[dep_id] = initial_inputs[dep_id]
+            
+            # Check cache
+            cache_key = self._get_cache_key(node, inputs)
+            
+            if cache_key and node.cache_result:
+                cached_result = self._load_from_cache(cache_key)
+                
+                if cached_result is not None:
+                    node.result = cached_result
+                    node.status = NodeStatus.COMPLETED
+                    results[node_id] = cached_result
+                    continue
+            
+            # Execute node
+            result = node.execute(inputs)
+            results[node_id] = result
+            
+            # Save to cache
+            if cache_key and node.cache_result:
+                self._save_to_cache(cache_key, result)
+        
+        return results
+    
+    def clear_cache(self):
+        """Clear all cached results"""
+        import shutil
+        if self.cache_dir.exists():
+            shutil.rmtree(self.cache_dir)
+            self.cache_dir.mkdir()
+

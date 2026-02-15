@@ -3,7 +3,7 @@
 import pytest
 from graph.node import Node, NodeStatus
 from graph.graph import Graph, CycleDetectedError, GraphError
-
+from graph.graph import CachedGraph
 
 class TestNode:
     """Test Node class"""
@@ -192,6 +192,184 @@ class TestGraph:
         
         dependents = graph.get_dependents("a")
         assert set(dependents) == {"b", "c"}
+
+
+class TestExecutionEngine:
+    """Test graph execution"""
+    
+    def test_simple_execution(self):
+        """Should execute simple graph"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 10))
+        graph.add_node(Node("b", fn=lambda x: x * 2, depends_on=["a"]))
+        
+        results = graph.execute()
+        
+        assert results["a"] == 10
+        assert results["b"] == 20
+    
+    def test_complex_execution(self):
+        """Should execute complex graph"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 5))
+        graph.add_node(Node("b", fn=lambda: 3))
+        graph.add_node(Node("c", fn=lambda x, y: x + y, depends_on=["a", "b"]))
+        graph.add_node(Node("d", fn=lambda x: x ** 2, depends_on=["c"]))
+        
+        results = graph.execute()
+        
+        assert results["a"] == 5
+        assert results["b"] == 3
+        assert results["c"] == 8  # 5 + 3
+        assert results["d"] == 64  # 8^2
+    
+    def test_execution_with_initial_inputs(self):
+        """Should use initial inputs for root nodes"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: None))  # Will be replaced by initial input
+        graph.add_node(Node("b", fn=lambda x: x * 2, depends_on=["a"]))
+        
+        results = graph.execute(initial_inputs={"a": 15})
+        
+        # Note: Node "a" still executes, but "b" uses the result
+        assert results["b"] == 30  # 15 * 2
+    
+    def test_execution_failure(self):
+        """Should handle node failure"""
+        def failing_fn():
+            raise ValueError("Test error")
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=failing_fn))
+        graph.add_node(Node("b", fn=lambda x: x, depends_on=["a"]))
+        
+        with pytest.raises(GraphError):
+            graph.execute()
+    
+    def test_continue_on_error(self):
+        """Should continue execution after failure"""
+        def failing_fn():
+            raise ValueError("Test error")
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 10))
+        graph.add_node(Node("b", fn=failing_fn))
+        graph.add_node(Node("c", fn=lambda x: x * 2, depends_on=["a"]))
+        
+        results = graph.execute(continue_on_error=True)
+        
+        # Node "a" and "c" should succeed
+        assert results["a"] == 10
+        assert results["c"] == 20
+        # Node "b" failed, so not in results
+        assert "b" not in results
+    
+    def test_skip_nodes(self):
+        """Should skip specified nodes"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 10))
+        graph.add_node(Node("b", fn=lambda x: x * 2, depends_on=["a"]))
+        graph.add_node(Node("c", fn=lambda x: x + 1, depends_on=["b"]))
+        
+        results = graph.execute(skip_nodes=["b"])
+        
+        assert results["a"] == 10
+        assert "b" not in results
+        # "c" skipped because dependency "b" was skipped
+        assert "c" not in results
+    
+    def test_execution_summary(self):
+        """Should provide execution summary"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 10))
+        graph.add_node(Node("b", fn=lambda x: x * 2, depends_on=["a"]))
+        
+        graph.execute()
+        summary = graph.get_last_execution_summary()
+        
+        assert summary['total_nodes'] == 2
+        assert summary['completed'] == 2
+        assert summary['failed'] == 0
+        assert summary['total_duration'] >= 0
+
+class TestConditionalNode:
+    """Test conditional execution"""
+    
+    def test_conditional_node_execute(self):
+        """Should execute when condition is True"""
+        from graph.node import ConditionalNode
+        
+        node = ConditionalNode(
+            "test",
+            fn=lambda x: x * 2,
+            condition=lambda x: x > 5,
+            depends_on=["a"]
+        )
+        
+        result = node.execute({"a": 10})
+        assert result == 20
+        assert node.status == NodeStatus.COMPLETED
+    
+    def test_conditional_node_skip(self):
+        """Should skip when condition is False"""
+        from graph.node import ConditionalNode
+        
+        node = ConditionalNode(
+            "test",
+            fn=lambda x: x * 2,
+            condition=lambda x: x > 5,
+            depends_on=["a"]
+        )
+        
+        result = node.execute({"a": 3})
+        assert result is None
+        assert node.status == NodeStatus.SKIPPED
+
+
+class TestCachedGraph:
+    """Test result caching"""
+    
+    def test_cache_simple(self, tmp_path):
+        from graph.graph import CachedGraph
+
+        call_count = [0]
+
+        def expensive_fn():
+            call_count[0] += 1
+            return 42
+
+        graph = CachedGraph(cache_dir=str(tmp_path))
+        graph.add_node(Node("a", fn=expensive_fn))  # track call_count
+
+        results1 = graph.execute()
+        assert results1["a"] == 42
+        assert call_count[0] == 1
+
+        results2 = graph.execute()
+        assert results2["a"] == 42
+        assert call_count[0] == 1  # cached, not called again
+
+    
+    def test_cache_invalidation(self, tmp_path):
+        from graph.graph import CachedGraph
+
+        call_count = [0]
+
+        def fn(x):
+            call_count[0] += 1
+            return x * 2
+
+        graph = CachedGraph(cache_dir=str(tmp_path))
+        graph.add_node(Node("a", fn=lambda: 10))  # root node with fixed value
+        graph.add_node(Node("b", fn=fn, depends_on=["a"]))
+
+        # First execution
+        graph.execute()
+        assert call_count[0] == 1
+
+        # Cached execution → call_count should not increase
+        graph.execute()
+        assert call_count[0] == 1
 
 
 # Run tests

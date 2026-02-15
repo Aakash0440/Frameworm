@@ -142,3 +142,50 @@ class Node:
         if not isinstance(other, Node):
             return False
         return self.node_id == other.node_id
+
+
+class ConditionalNode(Node):
+    """
+    Node that executes conditionally based on a predicate.
+    
+    Args:
+        node_id: Node identifier
+        fn: Function to execute
+        condition: Function that returns True/False
+        depends_on: Dependencies
+    """
+    
+    def __init__(
+        self,
+        node_id: str,
+        fn: Callable,
+        condition: Callable[..., bool],
+        depends_on: Optional[List[str]] = None,
+        **kwargs
+    ):
+        super().__init__(node_id, fn, depends_on, **kwargs)
+        self.condition = condition
+    
+    def should_execute(self, inputs: Dict[str, Any]) -> bool:
+        """
+        Check if node should execute.
+        
+        Args:
+            inputs: Dependency results
+            
+        Returns:
+            True if node should execute
+        """
+        try:
+            args = [inputs.get(dep_id) for dep_id in self.depends_on]
+            return self.condition(*args)
+        except Exception:
+            return False
+    
+    def execute(self, inputs: Dict[str, Any]) -> Any:
+        """Execute only if condition is met"""
+        if not self.should_execute(inputs):
+            self.status = NodeStatus.SKIPPED
+            return None
+        
+        return super().execute(inputs)
