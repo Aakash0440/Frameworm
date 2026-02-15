@@ -14,6 +14,12 @@ from training.state import TrainingState
 from training.metrics import MetricsTracker, ProgressLogger
 from core.exceptions import FramewormError
 
+from training.advanced import (
+    GradientAccumulator,
+    GradientClipper,
+    EMAModel,
+    compute_gradient_norm
+)
 
 class TrainingError(FramewormError):
     """Raised when training fails"""
@@ -56,6 +62,11 @@ class Trainer:
         self.callbacks = CallbackList()
         # Move model to device
         self.model.to(self.device)
+        self.gradient_accumulator: Optional[GradientAccumulator] = None
+        self.gradient_clipper: Optional[GradientClipper] = None
+        self.ema: Optional[EMAModel] = None
+        self.mixed_precision: bool = False
+        self.grad_scaler: Optional[torch.cuda.amp.GradScaler] = None
         
         # Training state
         self.state = TrainingState()
@@ -77,7 +88,28 @@ class Trainer:
     def add_callback(self, callback: Callback):
         """Add a callback"""
         self.callbacks.append(callback)
+
+    def enable_gradient_accumulation(self, accumulation_steps: int):
+        """Enable gradient accumulation"""
+        self.gradient_accumulator = GradientAccumulator(accumulation_steps)
     
+    def enable_gradient_clipping(self, max_norm: float = 1.0):
+        """Enable gradient clipping"""
+        self.gradient_clipper = GradientClipper(max_norm)
+    
+    def enable_ema(self, decay: float = 0.999):
+        """Enable exponential moving average"""
+        self.ema = EMAModel(self.model, decay)
+    
+    def enable_mixed_precision(self):
+        """Enable mixed precision training (FP16)"""
+        if not torch.cuda.is_available():
+            print("Warning: Mixed precision requires CUDA, skipping")
+            return
+        
+        self.mixed_precision = True
+        self.grad_scaler = torch.cuda.amp.GradScaler()
+
     def set_early_stopping(self, patience: int, min_delta: float = 0.0):
         """
         Enable early stopping.
@@ -176,23 +208,14 @@ class Trainer:
             # Save final state
             self.state.save(self.checkpoint_dir / 'training_state.json')
             self.callbacks.on_train_end(self)
-    def train_epoch(
-        self,
-        train_loader: DataLoader,
-        epoch: int
-    ) -> Dict[str, float]:
-        """
-        Train for one epoch.
-        
-        Args:
-            train_loader: Training data loader
-            epoch: Current epoch number
-            
-        Returns:
-            Dictionary of averaged metrics
-        """
+    def train_epoch(self, train_loader, epoch):
+        """Train for one epoch with advanced features"""
         self.model.train()
         self.train_tracker.epoch_start()
+        
+        # Reset gradient accumulator
+        if self.gradient_accumulator:
+            self.gradient_accumulator.reset()
         
         for batch_idx, batch in enumerate(train_loader):
             # Move batch to device
@@ -201,57 +224,108 @@ class Trainer:
             elif isinstance(batch, torch.Tensor):
                 batch = batch.to(self.device)
             
-            # Zero gradients
-            self.optimizer.zero_grad()
+            # Callbacks
             self.callbacks.on_batch_begin(batch_idx, self)
-            # Forward pass
-            if hasattr(self.model, 'compute_loss'):
-                # Model has its own loss computation
-                if isinstance(batch, (list, tuple)) and len(batch) == 1:
-                    loss_dict = self.model.compute_loss(batch[0])
-                else:
-                    loss_dict = self.model.compute_loss(*batch if isinstance(batch, (list, tuple)) else batch)
+            
+            # Forward pass with optional mixed precision
+            if self.mixed_precision:
+                with torch.cuda.amp.autocast():
+                    loss_dict = self._compute_loss(batch)
+                    loss = loss_dict['loss']
+                    
+                    # Scale loss for gradient accumulation
+                    if self.gradient_accumulator:
+                        loss = self.gradient_accumulator.scale_loss(loss)
                 
-                loss = loss_dict['loss']
-                metrics = loss_dict
+                # Backward with gradient scaling
+                self.grad_scaler.scale(loss).backward()
+                
+                # Gradient clipping (unscale first)
+                if self.gradient_clipper:
+                    self.grad_scaler.unscale_(self.optimizer)
+                    grad_norm = self.gradient_clipper.clip(self.model.parameters())
+                    loss_dict['grad_norm'] = grad_norm
+                
+                # Optimizer step
+                should_update = (
+                    not self.gradient_accumulator or
+                    self.gradient_accumulator.should_update()
+                )
+                
+                if should_update:
+                    self.grad_scaler.step(self.optimizer)
+                    self.grad_scaler.update()
+                    self.optimizer.zero_grad()
+                    
+                    # Update EMA
+                    if self.ema:
+                        self.ema.update()
             else:
-                # Use provided criterion
-                if self.criterion is None:
-                    raise ValueError("Model doesn't have compute_loss() and no criterion provided")
+                # Standard training
+                self.optimizer.zero_grad()
                 
-                # Unpack batch
-                if isinstance(batch, (list, tuple)):
-                    *inputs, targets = batch
-                    outputs = self.model(*inputs)
-                else:
-                    outputs = self.model(batch)
-                    targets = batch
+                loss_dict = self._compute_loss(batch)
+                loss = loss_dict['loss']
                 
-                loss = self.criterion(outputs, targets)
-                metrics = {'loss': loss}
+                # Scale loss for gradient accumulation
+                if self.gradient_accumulator:
+                    loss = self.gradient_accumulator.scale_loss(loss)
+                
+                # Backward
+                loss.backward()
+                
+                # Gradient clipping
+                if self.gradient_clipper:
+                    grad_norm = self.gradient_clipper.clip(self.model.parameters())
+                    loss_dict['grad_norm'] = grad_norm
+                
+                # Optimizer step
+                should_update = (
+                    not self.gradient_accumulator or
+                    self.gradient_accumulator.should_update()
+                )
+                
+                if should_update:
+                    self.optimizer.step()
+                    
+                    # Update EMA
+                    if self.ema:
+                        self.ema.update()
             
-            # Backward pass
-            loss.backward()
-            
-            # Update weights
-            self.optimizer.step()
-            self.callbacks.on_batch_end(batch_idx, metrics, self)
             # Update metrics
-            self.train_tracker.update(metrics)
+            self.train_tracker.update(loss_dict)
+            
+            # Callbacks
+            self.callbacks.on_batch_end(batch_idx, loss_dict, self)
             
             # Log batch
-            self.logger.log_batch(
-                epoch + 1,
-                batch_idx,
-                len(train_loader),
-                metrics
-            )
+            self.logger.log_batch(epoch + 1, batch_idx, len(train_loader), loss_dict)
             
             # Update global step
             self.state.global_step += 1
         
-        # Compute epoch metrics
         return self.train_tracker.epoch_end()
+
+    def _compute_loss(self, batch):
+        """Compute loss for batch"""
+        if hasattr(self.model, 'compute_loss'):
+            if isinstance(batch, (list, tuple)) and len(batch) == 1:
+                return self.model.compute_loss(batch[0])
+            else:
+                return self.model.compute_loss(*batch if isinstance(batch, (list, tuple)) else batch)
+        else:
+            if self.criterion is None:
+                raise ValueError("Model doesn't have compute_loss() and no criterion provided")
+            
+            if isinstance(batch, (list, tuple)):
+                *inputs, targets = batch
+                outputs = self.model(*inputs)
+            else:
+                outputs = self.model(batch)
+                targets = batch
+            
+            loss = self.criterion(outputs, targets)
+            return {'loss': loss}
     
     def validate_epoch(
         self,
@@ -303,37 +377,47 @@ class Trainer:
         # Compute epoch metrics
         return self.val_tracker.epoch_end()
     
-    def save_checkpoint(self, filename: str, epoch: int):
-        self.state.current_epoch = epoch  # sync state
+    def save_checkpoint(self, filename, epoch):
+        """Save checkpoint with EMA if enabled"""
         checkpoint = {
             'epoch': epoch,
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'training_state': self.state.to_dict(),
         }
+        
         if self.scheduler:
             checkpoint['scheduler_state_dict'] = self.scheduler.state_dict()
         
+        if self.ema:
+            checkpoint['ema_state_dict'] = self.ema.state_dict()
+        
+        if self.grad_scaler:
+            checkpoint['grad_scaler_state_dict'] = self.grad_scaler.state_dict()
+        
         checkpoint_path = self.checkpoint_dir / filename
         torch.save(checkpoint, checkpoint_path)
+
+    def save_checkpoint(self, filename, epoch):
+        """Save checkpoint with EMA if enabled"""
+        checkpoint = {
+            'epoch': epoch,
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'training_state': self.state.to_dict(),
+        }
         
-    def load_checkpoint(self, checkpoint_path: str):
-        """
-        Load checkpoint.
+        if self.scheduler:
+            checkpoint['scheduler_state_dict'] = self.scheduler.state_dict()
         
-        Args:
-            checkpoint_path: Path to checkpoint file
-        """
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
+        if self.ema:
+            checkpoint['ema_state_dict'] = self.ema.state_dict()
         
-        self.model.load_state_dict(checkpoint['model_state_dict'])
-        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        self.state = TrainingState.from_dict(checkpoint['training_state'])
+        if self.grad_scaler:
+            checkpoint['grad_scaler_state_dict'] = self.grad_scaler.state_dict()
         
-        if self.scheduler and 'scheduler_state_dict' in checkpoint:
-            self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        
-        print(f"Resumed from epoch {self.state.current_epoch}")
+        checkpoint_path = self.checkpoint_dir / filename
+        torch.save(checkpoint, checkpoint_path)
     
     def _should_stop_early(self) -> bool:
         """Check if training should stop early"""

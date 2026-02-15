@@ -9,13 +9,21 @@ from training.schedulers import (
     PolynomialLR,
     get_scheduler
 )
+from training.advanced import (
+    GradientAccumulator,
+    GradientClipper,
+    EMAModel,
+    compute_gradient_norm
+)
+
 from training.callbacks import (
     Callback,
     CallbackList,
     CSVLogger,
     ModelCheckpoint,
     LearningRateMonitor,
-    GradientMonitor
+    GradientMonitor,
+    
 )
 
 __all__ = [
@@ -34,4 +42,8 @@ __all__ = [
     'ModelCheckpoint',
     'LearningRateMonitor',
     'GradientMonitor',
+    'GradientAccumulator',
+    'GradientClipper',
+    'EMAModel',
+    'compute_gradient_norm',
 ]
