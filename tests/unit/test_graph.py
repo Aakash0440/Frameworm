@@ -4,6 +4,12 @@ import pytest
 from graph.node import Node, NodeStatus
 from graph.graph import Graph, CycleDetectedError, GraphError
 from graph.graph import CachedGraph
+import time
+import threading
+
+def process_test_fn():
+    return 42
+
 
 class TestNode:
     """Test Node class"""
@@ -371,6 +377,177 @@ class TestCachedGraph:
         graph.execute()
         assert call_count[0] == 1
 
+class TestParallelExecution:
+    """Test parallel execution engine"""
+    
+    def test_compute_execution_levels(self):
+        """Should group nodes into parallelizable levels"""
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 1))
+        graph.add_node(Node("b", fn=lambda: 2))
+        graph.add_node(Node("c", fn=lambda x, y: x + y, depends_on=["a", "b"]))
+        graph.add_node(Node("d", fn=lambda x: x * 2, depends_on=["c"]))
+        
+        levels = graph.get_execution_levels()
+        
+        # Level 0: a and b (no dependencies)
+        assert set(levels[0]) == {"a", "b"}
+        # Level 1: c (depends on a, b)
+        assert levels[1] == ["c"]
+        # Level 2: d (depends on c)
+        assert levels[2] == ["d"]
+    
+    def test_parallel_execution_simple(self):
+        """Should execute independent nodes in parallel"""
+        call_times = {}
+        lock = threading.Lock()
+        
+        def slow_fn(name):
+            with lock:
+                call_times[name] = time.time()
+            time.sleep(0.1)
+            return name
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: slow_fn("a")))
+        graph.add_node(Node("b", fn=lambda: slow_fn("b")))
+        graph.add_node(Node("c", fn=lambda: slow_fn("c")))
+        
+        start = time.time()
+        results = graph.execute_parallel(max_workers=3)
+        duration = time.time() - start
+        
+        # All completed
+        assert len(results) == 3
+        
+        # Should take ~0.1s (parallel) not ~0.3s (sequential)
+        assert duration < 0.2  # Allow some overhead
+        
+        # All started at roughly same time
+        times = list(call_times.values())
+        time_spread = max(times) - min(times)
+        assert time_spread < 0.05  # Started within 50ms
+    
+    def test_parallel_execution_with_dependencies(self):
+        """Should respect dependencies in parallel execution"""
+        execution_order = []
+        lock = threading.Lock()
+        
+        def track_fn(name):
+            time.sleep(0.05)
+            with lock:
+                execution_order.append(name)
+            return name
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: track_fn("a")))
+        graph.add_node(Node("b", fn=lambda: track_fn("b")))
+        graph.add_node(Node("c", fn=lambda x, y: track_fn("c"), depends_on=["a", "b"]))
+        
+        results = graph.execute_parallel(max_workers=3)
+        
+        # c should execute after a and b
+        assert execution_order.index("c") > execution_order.index("a")
+        assert execution_order.index("c") > execution_order.index("b")
+    
+    def test_parallel_execution_performance(self):
+        """Should be faster than sequential for independent nodes"""
+        def slow_fn():
+            time.sleep(0.1)
+            return 1
+        
+        graph = Graph()
+        for i in range(5):
+            graph.add_node(Node(f"node{i}", fn=slow_fn))
+        
+        # Sequential execution
+        start = time.time()
+        graph.execute()
+        seq_duration = time.time() - start
+        
+        # Reset graph
+        graph.reset()
+        
+        # Parallel execution
+        start = time.time()
+        graph.execute_parallel(max_workers=5)
+        par_duration = time.time() - start
+        
+        # Parallel should be significantly faster
+        assert par_duration < seq_duration * 0.6  # At least 40% faster
+    
+    def test_progress_callback(self):
+        """Should call progress callback"""
+        progress_updates = []
+        
+        def callback(node_id, completed, total):
+            progress_updates.append((node_id, completed, total))
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=lambda: 1))
+        graph.add_node(Node("b", fn=lambda: 2))
+        graph.add_node(Node("c", fn=lambda x, y: x + y, depends_on=["a", "b"]))
+        
+        graph.execute_parallel(progress_callback=callback)
+        
+        # Should have 3 progress updates
+        assert len(progress_updates) == 3
+        
+        # Total should be 3 for all updates
+        assert all(total == 3 for _, _, total in progress_updates)
+    
+    def test_thread_vs_process_executor(self):
+        """Should work with both thread and process executors"""
+
+        graph = Graph()
+        graph.add_node(Node("a", fn=process_test_fn))
+
+        # Thread executor
+        results_thread = graph.execute_parallel(executor_type="thread")
+        assert results_thread["a"] == 42
+
+        # Process executor
+        graph.reset()
+        results_process = graph.execute_parallel(executor_type="process")
+        assert results_process["a"] == 42
+
+class TestMonitoring:
+    """Test performance monitoring"""
+    
+    def test_profile_graph(self):
+        """Should collect execution metrics"""
+        from graph.monitoring import profile_graph
+        
+        def slow_fn():
+            time.sleep(0.1)
+            return 42
+        
+        graph = Graph()
+        graph.add_node(Node("a", fn=slow_fn))
+        graph.add_node(Node("b", fn=slow_fn))
+        
+        metrics = profile_graph(graph)
+        
+        assert metrics.total_duration >= 0.2  # At least 0.2s (2 * 0.1s)
+        assert len(metrics.node_metrics) == 2
+        assert all(m.duration >= 0.1 for m in metrics.node_metrics)
+    
+    def test_get_bottlenecks(self):
+        """Should identify slowest nodes"""
+        from graph.monitoring import profile_graph
+        
+        graph = Graph()
+        graph.add_node(Node("fast", fn=lambda: time.sleep(0.01) or 1))
+        graph.add_node(Node("slow", fn=lambda: time.sleep(0.2) or 1))
+        graph.add_node(Node("medium", fn=lambda: time.sleep(0.05) or 1))
+        
+        metrics = profile_graph(graph)
+        bottlenecks = metrics.get_bottlenecks(top_n=3)
+        
+        # Slowest should be first
+        assert bottlenecks[0].node_id == "slow"
+        assert bottlenecks[1].node_id == "medium"
+        assert bottlenecks[2].node_id == "fast"
 
 # Run tests
 if __name__ == '__main__':

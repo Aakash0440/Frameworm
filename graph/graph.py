@@ -10,7 +10,21 @@ from collections import defaultdict, deque
 from graph.node import Node, NodeStatus
 from core.exceptions import FramewormError
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from typing import Literal
+import threading
 
+def _execute_node_process(node_id: str, node_fn, inputs: dict):
+    """
+    Top-level worker function for ProcessPoolExecutor.
+    Must be module-level to be pickleable on Windows.
+    """
+    try:
+        if inputs:
+            return node_fn(**inputs)
+        return node_fn()
+    except Exception as e:
+        raise e
 
 
 class GraphError(FramewormError):
@@ -321,7 +335,48 @@ class Graph:
         
         return engine.get_execution_summary()
 
+    def execute_parallel(
+        self,
+        max_workers: int = 4,
+        executor_type: Literal['thread', 'process'] = 'thread',
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        progress_callback: Optional[Callable[[str, int, int], None]] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Execute graph in parallel.
+        
+        Args:
+            max_workers: Maximum parallel workers
+            executor_type: 'thread' or 'process'
+            initial_inputs: Initial values
+            progress_callback: Progress callback
+            **kwargs: Additional execution arguments
+            
+        Returns:
+            Dictionary of results
+        """
+        engine = ParallelExecutionEngine(
+            self,
+            max_workers=max_workers,
+            executor_type=executor_type
+        )
+        
+        return engine.execute(
+            initial_inputs=initial_inputs,
+            progress_callback=progress_callback,
+            **kwargs
+        )
     
+    def get_execution_levels(self) -> List[List[str]]:
+        """
+        Get nodes grouped by execution level.
+        
+        Returns:
+            List of levels, each level can execute in parallel
+        """
+        engine = ParallelExecutionEngine(self)
+        return engine.compute_execution_levels()
     
         
 class ExecutionEngine:
@@ -568,6 +623,12 @@ class CachedGraph(Graph):
         for node_id in execution_order:
             node = self.get_node(node_id)
             
+            if not node.depends_on and node_id in initial_inputs:
+                results[node_id] = initial_inputs[node_id]
+                node.result = initial_inputs[node_id]
+                node.status = NodeStatus.COMPLETED
+                continue
+
             # Prepare inputs
             inputs = {}
             for dep_id in node.depends_on:
@@ -605,3 +666,192 @@ class CachedGraph(Graph):
             shutil.rmtree(self.cache_dir)
             self.cache_dir.mkdir()
 
+
+class ParallelExecutionEngine(ExecutionEngine):
+    """
+    Engine for parallel graph execution.
+    
+    Executes independent nodes in parallel while maintaining
+    topological order.
+    """
+    
+    def __init__(
+        self,
+        graph: Graph,
+        max_workers: int = 4,
+        executor_type: Literal['thread', 'process'] = 'thread'
+    ):
+        super().__init__(graph)
+        self.max_workers = max_workers
+        self.executor_type = executor_type
+        self._lock = threading.Lock()
+    
+    def compute_execution_levels(self) -> List[List[str]]:
+        """
+        Group nodes into levels for parallel execution.
+        
+        Level 0: Nodes with no dependencies
+        Level 1: Nodes depending only on Level 0
+        Level 2: Nodes depending on Level 0 or 1
+        ...
+        
+        Returns:
+            List of levels, each level is a list of node IDs
+        """
+        levels = []
+        remaining = set(self.graph.nodes.keys())
+        completed = set()
+        
+        while remaining:
+            # Find nodes with all dependencies satisfied
+            level = [
+                node_id for node_id in remaining
+                if all(dep in completed for dep in self.graph.nodes[node_id].depends_on)
+            ]
+            
+            if not level:
+                # This shouldn't happen if topological sort succeeded
+                raise GraphError("Cannot compute execution levels")
+            
+            levels.append(level)
+            completed.update(level)
+            remaining -= set(level)
+        
+        return levels
+    
+    def execute(
+        self,
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        continue_on_error: bool = False,
+        skip_nodes: Optional[List[str]] = None,
+        progress_callback: Optional[Callable[[str, int, int], None]] = None
+    ) -> Dict[str, Any]:
+        """
+        Execute graph in parallel.
+        
+        Args:
+            initial_inputs: Initial values
+            continue_on_error: Continue if nodes fail
+            skip_nodes: Nodes to skip
+            progress_callback: Called on each node completion: callback(node_id, completed, total)
+            
+        Returns:
+            Dictionary of results
+        """
+        initial_inputs = initial_inputs or {}
+        skip_nodes = skip_nodes or []
+        
+        # Reset state
+        self.results = {}
+        self.errors = {}
+        self.graph.reset()
+        
+        # Check for cycles
+        try:
+            self.graph.get_execution_order()
+        except CycleDetectedError as e:
+            raise GraphError(f"Cannot execute graph with cycle: {e}")
+        
+        # Compute execution levels
+        levels = self.compute_execution_levels()
+        
+        # Choose executor
+        ExecutorClass = ThreadPoolExecutor if self.executor_type == 'thread' else ProcessPoolExecutor
+        
+        total_nodes = len(self.graph)
+        completed_count = 0
+        
+        # Execute level by level
+        for level_idx, level_nodes in enumerate(levels):
+            # Filter out skipped nodes
+            level_nodes = [n for n in level_nodes if n not in skip_nodes]
+            
+            if not level_nodes:
+                continue
+            
+            # Execute level in parallel
+            with ExecutorClass(max_workers=min(self.max_workers, len(level_nodes))) as executor:
+                # Submit all nodes in this level
+                futures = {}
+                for node_id in level_nodes:
+                    # Check if dependencies failed
+                    node = self.graph.get_node(node_id)
+                    failed_deps = [dep for dep in node.depends_on if dep in self.errors]
+                    
+                    if failed_deps and not continue_on_error:
+                        node.status = NodeStatus.SKIPPED
+                        continue
+                    
+                    # Prepare inputs
+                    inputs = self._prepare_inputs(node, initial_inputs)
+                    
+                    # Submit for execution
+                    node = self.graph.get_node(node_id)
+
+                    if self.executor_type == "process":
+                        # 🔥 DO NOT send self into process pool
+                        future = executor.submit(
+                            _execute_node_process,
+                            node_id,
+                            node.fn,
+                            inputs
+                        )
+                    else:
+                        # Thread mode can use bound method safely
+                        future = executor.submit(
+                            self._execute_node_safe,
+                            node_id,
+                            inputs
+                        )
+
+                    futures[future] = node_id
+                
+                # Collect results as they complete
+                for future in as_completed(futures):
+                    node_id = futures[future]
+                    
+                    try:
+                        result = future.result()
+                        
+                        # Store result (thread-safe)
+                        with self._lock:
+                            self.results[node_id] = result
+                            completed_count += 1
+                        
+                        # Progress callback
+                        if progress_callback:
+                            progress_callback(node_id, completed_count, total_nodes)
+                    
+                    except Exception as e:
+                        with self._lock:
+                            self.errors[node_id] = e
+                            completed_count += 1
+                        
+                        if not continue_on_error:
+                            # Cancel remaining futures in this level
+                            for f in futures:
+                                f.cancel()
+                            
+                            raise GraphError(
+                                f"Node '{node_id}' failed: {e}",
+                                node_id=node_id,
+                                original_error=e
+                            )
+        
+        return self.results
+    
+    def _execute_node_safe(self, node_id: str, inputs: Dict[str, Any]) -> Any:
+        """
+        Execute node with error handling.
+        
+        This method is called in parallel, so it needs to be thread-safe.
+        """
+        node = self.graph.get_node(node_id)
+        
+        try:
+            result = node.execute(inputs)
+            return result
+        except Exception as e:
+            node.status = NodeStatus.FAILED
+            node.error = e
+            raise
