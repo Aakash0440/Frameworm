@@ -1,17 +1,16 @@
-## [0.3.0] - Day 7 (2026-02-XX)
+## [0.4.0] - Day 8 (2026-02-XX)
 
 ### Added
-- Training loop infrastructure
-- TrainingState for state management
-- MetricsTracker for metric aggregation
-- Complete Trainer class
-- Learning rate schedulers (Warmup, WarmupCosine, Polynomial)
-- Callback system
-- CSV logging, model checkpointing callbacks
-- Early stopping
-- Checkpoint save/load with resume
-- Training documentation and examples
+- Gradient accumulation for simulating larger batches
+- Gradient clipping to prevent exploding gradients
+- Exponential Moving Average (EMA) for better generalization
+- Mixed precision training (FP16) for faster training
+- TensorBoard logger integration
+- Weights & Biases logger integration
+- Comprehensive advanced training example
+- Advanced training documentation
 
 ### Enhanced
-- Model training now production-ready
-- Full training workflow support
+- Trainer now supports all production training features
+- Checkpoint saving includes EMA and grad scaler state
+- Better gradient norm tracking
