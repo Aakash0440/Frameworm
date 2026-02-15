@@ -141,6 +141,21 @@ Test coverage: **92%+**
 pytest -v  # All tests
 pytest tests/unit/test_registry.py  # Specific module
 ```
+## Training
+```python
+from frameworm.training import Trainer
+from frameworm.training.callbacks import CSVLogger, ModelCheckpoint
+
+# Create trainer
+trainer = Trainer(model, optimizer, device='cuda')
+
+# Add callbacks
+trainer.add_callback(CSVLogger('training.csv'))
+trainer.add_callback(ModelCheckpoint('best.pt', monitor='val_loss'))
+
+# Train
+trainer.train(train_loader, val_loader, epochs=100)
+```
 
 ## Roadmap
 

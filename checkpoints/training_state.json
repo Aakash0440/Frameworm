@@ -1,0 +1,18 @@
+{
+  "current_epoch": 1,
+  "global_step": 2,
+  "best_metric": Infinity,
+  "best_epoch": 0,
+  "train_metrics": {
+    "loss": [
+      0.9496413469314575
+    ],
+    "epoch_time": [
+      0.0021431446075439453
+    ]
+  },
+  "val_metrics": {},
+  "patience_counter": 0,
+  "should_stop": false,
+  "lr_history": []
+}

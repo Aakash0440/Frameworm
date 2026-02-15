@@ -158,6 +158,7 @@ class Trainer:
                 if self._should_stop_early():
                     print(f"\nEarly stopping triggered after {epoch + 1} epochs")
                     break
+                self.state.current_epoch = epoch + 1
         
         except KeyboardInterrupt:
             print("\n\nTraining interrupted by user")
@@ -303,26 +304,19 @@ class Trainer:
         return self.val_tracker.epoch_end()
     
     def save_checkpoint(self, filename: str, epoch: int):
-        """
-        Save checkpoint.
-        
-        Args:
-            filename: Checkpoint filename
-            epoch: Current epoch
-        """
+        self.state.current_epoch = epoch  # sync state
         checkpoint = {
             'epoch': epoch,
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'training_state': self.state.to_dict(),
         }
-        
         if self.scheduler:
             checkpoint['scheduler_state_dict'] = self.scheduler.state_dict()
         
         checkpoint_path = self.checkpoint_dir / filename
         torch.save(checkpoint, checkpoint_path)
-    
+        
     def load_checkpoint(self, checkpoint_path: str):
         """
         Load checkpoint.
