@@ -9,7 +9,7 @@ import torch.nn as nn
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
-
+from training.callbacks import CallbackList, Callback
 from training.state import TrainingState
 from training.metrics import MetricsTracker, ProgressLogger
 from core.exceptions import FramewormError
@@ -45,6 +45,7 @@ class Trainer:
         device: str = 'cuda',
         checkpoint_dir: str = 'checkpoints',
         log_every_n_steps: int = 100
+        
     ):
         self.model = model
         self.optimizer = optimizer
@@ -52,7 +53,7 @@ class Trainer:
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-        
+        self.callbacks = CallbackList()
         # Move model to device
         self.model.to(self.device)
         
@@ -72,6 +73,10 @@ class Trainer:
     def set_scheduler(self, scheduler: _LRScheduler):
         """Set learning rate scheduler"""
         self.scheduler = scheduler
+
+    def add_callback(self, callback: Callback):
+        """Add a callback"""
+        self.callbacks.append(callback)
     
     def set_early_stopping(self, patience: int, min_delta: float = 0.0):
         """
@@ -105,11 +110,11 @@ class Trainer:
             self.load_checkpoint(resume_from)
         
         self.logger.total_epochs = epochs
-        
+        self.callbacks.on_train_begin(self)
         try:
             for epoch in range(self.state.current_epoch, epochs):
                 self.state.current_epoch = epoch
-                
+                self.callbacks.on_epoch_begin(epoch, self)
                 # Log epoch start
                 self.logger.log_epoch_start(epoch + 1)
                 
@@ -125,7 +130,7 @@ class Trainer:
                 
                 # Log epoch end
                 self.logger.log_epoch_end(epoch + 1, train_metrics, val_metrics)
-                
+                self.callbacks.on_epoch_end(epoch, train_metrics, self)
                 # Check if best epoch
                 if val_metrics and 'loss' in val_metrics:
                     is_best = self.state.is_best_epoch(val_metrics['loss'], mode='min')
@@ -169,7 +174,7 @@ class Trainer:
             
             # Save final state
             self.state.save(self.checkpoint_dir / 'training_state.json')
-    
+            self.callbacks.on_train_end(self)
     def train_epoch(
         self,
         train_loader: DataLoader,
@@ -197,7 +202,7 @@ class Trainer:
             
             # Zero gradients
             self.optimizer.zero_grad()
-            
+            self.callbacks.on_batch_begin(batch_idx, self)
             # Forward pass
             if hasattr(self.model, 'compute_loss'):
                 # Model has its own loss computation
@@ -229,7 +234,7 @@ class Trainer:
             
             # Update weights
             self.optimizer.step()
-            
+            self.callbacks.on_batch_end(batch_idx, metrics, self)
             # Update metrics
             self.train_tracker.update(metrics)
             
