@@ -25,7 +25,12 @@ from training.callbacks import (
     GradientMonitor,
     
 )
-
+from training.loggers import (
+    Logger,
+    LoggerList,
+    TensorBoardLogger,
+    WandbLogger
+)
 __all__ = [
     'Trainer',
     'TrainingError',
@@ -46,4 +51,8 @@ __all__ = [
     'GradientClipper',
     'EMAModel',
     'compute_gradient_norm',
+    'Logger',
+    'LoggerList',
+    'TensorBoardLogger',
+    'WandbLogger'
 ]

@@ -13,7 +13,7 @@ from training.callbacks import CallbackList, Callback
 from training.state import TrainingState
 from training.metrics import MetricsTracker, ProgressLogger
 from core.exceptions import FramewormError
-
+from training.loggers import LoggerList, Logger
 from training.advanced import (
     GradientAccumulator,
     GradientClipper,
@@ -60,6 +60,7 @@ class Trainer:
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.callbacks = CallbackList()
+        self.loggers = LoggerList()
         # Move model to device
         self.model.to(self.device)
         self.gradient_accumulator: Optional[GradientAccumulator] = None
@@ -88,6 +89,10 @@ class Trainer:
     def add_callback(self, callback: Callback):
         """Add a callback"""
         self.callbacks.append(callback)
+
+    def add_logger(self, logger: Logger):
+        """Add experiment logger"""
+        self.loggers.append(logger)
 
     def enable_gradient_accumulation(self, accumulation_steps: int):
         """Enable gradient accumulation"""
@@ -163,6 +168,11 @@ class Trainer:
                 # Log epoch end
                 self.logger.log_epoch_end(epoch + 1, train_metrics, val_metrics)
                 self.callbacks.on_epoch_end(epoch, train_metrics, self)
+                combined_metrics = {f'train_{k}': v for k, v in train_metrics.items()}
+                if val_metrics:
+                    combined_metrics.update({f'val_{k}': v for k, v in val_metrics.items()})
+            
+                self.loggers.log_scalars(combined_metrics, self.state.global_step)
                 # Check if best epoch
                 if val_metrics and 'loss' in val_metrics:
                     is_best = self.state.is_best_epoch(val_metrics['loss'], mode='min')
