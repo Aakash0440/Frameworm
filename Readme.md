@@ -156,6 +156,28 @@ trainer.add_callback(ModelCheckpoint('best.pt', monitor='val_loss'))
 # Train
 trainer.train(train_loader, val_loader, epochs=100)
 ```
+## Advanced Training Features
+
+### Gradient Accumulation
+```python
+trainer.enable_gradient_accumulation(accumulation_steps=4)
+```
+
+### Mixed Precision (FP16)
+```python
+trainer.enable_mixed_precision()  # 2-3x faster on modern GPUs
+```
+
+### Exponential Moving Average
+```python
+trainer.enable_ema(decay=0.999)  # Better generalization
+```
+
+### TensorBoard Logging
+```python
+from frameworm.training.loggers import TensorBoardLogger
+trainer.add_logger(TensorBoardLogger('runs/experiment'))
+```
 
 ## Roadmap
 
