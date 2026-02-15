@@ -1,5 +1,6 @@
-"""Pipeline implementations"""
+from .base import BasePipeline
+# pipelines/__init__.py
+from graph import Graph as GraphPipeline
 
-from pipelines.base import BasePipeline
 
-__all__ = ['BasePipeline']
+__all__ = ["BasePipeline", "GraphPipeline"]

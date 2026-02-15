@@ -95,6 +95,20 @@ class VAE(BaseModel):
         # Initialize weights
         self.init_weights()
 
+    def init_weights(self):
+        """Initialize weights for all submodules"""
+        self.apply(self._default_init)
+
+    def _default_init(self, module):
+        if isinstance(module, (nn.Conv2d, nn.ConvTranspose2d)):
+            nn.init.kaiming_normal_(module.weight)
+            if module.bias is not None:
+                nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Linear):
+            nn.init.xavier_normal_(module.weight)
+            if module.bias is not None:
+                nn.init.zeros_(module.bias)
+
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
@@ -131,13 +145,3 @@ class VAE(BaseModel):
         kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / x.size(0)
         total_loss = recon_loss + self.beta * kl_loss
         return {"loss": total_loss, "recon_loss": recon_loss, "kl_loss": kl_loss}
-
-    def _default_init(self, module):
-        if isinstance(module, (nn.Conv2d, nn.ConvTranspose2d)):
-            nn.init.kaiming_normal_(module.weight)
-            if module.bias is not None:
-                nn.init.zeros_(module.bias)
-        elif isinstance(module, nn.Linear):
-            nn.init.xavier_normal_(module.weight)
-            if module.bias is not None:
-                nn.init.zeros_(module.bias)
