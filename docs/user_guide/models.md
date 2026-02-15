@@ -126,3 +126,58 @@ model:
 - Reconstruction: MSE between input and output
 - KL Divergence: Regularization to N(0, I)
 - Total: recon_loss + β * kl_loss
+
+### DDPM (Denoising Diffusion Probabilistic Model)
+
+Generate images through iterative denoising.
+
+**Usage:**
+```python
+from frameworm.core import Config, get_model
+import torch
+
+# Load config
+cfg = Config('configs/models/diffusion/ddpm.yaml')
+
+# Get model
+ddpm = get_model("ddpm")(cfg)
+
+# Generate samples (slow - 1000 steps)
+samples = ddpm.sample(batch_size=8)
+
+# Training
+x = torch.rand(batch, 3, 64, 64)
+loss_dict = ddpm.compute_loss(x)
+loss = loss_dict['loss']
+```
+
+**Config Options:**
+```yaml
+model:
+  type: ddpm
+  timesteps: 1000      # Number of diffusion steps
+  image_size: 64       # Output image size
+  channels: 3          # Color channels
+  base_channels: 128   # U-Net base channels
+```
+
+**Architecture:**
+- U-Net with time embeddings
+- 1000 denoising steps
+- Linear beta schedule
+- MSE loss on noise prediction
+
+**Notes:**
+- Generation is slow (~1000 forward passes)
+- Requires substantial training
+- Quality improves with more timesteps
+- Use EMA for best results
+
+**Advantages:**
+- High-quality samples
+- Stable training
+- Principled framework
+
+**Disadvantages:**
+- Very slow sampling
+- Computationally expensive

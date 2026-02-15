@@ -1,0 +1,21 @@
+_base_: ../../base.yaml
+
+model:
+  type: ddpm
+  timesteps: 1000
+  image_size: 64
+  channels: 3
+  base_channels: 128
+
+training:
+  epochs: 500
+  batch_size: 32
+  device: cuda
+  
+  # Diffusion-specific
+  ema_decay: 0.9999  # Exponential moving average
+
+optimizer:
+  type: adam
+  lr: 0.0001
+  betas: [0.9, 0.999]
