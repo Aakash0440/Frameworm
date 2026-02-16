@@ -23,6 +23,7 @@ from training.advanced import (
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from experiment import Experiment
+from metrics.evaluator import MetricEvaluator
 
 class TrainingError(FramewormError):
     """Raised when training fails"""
@@ -200,7 +201,7 @@ class Trainer:
                             step=self.state.global_step,
                             metric_type='val'
                         )
-                        
+
                 # Check if best epoch
                 if val_metrics and 'loss' in val_metrics:
                     is_best = self.state.is_best_epoch(val_metrics['loss'], mode='min')
@@ -463,3 +464,20 @@ class Trainer:
             return False
         
         return self.state.patience_counter >= self.early_stopping_patience
+
+def set_evaluator(self, evaluator: 'MetricEvaluator', eval_every: int = 5):
+        """
+        Set metric evaluator for automatic evaluation.
+        
+        Args:
+            evaluator: MetricEvaluator instance
+            eval_every: Evaluate every N epochs
+        """
+        from training.evaluation import EvaluationCallback
+        
+        callback = EvaluationCallback(
+            evaluator=evaluator,
+            eval_every=eval_every,
+            num_samples=5000
+        )
+        self.add_callback(callback)
