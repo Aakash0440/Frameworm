@@ -20,6 +20,9 @@ from training.advanced import (
     EMAModel,
     compute_gradient_norm
 )
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from experiment import Experiment
 
 class TrainingError(FramewormError):
     """Raised when training fails"""
@@ -61,6 +64,7 @@ class Trainer:
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.callbacks = CallbackList()
         self.loggers = LoggerList()
+        self.experiment: Optional['Experiment'] = None
         # Move model to device
         self.model.to(self.device)
         self.gradient_accumulator: Optional[GradientAccumulator] = None
@@ -105,7 +109,15 @@ class Trainer:
     def enable_ema(self, decay: float = 0.999):
         """Enable exponential moving average"""
         self.ema = EMAModel(self.model, decay)
-    
+
+    def set_experiment(self, experiment: 'Experiment'):
+        """Set experiment for tracking"""
+        self.experiment = experiment
+        
+        # Set checkpoint directory to experiment directory
+        if experiment:
+            self.checkpoint_dir = experiment.checkpoint_dir
+
     def enable_mixed_precision(self):
         """Enable mixed precision training (FP16)"""
         if not torch.cuda.is_available():
@@ -173,6 +185,22 @@ class Trainer:
                     combined_metrics.update({f'val_{k}': v for k, v in val_metrics.items()})
             
                 self.loggers.log_scalars(combined_metrics, self.state.global_step)
+                if self.experiment:
+                    self.experiment.log_metrics(
+                        train_metrics,
+                        epoch=epoch,
+                        step=self.state.global_step,
+                        metric_type='train'
+                    )
+                
+                    if val_metrics:
+                        self.experiment.log_metrics(
+                            val_metrics,
+                            epoch=epoch,
+                            step=self.state.global_step,
+                            metric_type='val'
+                        )
+                        
                 # Check if best epoch
                 if val_metrics and 'loss' in val_metrics:
                     is_best = self.state.is_best_epoch(val_metrics['loss'], mode='min')
