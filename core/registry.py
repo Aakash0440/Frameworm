@@ -96,20 +96,21 @@ class Registry:
         return cls
     
     def get(self, name: str):
-        if name in self._models:
-            return self._models[name]
-    # <-- initialize available here
-        available = list(self._models.keys())
-        raise ModelNotFoundError(name, available=available)
+        """
+        Retrieve a registered class by name.
+        """
+        if name in self._registry:
+            return self._registry[name]
+
+        available = list(self._registry.keys())
+
         if self.name == "models":
-            from core.exceptions import ModelNotFoundError
             raise ModelNotFoundError(name, available=available)
         else:
             raise KeyError(
                 f"'{name}' not found in {self.name} registry. "
                 f"Available: {', '.join(available)}"
             )
-        return self._registry[name]
 
     
     def has(self, name: str) -> bool:
