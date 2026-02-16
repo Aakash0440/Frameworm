@@ -18,6 +18,8 @@ from distributed import (
     get_world_size,
     get_rank
 )
+from distributed.data_loader import OptimizedDataLoader
+from distributed.profiler import PerformanceProfiler
 
 try:
     from __version__ import __version__, __author__, __email__
