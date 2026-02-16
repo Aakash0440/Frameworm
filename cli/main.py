@@ -10,6 +10,24 @@ import click_completion
 click_completion.init()
 
 @cli.command()
+@click.option('--port', type=int, default=8080, help='Port to run on')
+@click.option('--host', type=str, default='0.0.0.0', help='Host to bind to')
+def dashboard(port, host):
+    """
+    Launch web dashboard.
+    
+    Example:
+        frameworm dashboard --port 8080
+    """
+    from ui.api import run_dashboard
+    
+    click.echo(f"Starting dashboard at http://{host}:{port}")
+    click.echo(f"Press Ctrl+C to stop")
+    
+    run_dashboard(host=host, port=port)
+
+
+@cli.command()
 @click.option('--shell', type=click.Choice(['bash', 'zsh', 'fish']), 
               default='bash', help='Shell type')
 def completion(shell):

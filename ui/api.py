@@ -11,7 +11,8 @@ from pydantic import BaseModel
 from pathlib import Path
 import json
 from datetime import datetime
-
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from experiment import ExperimentManager
 from deployment import ModelExporter
 
@@ -180,7 +181,10 @@ async def list_models():
     
     return models
 
-
+static_dir = Path(__file__).parent / 'static'
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+    
 @app.post("/api/models/export")
 async def export_model(request: ModelExportRequest):
     """Export model to deployment format"""
