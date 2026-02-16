@@ -6,6 +6,23 @@ import click
 from pathlib import Path
 import sys
 
+import click_completion
+click_completion.init()
+
+@cli.command()
+@click.option('--shell', type=click.Choice(['bash', 'zsh', 'fish']), 
+              default='bash', help='Shell type')
+def completion(shell):
+    """
+    Generate shell completion script.
+    
+    Usage:
+        frameworm completion --shell bash >> ~/.bashrc
+        frameworm completion --shell zsh >> ~/.zshrc
+    """
+    from click_completion import get_code
+    code = get_code(shell=shell)
+    click.echo(code)
 
 @click.group()
 @click.version_option(version='1.0.0')
@@ -17,6 +34,26 @@ def cli():
     """
     pass
 
+@cli.command()
+@click.argument('pipeline_file')
+@click.option('--dry-run', is_flag=True, help='Show steps without executing')
+def pipeline(pipeline_file, dry_run):
+    """
+    Run automated pipeline.
+    
+    Example:
+        frameworm pipeline workflow.yaml
+    """
+    from cli.pipeline import Pipeline
+    
+    pipe = Pipeline(pipeline_file)
+    
+    if dry_run:
+        echo("Pipeline steps (dry run):")
+        for i, step in enumerate(pipe.steps, 1):
+            echo(f"{i}. {step['name']}")
+    else:
+        pipe.run()
 
 @cli.command()
 @click.argument('project_name')
@@ -30,7 +67,7 @@ def init(project_name, template, path):
     Example:
         frameworm init my-project --template vae
     """
-    from frameworm.cli.init import create_project
+    from cli.init import create_project
     
     project_path = Path(path) / project_name
     
@@ -47,6 +84,30 @@ def init(project_name, template, path):
 
 
 @cli.command()
+@click.argument('experiment_dir')
+@click.option('--refresh', type=int, default=2, help='Refresh rate in seconds')
+def monitor(experiment_dir, refresh):
+    """
+    Monitor training in real-time.
+    
+    Example:
+        frameworm monitor experiments/vae-run-1
+    """
+    from cli.monitor import TrainingMonitor
+    
+    monitor = TrainingMonitor(experiment_dir)
+    monitor.watch(refresh_rate=refresh)
+
+@cli.command(context_settings=dict(help_option_names=['-h', '--help']))
+@click.option('--log-level', type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
+              default='INFO', help='Logging level')
+@click.option('--log-file', type=str, help='Log file path')
+@click.pass_context
+def main(ctx, log_level, log_file):
+    """FRAMEWORM CLI with logging"""
+    ctx.obj = setup_logging(log_level, log_file)
+
+@cli.command()
 @click.option('--config', type=str, required=True, help='Config file path')
 @click.option('--gpus', type=str, default=None, help='GPU IDs (e.g., 0,1,2,3)')
 @click.option('--experiment', type=str, default=None, help='Experiment name')
@@ -59,7 +120,7 @@ def train(config, gpus, experiment, resume, debug):
     Example:
         frameworm train --config config.yaml --gpus 0,1,2,3
     """
-    from frameworm.cli.train import run_training
+    from cli.train import run_training
     
     if debug:
         click.echo("Debug mode enabled")
@@ -93,7 +154,7 @@ def evaluate(config, checkpoint, metrics, num_samples):
     Example:
         frameworm evaluate --checkpoint best.pt --metrics fid,is
     """
-    from frameworm.cli.evaluate import run_evaluation
+    from cli.evaluate import run_evaluation
     
     metric_list = metrics.split(',')
     
@@ -122,7 +183,7 @@ def search(config, space, method, trials, parallel):
     Example:
         frameworm search --config config.yaml --space search.yaml --method bayesian
     """
-    from frameworm.cli.search import run_search
+    from cli.search import run_search
     
     click.echo(f"Starting {method} search")
     click.echo(f"Trials: {trials}")
@@ -151,7 +212,7 @@ def export(checkpoint, format, output, quantize, benchmark):
     Example:
         frameworm export best.pt --format onnx --quantize
     """
-    from frameworm.cli.export import export_model
+    from cli.export import export_model
     
     click.echo(f"Exporting checkpoint: {checkpoint}")
     click.echo(f"Format: {format}")
@@ -177,7 +238,7 @@ def serve(model_path, port, workers, host):
     Example:
         frameworm serve model.pt --port 8000 --workers 4
     """
-    from frameworm.deployment.server import create_server
+    from deployment.server import create_server
     
     click.echo(f"Starting server")
     click.echo(f"Model: {model_path}")
@@ -214,7 +275,7 @@ def config_show(config_file):
 def config_validate(config_file):
     """Validate config file"""
     try:
-        from frameworm.core import Config
+        from core import Config
         cfg = Config(config_file)
         click.echo("✓ Config is valid")
     except Exception as e:
