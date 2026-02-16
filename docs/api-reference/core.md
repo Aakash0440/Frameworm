@@ -6,7 +6,7 @@ Core components of FRAMEWORM.
 
 ## Config
 
-::: frameworm.core.Config
+::: core.Config
     options:
       show_source: true
       members:
@@ -19,7 +19,7 @@ Core components of FRAMEWORM.
 
 ### Usage
 ```python
-from frameworm.core import Config
+from core import Config
 
 # Load from YAML
 config = Config('config.yaml')
@@ -39,7 +39,7 @@ config.to_yaml('updated_config.yaml')
 
 ## Model Registry
 
-::: frameworm.core.get_model
+::: core.get_model
 
 ### Built-in Models
 
@@ -49,7 +49,7 @@ config.to_yaml('updated_config.yaml')
 
 ### Usage
 ```python
-from frameworm.core import get_model
+from core import get_model
 
 # Get model class
 VAE = get_model('vae')
@@ -62,11 +62,11 @@ model = VAE(config)
 
 ## Plugin System
 
-::: frameworm.core.plugin.PluginRegistry
+::: core.plugin.PluginRegistry
 
 ### Register Custom Model
 ```python
-from frameworm.core import register_model
+from core import register_model
 import torch.nn as nn
 
 @register_model('my_model')
@@ -87,13 +87,13 @@ model = get_model('my_model')(config)
 
 ## Type System
 
-::: frameworm.core.types.ModelProtocol
-::: frameworm.core.types.OptimizerProtocol
-::: frameworm.core.types.DataLoaderProtocol
+::: core.types.ModelProtocol
+::: core.types.OptimizerProtocol
+::: core.types.DataLoaderProtocol
 
 ### Usage
 ```python
-from frameworm.core.types import ModelProtocol
+from core.types import ModelProtocol
 import torch.nn as nn
 
 class MyModel(nn.Module, ModelProtocol):
