@@ -126,23 +126,19 @@ class DistributedTrainer(Trainer):
         )
     
     def train_epoch(self, train_loader: DataLoader, epoch: int):
-        """
-        Train one epoch with distributed support.
-        
-        Args:
-            train_loader: Training data loader
-            epoch: Current epoch
-        """
-        # Set epoch for distributed sampler (for proper shuffling)
+        # Set epoch for distributed sampler
         if hasattr(train_loader.sampler, 'set_epoch'):
             train_loader.sampler.set_epoch(epoch)
-        
-        # Call parent train_epoch
-        super().train_epoch(train_loader, epoch)
-        
+
+        # Get metrics from parent
+        metrics = super().train_epoch(train_loader, epoch)
+
         # Synchronize after epoch
         if self.is_distributed:
             barrier()
+
+        return metrics
+
     
     def validate_epoch(self, val_loader: DataLoader, epoch: int) -> Dict[str, float]:
         """
@@ -188,33 +184,33 @@ class DistributedTrainer(Trainer):
         
         return {k: float(v) for k, v in aggregated.items()}
     
-    def save_checkpoint(self, path: str):
+    def save_checkpoint(self, path: str, epoch: int):
         """
         Save checkpoint (only from master process).
-        
-        Args:
-            path: Checkpoint path
         """
         if not is_master():
-            # Only master saves checkpoints
-            barrier()  # Wait for master to finish
+            if self.is_distributed:
+                barrier()
             return
-        
+
         # Unwrap DDP model if needed
         model_to_save = self.model.module if isinstance(self.model, DDP) else self.model
-        
-        # Save using parent method
+
         checkpoint = {
-            'model_state_dict': model_to_save.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'state': self.state.to_dict() if hasattr(self.state, 'to_dict') else None
+            "epoch": epoch,
+            "model_state_dict": model_to_save.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "state": self.state.to_dict() if hasattr(self.state, "to_dict") else None,
         }
-        
+
         if self.scheduler is not None:
-            checkpoint['scheduler_state_dict'] = self.scheduler.state_dict()
-        
+            checkpoint["scheduler_state_dict"] = self.scheduler.state_dict()
+
         torch.save(checkpoint, path)
-        barrier()  # Signal other processes that save is complete
+
+        if self.is_distributed:
+            barrier()
+
     
     def load_checkpoint(self, path: str):
         """
