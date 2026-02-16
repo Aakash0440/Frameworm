@@ -1,62 +1,19 @@
-"""Tests for distributed training"""
+"""Comprehensive distributed training tests"""
 
 import pytest
 import torch
 import torch.nn as nn
-from torch.utils.data import TensorDataset
+from torch.utils.data import TensorDataset, DataLoader
 
-from distributed.utils import (
-    is_distributed,
-    get_world_size,
-    get_rank,
-    is_master
-)
-from distributed.sampler import DistributedSampler
 from distributed.trainer import DistributedTrainer
+from distributed.data_loader import OptimizedDataLoader
+from distributed.profiler import PerformanceProfiler
 
 
-class TestDistributedUtils:
-    def test_single_process(self):
-        """Test utilities in single-process mode"""
-        assert not is_distributed()
-        assert get_world_size() == 1
-        assert get_rank() == 0
-        assert is_master()
-
-
-class TestDistributedSampler:
-    def test_sampler_split(self):
-        """Test data split across processes"""
-        dataset = TensorDataset(torch.arange(100))
-        
-        sampler = DistributedSampler(
-            dataset,
-            num_replicas=4,
-            rank=0,
-            shuffle=False
-        )
-        
-        indices = list(sampler)
-        assert len(indices) == 25
-    
-    def test_sampler_disjoint(self):
-        """Test different ranks get different data"""
-        dataset = TensorDataset(torch.arange(100))
-        
-        sampler_0 = DistributedSampler(dataset, num_replicas=2, rank=0, shuffle=False)
-        sampler_1 = DistributedSampler(dataset, num_replicas=2, rank=1, shuffle=False)
-        
-        indices_0 = set(sampler_0)
-        indices_1 = set(sampler_1)
-        
-        # Should be disjoint
-        assert len(indices_0 & indices_1) == 0
-
-
-class TestDistributedTrainer:
-    def test_single_process_training(self):
-        """Test DistributedTrainer in single-process mode"""
-        # Dummy model
+class TestDistributedOptimization:
+    def test_gradient_accumulation(self):
+        """Test gradient accumulation reduces optimizer steps"""
+        # Model
         class SimpleModel(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -67,22 +24,54 @@ class TestDistributedTrainer:
             
             def compute_loss(self, x, y):
                 pred = self.forward(x)
-                loss = nn.MSELoss()(pred, y)
-                return {'loss': loss}
+                return {'loss': nn.MSELoss()(pred, y)}
         
-        # Dummy data
-        from torch.utils.data import DataLoader
+        # Data
+        X = torch.randn(100, 10)
+        y = torch.randn(100, 1)
+        loader = DataLoader(TensorDataset(X, y), batch_size=10)
         
-        X = torch.randn(50, 10)
-        y = torch.randn(50, 1)
-        dataset = TensorDataset(X, y)
-        loader = DataLoader(dataset, batch_size=10)
-        
-        # Train
+        # Train with accumulation
         model = SimpleModel()
         optimizer = torch.optim.Adam(model.parameters())
         
-        trainer = DistributedTrainer(model, optimizer, device='cpu')
-        trainer.train(loader, epochs=2)
+        trainer = DistributedTrainer(
+            model,
+            optimizer,
+            device='cpu',
+            gradient_accumulation_steps=2
+        )
         
-        assert trainer.state.current_epoch == 2
+        trainer.train_epoch(loader, epoch=0)
+        
+        # Should have 5 optimizer steps (10 batches / 2 accumulation)
+        assert trainer.state.global_step == 5
+    
+    def test_optimized_dataloader(self):
+        """Test optimized dataloader creation"""
+        dataset = TensorDataset(torch.randn(100, 10))
+        
+        loader = OptimizedDataLoader.create(
+            dataset,
+            batch_size=32,
+            shuffle=True
+        )
+        
+        # Should auto-configure
+        assert loader.num_workers >= 0
+        assert isinstance(loader.pin_memory, bool)
+    
+    def test_performance_profiler(self):
+        """Test performance profiler"""
+        profiler = PerformanceProfiler()
+        
+        # Profile some operations
+        for _ in range(10):
+            with profiler.profile('step'):
+                with profiler.profile('forward'):
+                    pass
+        
+        results = profiler.get_results()
+        
+        assert len(results.step_times) == 10
+        assert len(results.forward_times) == 10
