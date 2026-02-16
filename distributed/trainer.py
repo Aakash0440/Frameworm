@@ -8,6 +8,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from typing import Optional, Dict, Any
 import os
+from torch.cuda.amp import autocast, GradScaler
 
 from training import Trainer
 from distributed.utils import (
@@ -56,6 +57,8 @@ class DistributedTrainer(Trainer):
         optimizer: torch.optim.Optimizer,
         backend: str = 'nccl',
         find_unused_parameters: bool = False,
+        gradient_accumulation_steps: int = 1,  
+        use_amp: bool = False,
         **kwargs
     ):
         # Initialize distributed if not already done
@@ -90,6 +93,13 @@ class DistributedTrainer(Trainer):
         
         self.backend = backend
         self.is_distributed = is_distributed()
+        self.gradient_accumulation_steps = gradient_accumulation_steps
+        self._accumulation_counter = 0
+        self.use_amp = use_amp and torch.cuda.is_available()
+        self.scaler = GradScaler() if self.use_amp else None
+        
+        if self.use_amp:
+            print("Mixed precision (AMP) enabled")
     
     def _create_dataloader(
         self,
@@ -126,19 +136,70 @@ class DistributedTrainer(Trainer):
         )
     
     def train_epoch(self, train_loader: DataLoader, epoch: int):
+        """Train one epoch with mixed precision support"""
         # Set epoch for distributed sampler
         if hasattr(train_loader.sampler, 'set_epoch'):
             train_loader.sampler.set_epoch(epoch)
-
-        # Get metrics from parent
-        metrics = super().train_epoch(train_loader, epoch)
-
-        # Synchronize after epoch
+        
+        self.model.train()
+        
+        for batch_idx, batch in enumerate(train_loader):
+            # Move to device
+            if isinstance(batch, (list, tuple)):
+                batch = [b.to(self.device) if torch.is_tensor(b) else b for b in batch]
+            
+            # Forward pass with autocast
+            with autocast(enabled=self.use_amp):
+                loss_dict = self.model.compute_loss(*batch)
+                loss = loss_dict['loss']
+                
+                # Scale loss for gradient accumulation
+                if self.gradient_accumulation_steps > 1:
+                    loss = loss / self.gradient_accumulation_steps
+            
+            # Backward pass
+            if self.use_amp:
+                self.scaler.scale(loss).backward()
+            else:
+                loss.backward()
+            
+            # Update if accumulation complete
+            self._accumulation_counter += 1
+            
+            if self._accumulation_counter % self.gradient_accumulation_steps == 0:
+                if self.use_amp:
+                    # Unscale before gradient clipping
+                    self.scaler.unscale_(self.optimizer)
+                
+                # Gradient clipping
+                if self.gradient_clipper:
+                    self.gradient_clipper.clip(self.model.parameters())
+                
+                # Optimizer step
+                if self.use_amp:
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                else:
+                    self.optimizer.step()
+                
+                self.optimizer.zero_grad()
+                
+                self.state.global_step += 1
+        
+        # Synchronize
         if self.is_distributed:
             barrier()
 
-        return metrics
-
+    def enable_gradient_accumulation(self, steps: int):
+        """
+        Enable gradient accumulation.
+        
+        Args:
+            steps: Number of steps to accumulate
+        """
+        self.gradient_accumulation_steps = steps
+        print(f"Gradient accumulation enabled: {steps} steps")
+        print(f"Effective batch size = batch_size × world_size × {steps}")
     
     def validate_epoch(self, val_loader: DataLoader, epoch: int) -> Dict[str, float]:
         """
