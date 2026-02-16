@@ -23,3 +23,8 @@ __all__ = [
     'RandomSearch',
     'SearchAnalyzer',
 ]
+try:
+    from search.bayesian_search import BayesianSearch
+    __all__.append('BayesianSearch')
+except ImportError:
+    pass  # scikit-optimize not available
