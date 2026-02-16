@@ -178,6 +178,32 @@ trainer.enable_ema(decay=0.999)  # Better generalization
 from frameworm.training.loggers import TensorBoardLogger
 trainer.add_logger(TensorBoardLogger('runs/experiment'))
 ```
+## Hyperparameter Search
+```python
+from frameworm.search import BayesianSearch
+from frameworm.search.space import Real, Integer
+
+# Define search space
+search_space = {
+    'training.lr': Real(1e-5, 1e-2, log=True),
+    'training.batch_size': Integer(32, 256, log=True)
+}
+
+# Bayesian optimization
+search = BayesianSearch(
+    base_config=config,
+    search_space=search_space,
+    n_trials=50
+)
+
+# Find best configuration
+best_config, best_score = search.run(train_fn)
+```
+
+**Available Methods:**
+- Grid Search (exhaustive)
+- Random Search (efficient)
+- Bayesian Optimization (intelligent)
 
 ## Roadmap
 
@@ -190,15 +216,6 @@ trainer.add_logger(TensorBoardLogger('runs/experiment'))
 - Comprehensive testing (92% coverage)
 - Full documentation
 
-### 🚧 In Progress (Week 1 - Days 5-7)
-- Dependency graph engine
-- Pipeline execution system
-- More model implementations
-
-### ⏳ Upcoming
-- **Week 2**: Training infrastructure, experiment tracking
-- **Week 3**: Hyperparameter search, benchmarking
-- **Week 4**: CLI wizard, final polish, launch
 
 ## Contributing
 
