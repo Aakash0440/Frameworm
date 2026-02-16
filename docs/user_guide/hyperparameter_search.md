@@ -88,6 +88,153 @@ best_config, best_score = search.run(train_fn)
 - Limited compute budget
 - Often more efficient than grid search
 
+
+## Bayesian Optimization
+
+Most sample-efficient method for expensive evaluations.
+```python
+from frameworm.search import BayesianSearch
+from frameworm.search.space import Real, Integer
+
+search = BayesianSearch(
+    base_config=config,
+    search_space={
+        'training.lr': Real(1e-5, 1e-2, log=True),
+        'training.batch_size': Integer(32, 256, log=True),
+        'model.hidden_dim': Integer(128, 512)
+    },
+    metric='val_loss',
+    mode='min',
+    n_trials=50,
+    n_initial_points=10,
+    acquisition='ei'  # Expected Improvement
+)
+
+best_config, best_score = search.run(train_fn)
+```
+
+**When to use:**
+- Training is expensive (> 10 min/trial)
+- < 100 trials budget
+- Need sample efficiency
+- Sequential evaluation okay
+
+**Acquisition Functions:**
+- `'ei'`: Expected Improvement (default, balanced)
+- `'lcb'`: Lower Confidence Bound (more exploration)
+- `'pi'`: Probability of Improvement (more exploitation)
+
+## Comparison Guide
+
+### Grid vs Random vs Bayesian
+
+| Aspect | Grid | Random | Bayesian |
+|--------|------|--------|----------|
+| **Sample Efficiency** | Low | Medium | High |
+| **Parallelizable** | ✅ Yes | ✅ Yes | ❌ Sequential |
+| **Setup Complexity** | Low | Low | Medium |
+| **Continuous Params** | ❌ No | ✅ Yes | ✅ Yes |
+| **Best For** | Small discrete | Large continuous | Expensive evals |
+
+### Decision Flow
+Is search space < 100 configs AND all discrete?
+├─ YES → Use Grid Search
+└─ NO  → Continue
+Is training cheap (< 5 min/trial)?
+├─ YES → Use Random Search (20-50 trials)
+└─ NO  → Continue
+Can you run trials sequentially?
+├─ YES → Use Bayesian Optimization
+└─ NO  → Use Random Search with parallel execution
+## Tips & Tricks
+
+### Reduce Search Time
+```python
+# 1. Use fewer epochs during search
+config.training.epochs = 5  # Instead of 100
+
+# 2. Use smaller dataset
+train_subset = Subset(train_dataset, range(5000))
+
+# 3. Parallelize (Grid/Random only)
+search.run(train_fn, n_jobs=4)
+```
+
+### Handle Different Parameter Types
+```python
+from frameworm.search.space import Real, Integer, Categorical
+
+search_space = {
+    # Continuous (use log scale for learning rates)
+    'training.lr': Real(1e-5, 1e-2, log=True),
+    
+    # Discrete integers (use log for batch sizes)
+    'training.batch_size': Integer(32, 256, log=True),
+    
+    # Discrete choices
+    'optimizer': Categorical(['adam', 'sgd', 'rmsprop']),
+    
+    # Linear continuous
+    'model.dropout': Real(0.0, 0.5, log=False)
+}
+```
+
+### Two-Stage Search
+```python
+# Stage 1: Coarse search with Random
+coarse_search = RandomSearch(
+    config,
+    search_space_wide,
+    n_trials=50
+)
+coarse_best = coarse_search.run(train_fn)
+
+# Stage 2: Fine-tune with Bayesian around best region
+fine_search_space = refine_space_around(coarse_best)
+fine_search = BayesianSearch(
+    config,
+    fine_search_space,
+    n_trials=20
+)
+fine_best = fine_search.run(train_fn)
+```
+
+## Common Issues
+
+### Out of Memory During Search
+```python
+# Solution: Reduce batch size during search
+config.training.batch_size = 64  # Instead of 128
+```
+
+### Search Takes Too Long
+```python
+# Solution 1: Reduce epochs
+config.training.epochs = 3
+
+# Solution 2: Parallel execution
+search.run(train_fn, n_jobs=4)
+
+# Solution 3: Reduce trials
+search.n_trials = 20  # Instead of 50
+```
+
+### Bayesian Optimization Not Converging
+```python
+# Solution: Increase initial random points
+search = BayesianSearch(
+    ...
+    n_initial_points=15,  # More exploration
+    acquisition='ei'  # Balanced
+)
+```
+
+## Examples
+
+See:
+- `examples/hyperparameter_search_example.py` - Grid and Random
+- `examples/search_comparison_example.py` - All methods compared
+
 ## Training Function
 
 Define a function that takes Config and returns metrics:
