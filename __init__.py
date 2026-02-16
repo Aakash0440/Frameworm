@@ -1,4 +1,13 @@
 """Frameworm package"""
+# Search
+from search import (
+    GridSearch,
+    RandomSearch,
+    SearchAnalyzer,
+    Categorical,
+    Integer,
+    Real
+)
 
 try:
     from __version__ import __version__, __author__, __email__
