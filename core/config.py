@@ -131,6 +131,16 @@ class Config:
         
         if config_path:
             self.load(config_path)
+            
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Config":
+        """
+        Create Config from a Python dictionary.
+        """
+        cfg = cls()
+        cfg._data = ConfigNode(data)
+        return cfg
+
     
     def load(self, config_path: Union[str, Path]) -> 'Config':
         """
@@ -476,4 +486,4 @@ def create_model_from_config(cfg: "Config"):
     model_cls = get_model(model_type)
 
     # IMPORTANT: pass full config object to model
-    return model_cls(model_cfg)
+    return model_cls(model_cfg) 
