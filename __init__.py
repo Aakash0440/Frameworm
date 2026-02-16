@@ -8,6 +8,16 @@ from search import (
     Integer,
     Real
 )
+# Distributed
+from distributed import (
+    DistributedTrainer,
+    DataParallelTrainer,
+    setup_distributed,
+    cleanup_distributed,
+    is_distributed,
+    get_world_size,
+    get_rank
+)
 
 try:
     from __version__ import __version__, __author__, __email__
