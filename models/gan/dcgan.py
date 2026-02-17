@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from core import register_model
-from models import BaseModel
+from models.base import BaseModel
 
 
 class Generator(nn.Module):

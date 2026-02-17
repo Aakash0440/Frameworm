@@ -255,7 +255,9 @@ class CFGUNet(nn.Module):
         
         return self.conv_out(h)
 
+from core.registry import register_model
 
+@register_model('cfg_ddpm')
 class CFGDDPM(nn.Module):
     """
     Denoising Diffusion Probabilistic Model with Classifier-Free Guidance.
@@ -314,7 +316,10 @@ class CFGDDPM(nn.Module):
         self.register_buffer('sqrt_alphas_cumprod', torch.sqrt(self.alphas_cumprod))
         self.register_buffer('sqrt_one_minus_alphas_cumprod',
                              torch.sqrt(1.0 - self.alphas_cumprod))
-    
+
+    def forward(self, x: torch.Tensor, y=None) -> Dict[str, torch.Tensor]:
+        return self.compute_loss(x, y)
+
     def _cosine_schedule(self, timesteps: int, s: float = 0.008) -> torch.Tensor:
         """
         Cosine noise schedule (better than linear for small timestep counts).

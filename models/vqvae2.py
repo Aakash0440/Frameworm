@@ -200,7 +200,9 @@ class VQDecoder(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.decoder(x)
 
+from core.registry import register_model
 
+@register_model('vqvae2')
 class VQVAE2(nn.Module):
     """
     VQ-VAE-2: Hierarchical Vector Quantized VAE.

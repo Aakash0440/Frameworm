@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from core import register_model
-from models import BaseModel
+from models.base import BaseModel
 
 
 class Encoder(nn.Module):

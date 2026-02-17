@@ -212,7 +212,9 @@ class ViTDiscriminator(nn.Module):
         
         return self.head(cls_output)  # (B, 1)
 
+from core.registry import register_model
 
+@register_model('vitgan')
 class ViTGAN(nn.Module):
     """
     GAN with Vision Transformer discriminator and CNN generator.
@@ -288,7 +290,10 @@ class ViTGAN(nn.Module):
             depth=vit_depth,
             num_heads=vit_heads
         )
-    
+        
+    def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
+        return self.compute_loss(x)
+
     def generate(self, batch_size: int, device: str = None) -> torch.Tensor:
         """Generate a batch of images"""
         if device is None:
