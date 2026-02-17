@@ -1,37 +1,39 @@
 """Comprehensive tests for plugin registry system"""
 
-import pytest
-from pathlib import Path
-import tempfile
 import shutil
+import tempfile
+from pathlib import Path
+
+import pytest
+
+from core.exceptions import PluginValidationError  # FIX: import for validation tests
 from core.registry import (
-    Registry,
-    ModelRegistry,
-    TrainerRegistry,
-    PipelineRegistry,
-    DatasetRegistry,
-    register_model,
-    register_trainer,
-    register_pipeline,
-    register_dataset,
-    get_model,
-    get_trainer,
-    list_models,
-    list_trainers,
-    has_model,
-    has_trainer,
-    discover_plugins,
-    reset_discovery,
-    set_auto_discover,
-    search_models,
-    print_registry_summary,
     _MODEL_REGISTRY,
     _TRAINER_REGISTRY,
+    DatasetRegistry,
+    ModelRegistry,
+    PipelineRegistry,
+    Registry,
+    TrainerRegistry,
+    discover_plugins,
+    get_model,
+    get_trainer,
+    has_model,
+    has_trainer,
+    list_models,
+    list_trainers,
+    print_registry_summary,
+    register_dataset,
+    register_model,
+    register_pipeline,
+    register_trainer,
+    reset_discovery,
+    search_models,
+    set_auto_discover,
 )
-from core.exceptions import PluginValidationError  # FIX: import for validation tests
 from models.base import BaseModel
-from trainers.base import BaseTrainer
 from pipelines.base import BasePipeline
+from trainers.base import BaseTrainer
 
 
 class TestRegistry:

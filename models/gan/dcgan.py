@@ -2,8 +2,9 @@
 
 import torch
 import torch.nn as nn
-from models import BaseModel
+
 from core import register_model
+from models import BaseModel
 
 
 class Generator(nn.Module):

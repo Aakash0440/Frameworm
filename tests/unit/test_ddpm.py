@@ -1,11 +1,13 @@
 """Tests for DDPM model"""
 
-import pytest
-import torch
-from core import Config, get_model
-from models.diffusion.ddpm import DDPM, get_timestep_embedding
 import tempfile
 from pathlib import Path
+
+import pytest
+import torch
+
+from core import Config, get_model
+from models.diffusion.ddpm import DDPM, get_timestep_embedding
 
 
 class TestTimestepEmbedding:

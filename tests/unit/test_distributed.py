@@ -3,11 +3,11 @@
 import pytest
 import torch
 import torch.nn as nn
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
-from distributed.trainer import DistributedTrainer
 from distributed.data_loader import OptimizedDataLoader
 from distributed.profiler import PerformanceProfiler
+from distributed.trainer import DistributedTrainer
 
 
 class TestDistributedOptimization:

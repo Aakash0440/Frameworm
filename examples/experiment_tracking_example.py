@@ -8,13 +8,14 @@ Demonstrates:
 - Visualizing results
 """
 
-from core import Config, get_model
-from training.trainer import Trainer
-from experiment import Experiment, ExperimentManager
-from experiment.visualization import plot_metric_comparison
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
+from core import Config, get_model
+from experiment import Experiment, ExperimentManager
+from experiment.visualization import plot_metric_comparison
+from training.trainer import Trainer
 
 
 def get_mnist_loaders(batch_size=128):

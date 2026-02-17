@@ -2,10 +2,11 @@
 Optimized data loading for distributed training.
 """
 
+import multiprocessing as mp
+from typing import Callable, Optional
+
 import torch
 from torch.utils.data import DataLoader, Dataset
-from typing import Optional, Callable
-import multiprocessing as mp
 
 from distributed.sampler import get_distributed_sampler
 

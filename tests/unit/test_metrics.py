@@ -2,7 +2,8 @@
 
 import pytest
 import torch
-from metrics import FID, InceptionScore, LPIPS
+
+from metrics import FID, LPIPS, InceptionScore
 from metrics.evaluator import MetricEvaluator
 
 

@@ -4,12 +4,13 @@ Inception Score (IS) implementation.
 Based on: "Improved Techniques for Training GANs" (Salimans et al., 2016)
 """
 
+from typing import Tuple
+
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from torchvision import models
-from typing import Tuple
 from tqdm import tqdm
 
 

@@ -2,17 +2,18 @@
 Grid search implementation.
 """
 
-from typing import Dict, Any, Callable, Optional, List, Tuple
-from itertools import product
-import numpy as np
-from pathlib import Path
 import json
-from tqdm import tqdm
-from joblib import Parallel, delayed
+from itertools import product
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from search.space import expand_search_space, SearchSpace
+import numpy as np
+from joblib import Parallel, delayed
+from tqdm import tqdm
+
 from core import Config
 from experiment import Experiment
+from search.space import SearchSpace, expand_search_space
 
 
 class GridSearch:

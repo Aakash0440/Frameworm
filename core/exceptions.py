@@ -12,10 +12,9 @@ Example:
     ... )
 """
 
-from typing import Any, Dict, List, Optional, Tuple
-import traceback
 import sys
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ErrorContext:
@@ -235,8 +234,8 @@ class ConfigNotFoundError(ConfigurationError, FileNotFoundError):
         self.add_suggestion("List files: ls -la $(dirname {config_path})")
 
     def get_details(self) -> Dict[str, Any]:
-        from pathlib import Path
         import os
+        from pathlib import Path
 
         return {
             "Path": self.config_path,

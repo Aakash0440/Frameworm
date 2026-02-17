@@ -2,10 +2,11 @@
 Automated pipeline execution.
 """
 
-import yaml
-from pathlib import Path
-from click import echo, progressbar
 import subprocess
+from pathlib import Path
+
+import yaml
+from click import echo, progressbar
 
 
 class Pipeline:

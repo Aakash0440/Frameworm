@@ -4,9 +4,10 @@ Example: Image Generation with DCGAN
 Demonstrates loading DCGAN and generating images.
 """
 
-from core import Config, get_model
 import torch
+
 import models.gan.dcgan
+from core import Config, get_model
 
 
 def main():

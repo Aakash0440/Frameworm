@@ -8,13 +8,14 @@ Demonstrates:
 - Automated evaluation during training
 """
 
-from core import Config, get_model
-from training import Trainer
-from metrics import MetricEvaluator, FID, InceptionScore, LPIPS
-from experiment import Experiment
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
+from core import Config, get_model
+from experiment import Experiment
+from metrics import FID, LPIPS, InceptionScore, MetricEvaluator
+from training import Trainer
 
 
 def get_mnist_loaders(batch_size=128):

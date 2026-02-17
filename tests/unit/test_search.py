@@ -1,10 +1,11 @@
 """Tests for hyperparameter search"""
 
-import pytest
 import numpy as np
-from search.space import Categorical, Integer, Real, expand_search_space
-from search import GridSearch, RandomSearch, SearchAnalyzer
+import pytest
+
 from core import Config
+from search import GridSearch, RandomSearch, SearchAnalyzer
+from search.space import Categorical, Integer, Real, expand_search_space
 
 
 class TestSearchSpace:

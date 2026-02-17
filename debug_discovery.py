@@ -2,8 +2,8 @@
 Debug why discover_plugins isn't importing files
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, os.getcwd())
@@ -22,11 +22,11 @@ if TEST_PLUGIN_DIR.exists():
     for f in TEST_PLUGIN_DIR.rglob("*.py"):
         print(f"  - {f}")
 
-# Now trace through what discover_plugins does
-from core.registry import discover_plugins, reset_discovery
-
 # Monkey-patch _import_plugin_file to see if it's called
 import core.registry as registry_module
+
+# Now trace through what discover_plugins does
+from core.registry import discover_plugins, reset_discovery
 
 original_import = registry_module._import_plugin_file
 

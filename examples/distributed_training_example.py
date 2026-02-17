@@ -8,16 +8,17 @@ Demonstrates:
 - Multi-node training setup
 """
 
+import os
+
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-import os
 
 from core import Config, get_model
-from distributed import setup_distributed, cleanup_distributed, is_master, get_rank, get_world_size
-from distributed.trainer import DistributedTrainer
+from distributed import cleanup_distributed, get_rank, get_world_size, is_master, setup_distributed
 from distributed.data_parallel import DataParallelTrainer
+from distributed.trainer import DistributedTrainer
 
 
 def get_mnist_loaders(batch_size=128):
@@ -178,14 +179,14 @@ def example_multi_node_setup():
 Multi-node training requires:
 
 1. Set environment variables on each node:
-   
+
    # Node 0 (master):
    export MASTER_ADDR=<node0_ip>
    export MASTER_PORT=29500
    export WORLD_SIZE=8  # 2 nodes × 4 GPUs
    export RANK=0
    python train.py
-   
+
    # Node 1:
    export MASTER_ADDR=<node0_ip>
    export MASTER_PORT=29500
@@ -194,7 +195,7 @@ Multi-node training requires:
    python train.py
 
 2. Use DistributedTrainer as normal:
-   
+
    trainer = DistributedTrainer(model, optimizer)
    trainer.train(train_loader, val_loader)
 

@@ -4,9 +4,10 @@ Example: Using Graph-Based Pipeline
 Demonstrates building complex workflows with dependencies.
 """
 
-from pipelines.base import GraphPipeline
-from core import Config
 import time
+
+from core import Config
+from pipelines.base import GraphPipeline
 
 
 def load_data():

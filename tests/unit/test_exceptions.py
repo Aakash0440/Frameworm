@@ -1,17 +1,18 @@
 """Comprehensive tests for error system"""
 
 import pytest
+
 from core.exceptions import (
-    FramewormError,
-    ErrorContext,
-    ErrorFormatter,
+    ConfigInheritanceError,
     ConfigNotFoundError,
     ConfigValidationError,
-    ConfigInheritanceError,
+    ConvergenceError,
     DimensionMismatchError,
+    ErrorContext,
+    ErrorFormatter,
+    FramewormError,
     ModelNotFoundError,
     PluginValidationError,
-    ConvergenceError,
 )
 
 

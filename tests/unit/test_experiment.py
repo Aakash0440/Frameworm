@@ -1,9 +1,11 @@
 """Tests for experiment tracking"""
 
-import pytest
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
+
+import pytest
+
 from experiment import Experiment, ExperimentManager
 
 

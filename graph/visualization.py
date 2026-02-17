@@ -4,9 +4,10 @@ Graph visualization utilities.
 Provides functions to visualize dependency graphs.
 """
 
-from typing import Optional
-from graph import Graph
 from pathlib import Path
+from typing import Optional
+
+from graph import Graph
 
 
 def graph_to_dot(graph: Graph) -> str:

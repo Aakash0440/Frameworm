@@ -4,12 +4,12 @@ Example: VAE Image Generation and Reconstruction
 Demonstrates using VAE for reconstruction and sampling.
 """
 
-from core import Config, get_model
 import torch
-from core.registry import discover_plugins
 
 # Import your model file so it registers itself
 import models.vae.vanilla
+from core import Config, get_model
+from core.registry import discover_plugins
 
 # Force plugin discovery
 discover_plugins(force=True)

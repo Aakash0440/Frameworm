@@ -2,9 +2,10 @@
 ONNX Runtime inference wrapper.
 """
 
-import numpy as np
-from typing import Union, List, Dict, Any
 import warnings
+from typing import Any, Dict, List, Union
+
+import numpy as np
 
 try:
     import onnxruntime as ort

@@ -1,10 +1,12 @@
+import time
+from threading import Thread
+
+import requests
 import torch
 import torch.nn as nn
+
 from deployment.export import ModelExporter
 from deployment.server import ModelServer
-import time
-import requests
-from threading import Thread
 
 print("Testing FastAPI Server:")
 print("=" * 60)

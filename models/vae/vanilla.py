@@ -3,8 +3,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models import BaseModel
+
 from core import register_model
+from models import BaseModel
 
 
 class Encoder(nn.Module):

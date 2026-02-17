@@ -2,23 +2,25 @@
 Main Trainer class for training models.
 """
 
-from typing import Optional, Dict, Any, Callable, TYPE_CHECKING
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+
 import torch
 import torch.nn as nn
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
 
-from training.callbacks import CallbackList, Callback
-from training.state import TrainingState
-from training.metrics import MetricsTracker, ProgressLogger
 from core.exceptions import FramewormError
-from training.loggers import LoggerList, Logger
-from training.advanced import GradientAccumulator, GradientClipper, EMAModel
+from training.advanced import EMAModel, GradientAccumulator, GradientClipper
+from training.callbacks import Callback, CallbackList
+from training.loggers import Logger, LoggerList
+from training.metrics import MetricsTracker, ProgressLogger
+from training.state import TrainingState
 
 if TYPE_CHECKING:
     from experiment import Experiment
+
 from metrics.evaluator import MetricEvaluator
 
 

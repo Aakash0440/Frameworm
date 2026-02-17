@@ -4,15 +4,16 @@ Example: Training DCGAN on MNIST
 Demonstrates complete training workflow with FRAMEWORM.
 """
 
-from core import Config, get_model
-from training.trainer import Trainer
-from training.callbacks import CSVLogger, ModelCheckpoint
-from training.schedulers import WarmupCosineScheduler
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
+from core import Config, get_model
 from core.config import Config
+from training.callbacks import CSVLogger, ModelCheckpoint
+from training.schedulers import WarmupCosineScheduler
+from training.trainer import Trainer
 
 
 def get_dataloaders(batch_size=128):

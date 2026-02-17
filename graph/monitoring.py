@@ -4,12 +4,13 @@ Performance monitoring for graph execution.
 Tracks execution time, memory usage, and bottlenecks.
 """
 
-from typing import Dict, Any, List
 import time
-import psutil
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
+import psutil
+
 from graph import Graph
-from typing import Optional, Dict, List, Any
 
 
 @dataclass

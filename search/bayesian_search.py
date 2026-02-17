@@ -2,27 +2,26 @@
 Bayesian optimization for hyperparameter search.
 """
 
-from typing import Dict, Any, Callable, Optional, List, Tuple
-import numpy as np
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+import numpy as np
 
 try:
     from skopt import gp_minimize
-    from skopt.space import (
-        Real as SkoptReal,
-        Integer as SkoptInteger,
-        Categorical as SkoptCategorical,
-    )
+    from skopt.space import Categorical as SkoptCategorical
+    from skopt.space import Integer as SkoptInteger
+    from skopt.space import Real as SkoptReal
     from skopt.utils import use_named_args
 
     SKOPT_AVAILABLE = True
 except ImportError:
     SKOPT_AVAILABLE = False
 
-from search.space import expand_search_space, SearchSpace, Real, Integer, Categorical
 from core import Config
 from experiment import Experiment
+from search.space import Categorical, Integer, Real, SearchSpace, expand_search_space
 
 
 class BayesianSearch:

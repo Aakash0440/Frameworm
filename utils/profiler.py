@@ -2,16 +2,17 @@
 Performance profiling utilities.
 """
 
-import time
-import torch
 import cProfile
-import pstats
 import io
-from typing import Optional, Dict, Any, Callable, List
+import json
+import pstats
+import time
 from contextlib import contextmanager
 from pathlib import Path
-import json
+from typing import Any, Callable, Dict, List, Optional
+
 import numpy as np
+import torch
 
 
 class Timer:

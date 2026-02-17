@@ -1,8 +1,10 @@
 # tests/unit/test_vae.py
-import pytest
 from types import SimpleNamespace
-from models.vae.vanilla import VAE
+
+import pytest
 import torch
+
+from models.vae.vanilla import VAE
 
 
 # -----------------------------

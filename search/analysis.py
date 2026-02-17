@@ -2,9 +2,10 @@
 Analysis tools for hyperparameter search results.
 """
 
-import numpy as np
+from typing import Any, Dict, List, Optional
+
 import matplotlib.pyplot as plt
-from typing import List, Dict, Any, Optional
+import numpy as np
 import pandas as pd
 
 

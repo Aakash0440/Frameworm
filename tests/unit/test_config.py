@@ -1,11 +1,12 @@
 """Comprehensive tests for config system"""
 
+import os
 import sys
+import tempfile
+from pathlib import Path
+
 import pytest
 import yaml
-from pathlib import Path
-import tempfile
-import os
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from core.config import Config, ConfigNode

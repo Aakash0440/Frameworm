@@ -4,9 +4,10 @@ LPIPS (Learned Perceptual Image Patch Similarity) implementation.
 Based on: "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric"
 """
 
-import torch
-import lpips as lpips_lib
 from typing import Optional
+
+import lpips as lpips_lib
+import torch
 
 
 class LPIPS:

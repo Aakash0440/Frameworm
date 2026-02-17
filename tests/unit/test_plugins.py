@@ -1,18 +1,20 @@
 """Tests for frameworm plugin discovery system"""
 
-import pytest
 import os
 import shutil
 from pathlib import Path
+
+import pytest
+
 from core.registry import (
-    discover_plugins,
-    list_models,
-    get_model,
-    reset_discovery,
-    set_auto_discover,
     _MODEL_REGISTRY,
     add_plugin_path,
+    discover_plugins,
+    get_model,
+    list_models,
     remove_plugin_path,
+    reset_discovery,
+    set_auto_discover,
 )
 
 # Plugin directory inside tests/unit

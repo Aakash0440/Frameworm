@@ -2,10 +2,11 @@
 Advanced training features.
 """
 
+from copy import deepcopy
+from typing import Iterator, Optional
+
 import torch
 import torch.nn as nn
-from typing import Optional, Iterator
-from copy import deepcopy
 
 
 class GradientAccumulator:

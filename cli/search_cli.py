@@ -2,10 +2,11 @@
 Hyperparameter search command.
 """
 
-from core import Config
-from search import GridSearch, RandomSearch
 import yaml
 from click import echo
+
+from core import Config
+from search import GridSearch, RandomSearch
 
 
 def run_search(

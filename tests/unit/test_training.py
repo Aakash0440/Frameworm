@@ -1,14 +1,16 @@
 """Tests for training infrastructure"""
 
+import tempfile
+from pathlib import Path
+
 import pytest
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
+
 from training import Trainer, TrainingState
-from training.callbacks import CSVLogger, Callback
+from training.callbacks import Callback, CSVLogger
 from training.schedulers import WarmupLR
-import tempfile
-from pathlib import Path
 
 
 class DummyModel(nn.Module):

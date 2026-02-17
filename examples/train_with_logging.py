@@ -10,14 +10,15 @@ Demonstrates:
 - Learning rate scheduling
 """
 
-from core import Config, get_model
-from training import Trainer
-from training.callbacks import CSVLogger, ModelCheckpoint
-from training.schedulers import WarmupCosineScheduler
-from training.loggers import TensorBoardLogger
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
+from core import Config, get_model
+from training import Trainer
+from training.callbacks import CSVLogger, ModelCheckpoint
+from training.loggers import TensorBoardLogger
+from training.schedulers import WarmupCosineScheduler
 
 
 def get_mnist_loaders(batch_size=128):

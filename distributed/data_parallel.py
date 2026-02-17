@@ -2,10 +2,11 @@
 DataParallel wrapper (simple multi-GPU).
 """
 
+from typing import List, Optional
+
 import torch
 import torch.nn as nn
 from torch.nn import DataParallel as DP
-from typing import Optional, List
 
 
 class DataParallelTrainer:

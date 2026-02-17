@@ -2,16 +2,17 @@
 FastAPI model serving.
 """
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-import torch
-import numpy as np
-from PIL import Image
 import io
 import logging
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import torch
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from PIL import Image
+from pydantic import BaseModel
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

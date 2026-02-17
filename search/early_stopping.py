@@ -2,7 +2,8 @@
 Early stopping mechanisms for hyperparameter search.
 """
 
-from typing import Dict, Any, Optional, Callable
+from typing import Any, Callable, Dict, Optional
+
 import numpy as np
 
 

@@ -2,13 +2,15 @@
 Complete performance benchmarks for FRAMEWORM.
 """
 
+import json
+import time
+from pathlib import Path
+
 import torch
 import torch.nn as nn
-import time
-import json
-from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
-from utils.profiler import TrainingProfiler, InferenceProfiler
+
+from utils.profiler import InferenceProfiler, TrainingProfiler
 
 
 def benchmark_training_speed():

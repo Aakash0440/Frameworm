@@ -2,10 +2,11 @@
 Distributed data samplers.
 """
 
-import torch
-from torch.utils.data import Sampler, Dataset
-from typing import Iterator, Optional
 import math
+from typing import Iterator, Optional
+
+import torch
+from torch.utils.data import Dataset, Sampler
 
 
 class DistributedSampler(Sampler):

@@ -2,9 +2,9 @@
 Metrics tracking and logging.
 """
 
-from typing import Dict, List, Any, Optional
-from collections import defaultdict
 import time
+from collections import defaultdict
+from typing import Any, Dict, List, Optional
 
 # Add at top of training/metrics.py
 from training.state import TrainingState

@@ -2,11 +2,13 @@
 Unified metric evaluation system.
 """
 
+from typing import Any, Callable, Dict, List, Optional
+
 import torch
-from typing import Dict, List, Optional, Any, Callable
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from metrics import FID, InceptionScore, LPIPS
+
+from metrics import FID, LPIPS, InceptionScore
 
 
 class MetricEvaluator:
@@ -40,7 +42,7 @@ class MetricEvaluator:
         self.real_data = real_data
 
         # Initialize metrics
-        self.metric_objects = {}
+        self.metric_objects: Dict[str, Any] = {}
 
         for metric_name in metrics:
             metric_name_lower = metric_name.lower()
@@ -71,7 +73,7 @@ class MetricEvaluator:
         """
         model.eval()
 
-        generated_images = []
+        generated_images: list = []
 
         num_batches = (num_samples + self.batch_size - 1) // self.batch_size
 
@@ -191,7 +193,7 @@ class MetricEvaluator:
             images1 = generated_images[:n_pairs]
             images2 = generated_images[n_pairs : 2 * n_pairs]
 
-            lpips_score = self.metric_objects["lpips"].compute_mean(
+            lpips_score = self.metric_objects["lpips"].compute(
                 images1, images2, batch_size=self.batch_size
             )
             results["lpips"] = lpips_score

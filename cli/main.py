@@ -13,9 +13,9 @@ click_completion.init()
 # ================= TOP-LEVEL IMPORTS FOR PRE-LAUNCH =================
 # These allow pre_launch.py to detect core, trainer, and search modules
 import core
+import training
 from core.config import Config
 from training.trainer import Trainer
-import training
 
 # ====================================================================
 
@@ -120,8 +120,9 @@ def monitor(experiment_dir, refresh):
 @click.option("--gpus", default="0", help="GPU IDs to use")
 def train(config, resume, gpus):
     """Train a model using a config file"""
-    from core.config import Config
     from rich.console import Console
+
+    from core.config import Config
 
     console = Console()
 

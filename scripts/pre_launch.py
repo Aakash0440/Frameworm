@@ -2,11 +2,11 @@
 Pre-launch checklist verification.
 """
 
+import os
 import subprocess
 import sys
-import os
-from pathlib import Path
 import traceback
+from pathlib import Path
 
 checks_passed = 0
 checks_failed = 0
@@ -54,31 +54,31 @@ def run_pytest():
         errors="replace",
         env=env,
     )
-    
+
     # Always print a clean summary
     lines = result.stdout.split('\n')
-    
+
     # Show only failed/error lines for quick diagnosis
     failures = [l for l in lines if 'FAILED' in l or 'ERROR' in l]
     passed = [l for l in lines if 'passed' in l or 'failed' in l]
-    
+
     if failures:
         print("\n  ❌ FAILING TESTS:")
         for line in failures:
             print(f"     {line.strip()}")
-    
+
     if passed:
         print(f"  📊 {passed[-1].strip()}")
-    
+
     # Show full output only if something failed
     if result.returncode != 0:
         print("\n  📋 FULL FAILURE DETAILS:")
         print("  " + "\n  ".join(lines))
-    
+
     if result.stderr:
         print("\n  ⚠ STDERR:")
         print("  " + result.stderr[:500])
-    
+
     return result.returncode == 0
 
 

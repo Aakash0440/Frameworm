@@ -2,12 +2,13 @@
 Experiment management and comparison tools.
 """
 
-from typing import List, Dict, Any, Optional
-from pathlib import Path
-import sqlite3
 import json
-from tabulate import tabulate
+import sqlite3
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
+from tabulate import tabulate
 
 
 class ExperimentManager:
@@ -99,12 +100,12 @@ class ExperimentManager:
         # Get metric summary
         cursor.execute(
             """
-            SELECT metric_name, 
+            SELECT metric_name,
                    COUNT(*) as count,
                    MIN(metric_value) as min_value,
                    MAX(metric_value) as max_value,
                    AVG(metric_value) as avg_value
-            FROM metrics 
+            FROM metrics
             WHERE experiment_id = ?
             GROUP BY metric_name
         """,

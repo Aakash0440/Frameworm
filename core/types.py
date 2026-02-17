@@ -8,23 +8,24 @@ This module provides:
 - Generic types for containers
 """
 
+from pathlib import Path
 from typing import (
     Any,
+    Callable,
     Dict,
+    Generic,
     List,
-    Union,
+    Mapping,
     Optional,
     Protocol,
-    TypeVar,
-    Generic,
-    Callable,
     Sequence,
-    Mapping,
+    TypeVar,
+    Union,
     runtime_checkable,
 )
-from pathlib import Path
-import torch
+
 import numpy as np
+import torch
 
 # ==================== Basic Type Aliases ====================
 

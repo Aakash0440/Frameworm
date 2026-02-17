@@ -8,14 +8,15 @@ Demonstrates:
 - Integration with experiments
 """
 
-from core import Config, get_model
-from training import Trainer
-from search import GridSearch, RandomSearch, SearchAnalyzer
-from search.space import Real, Integer
-from metrics import MetricEvaluator, FID
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
+from core import Config, get_model
+from metrics import FID, MetricEvaluator
+from search import GridSearch, RandomSearch, SearchAnalyzer
+from search.space import Integer, Real
+from training import Trainer
 
 
 def get_mnist_loaders(batch_size=128):
