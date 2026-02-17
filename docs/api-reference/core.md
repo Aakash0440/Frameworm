@@ -62,7 +62,8 @@ model = VAE(config)
 
 ## Plugin System
 
-::: core.plugin.PluginRegistry
+::: core.registry.ModelRegistry
+::: core.registry.TrainerRegistry
 
 ### Register Custom Model
 ```python
@@ -88,8 +89,9 @@ model = get_model('my_model')(config)
 ## Type System
 
 ::: core.types.ModelProtocol
-::: core.types.OptimizerProtocol
-::: core.types.DataLoaderProtocol
+::: core.types.ConfigProtocol
+::: core.types.TrainerProtocol
+::: core.types.PipelineProtocol
 
 ### Usage
 ```python

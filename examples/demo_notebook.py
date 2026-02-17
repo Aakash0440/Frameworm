@@ -20,8 +20,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from frameworm import Config, Trainer, get_model
-from frameworm.experiment import Experiment
+from core import Config, Trainer, get_model
+from experiment import Experiment
 
 # 1. Configuration
 config = Config.from_dict(
@@ -53,8 +53,8 @@ print(f"✓ Training complete! Experiment: {exp.experiment_id}")
 # SECTION 3: HYPERPARAMETER SEARCH
 # ============================================================
 
-from frameworm.search import RandomSearch
-from frameworm.search.space import Integer, Real
+from search import RandomSearch
+from search.space import Integer, Real
 
 
 def train_fn(search_config):
@@ -85,7 +85,7 @@ print(f"✓ Best config: lr={best_config['training.lr']:.5f}, score={best_score:
 # SECTION 4: EXPORT & DEPLOY
 # ============================================================
 
-from frameworm.deployment import ModelExporter
+from deployment import ModelExporter
 
 # Export to TorchScript
 example_input = torch.randn(1, 1, 32, 32)

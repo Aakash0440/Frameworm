@@ -66,12 +66,12 @@ nav:
     - Quick Start: getting-started/quickstart.md
     - First Model: getting-started/first-model.md
   - User Guide:
-    - Configuration: user-guide/configuration.md
-    - Training: user-guide/training.md
-    - Hyperparameter Search: user-guide/hyperparameter-search.md
-    - Deployment: user-guide/deployment.md
-    - CLI: user-guide/cli.md
-    - Dashboard: user-guide/dashboard.md
+    - Configuration: user_guide/configuration.md
+    - Training: user_guide/training.md
+    - Hyperparameter Search: user_guide/hyperparameter-search.md
+    - Deployment: user_guide/deployment.md
+    - CLI: user_guide/cli.md
+    - Dashboard: user_guide/dashboard.md
   - Tutorials:
     - VAE Tutorial: tutorials/vae-tutorial.md
     - GAN Tutorial: tutorials/gan-tutorial.md
