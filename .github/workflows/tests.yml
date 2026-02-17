@@ -50,9 +50,9 @@ jobs:
     - name: Run linters
       run: |
         pip install black flake8 mypy isort
-        black --check frameworm/
-        flake8 frameworm/ --max-line-length=100
-        isort --check-only frameworm/
+        black --check . --exclude "/(\.git|\.venv|__pycache__|\.egg-info|dist|build)/"
+        flake8 . --max-line-length=100 --exclude ".git,__pycache__,.venv,.egg-info,dist,build"
+        isort --check-only . --skip-glob=".*" --skip ".venv,.git,__pycache__,.egg-info,dist,build"
 
   docs:
     runs-on: ubuntu-latest
