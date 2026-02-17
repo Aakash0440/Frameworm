@@ -9,7 +9,7 @@ cli/logger.py
 cli/main.py
 cli/monitor.py
 cli/pipeline.py
-cli/search.py
+cli/search_cli.py
 cli/train.py
 core/__init__.py
 core/config.py

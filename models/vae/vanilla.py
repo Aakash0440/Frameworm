@@ -1,151 +1,133 @@
-"""
-Pre-launch checklist verification (debug mode).
-"""
+"""Vanilla VAE implementation - Variational Autoencoder"""
 
-import subprocess
-import sys
-from pathlib import Path
-import traceback
-
-checks_passed = 0
-checks_failed = 0
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from models import BaseModel
+from core import register_model
 
 
-def check(name, fn):
-    """
-    Run a check function, print pass/fail, and show detailed errors if it fails.
-    """
-    global checks_passed, checks_failed
-    try:
-        result = fn()
-        if result:
-            print(f"  ✅ {name}")
-            checks_passed += 1
-        else:
-            print(f"  ❌ {name}")
-            print(f"     → Check returned False")
-            checks_failed += 1
-    except Exception as e:
-        print(f"  ❌ {name}: {e}")
-        traceback.print_exc()
-        checks_failed += 1
+class Encoder(nn.Module):
+    """VAE Encoder - maps images to latent distribution"""
+
+    def __init__(self, channels, latent_dim, input_size=32):
+        super().__init__()
+        self.input_size = input_size
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(channels, 32, 4, 2, 1),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, 4, 2, 1),
+            nn.ReLU(),
+            nn.Conv2d(64, 128, 4, 2, 1),
+            nn.ReLU(),
+            nn.Conv2d(128, 256, 4, 2, 1),
+            nn.ReLU(),
+        )
+        conv_output_size = self._get_conv_output_size()
+        self.fc_mu = nn.Linear(conv_output_size, latent_dim)
+        self.fc_logvar = nn.Linear(conv_output_size, latent_dim)
+
+    def _get_conv_output_size(self):
+        size = self.input_size
+        for _ in range(4):
+            size = (size + 2 * 1 - 4) // 2 + 1
+        return 256 * size * size
+
+    def forward(self, x):
+        x = self.conv_layers(x)
+        x = x.view(x.size(0), -1)
+        mu = self.fc_mu(x)
+        logvar = self.fc_logvar(x)
+        return mu, logvar
 
 
-print("\n🚀 PRE-LAUNCH CHECKLIST")
-print("=" * 60)
+class Decoder(nn.Module):
+    """VAE Decoder - reconstructs images from latent vectors"""
 
-# ---------------- Package ----------------
-print("\n📦 Package")
-check("pyproject.toml exists", lambda: Path("pyproject.toml").exists())
-check("LICENSE exists", lambda: Path("LICENSE").exists())
-check("CHANGELOG.md exists", lambda: Path("CHANGELOG.md").exists())
-check("README.md exists", lambda: Path("README.md").exists())
+    def __init__(self, latent_dim, channels, output_size=32):
+        super().__init__()
+        self.output_size = output_size
+        size = output_size
+        for _ in range(4):
+            size = (size + 1) // 2
+        self.init_size = max(size, 1)
+        self.fc = nn.Linear(latent_dim, 256 * self.init_size * self.init_size)
+        self.deconv_layers = nn.Sequential(
+            nn.ConvTranspose2d(256, 128, 4, 2, 1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(128, 64, 4, 2, 1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(64, 32, 4, 2, 1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(32, channels, 4, 2, 1),
+            nn.Sigmoid(),
+        )
 
-# ---------------- Tests ----------------
-print("\n🧪 Tests")
+    def forward(self, z):
+        x = self.fc(z)
+        x = x.view(x.size(0), 256, self.init_size, self.init_size)
+        x = self.deconv_layers(x)
+        return x
 
 
-def run_pytest():
-    result = subprocess.run(
-        [sys.executable, "-m", "pytest", "tests/", "-q", "--tb=no"], capture_output=True, text=True
-    )
-    print("pytest stdout:\n", result.stdout)
-    print("pytest stderr:\n", result.stderr)
-    return result.returncode == 0
+@register_model("vae", version="1.0.1", author="Frameworm Team")
+class VAE(BaseModel):
+    """Variational Autoencoder (VAE) with flexible input size."""
 
+    def __init__(self, config, input_size=32):
+        super().__init__(config)
+        self.latent_dim = config.model.latent_dim
+        self.channels = getattr(config.model, "channels", 3)
+        self.beta = getattr(config.model, "beta", 1.0)
+        self.input_size = input_size
+        self.encoder = Encoder(self.channels, self.latent_dim, input_size=input_size)
+        self.decoder = Decoder(self.latent_dim, self.channels, output_size=input_size)
+        self.init_weights()
 
-check("All tests pass", run_pytest)
-check("Tests exist", lambda: len(list(Path("tests").rglob("test_*.py"))) > 0)
+    def init_weights(self):
+        self.apply(self._default_init)
 
-# ---------------- Documentation ----------------
-print("\n📚 Documentation")
-check("docs/index.md exists", lambda: Path("docs/index.md").exists())
-check("mkdocs.yml exists", lambda: Path("mkdocs.yml").exists())
-check("Getting started guide exists", lambda: Path("docs/getting-started/quickstart.md").exists())
+    def _default_init(self, module):
+        if isinstance(module, (nn.Conv2d, nn.ConvTranspose2d)):
+            nn.init.kaiming_normal_(module.weight)
+            if module.bias is not None:
+                nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Linear):
+            nn.init.xavier_normal_(module.weight)
+            if module.bias is not None:
+                nn.init.zeros_(module.bias)
 
-# ---------------- CLI ----------------
-print("\n💻 CLI")
-cli_result = subprocess.run(
-    [sys.executable, "cli/main.py", "--help"], capture_output=True, text=True
-)
-print("CLI stdout:\n", cli_result.stdout)
-print("CLI stderr:\n", cli_result.stderr)
-check("CLI works", lambda: cli_result.returncode == 0)
-check("CLI has train command", lambda: "train" in cli_result.stdout)
-check("CLI has serve command", lambda: "serve" in cli_result.stdout)
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
 
-# ---------------- Core Features ----------------
-print("\n🔧 Core Features")
-try:
-    from core import Config
-    from core.registry import get_model
+    def forward(self, x):
+        mu, logvar = self.encoder(x)
+        z = self.reparameterize(mu, logvar)
+        recon = self.decoder(z)
+        return recon, mu, logvar
 
-    check("Config imports", lambda: True)
+    def encode(self, x):
+        return self.encoder(x)
 
-    try:
-        # FIX: import the VAE module so @register_model("vae") decorator fires
-        # before we try to look it up in the registry.
-        from models.vae.vanilla import VAE
+    def decode(self, z):
+        return self.decoder(z)
 
-        check("Model registry works", lambda: get_model("vae", auto_discover=False) is not None)
-    except Exception as e:
-        print("Error in get_model:", e)
-        traceback.print_exc()
-        checks_failed += 1
+    def sample(self, num_samples, device=None):
+        if device is None:
+            device = self.get_device()
+        z = torch.randn(num_samples, self.latent_dim, device=device)
+        with torch.no_grad():
+            return self.decode(z)
 
-except Exception as e:
-    print("Error importing core:", e)
-    traceback.print_exc()
-    checks_failed += 1
+    def reconstruct(self, x):
+        with torch.no_grad():
+            recon, _, _ = self.forward(x)
+        return recon
 
-try:
-    from training import Trainer
-
-    check("Trainer imports", lambda: True)
-except Exception as e:
-    print("Error importing Trainer:", e)
-    traceback.print_exc()
-    check("Trainer imports", lambda: False)
-
-try:
-    from experiment import Experiment, ExperimentManager
-
-    check("Experiment tracking imports", lambda: True)
-except Exception as e:
-    print("Error importing Experiment:", e)
-    traceback.print_exc()
-    check("Experiment tracking imports", lambda: False)
-
-try:
-    from search import GridSearch, RandomSearch
-
-    check("Search imports", lambda: True)
-except Exception as e:
-    print("Error importing search:", e)
-    traceback.print_exc()
-    check("Search imports", lambda: False)
-
-try:
-    from deployment import ModelExporter
-
-    check("Deployment imports", lambda: True)
-except Exception as e:
-    print("Error importing ModelExporter:", e)
-    traceback.print_exc()
-    check("Deployment imports", lambda: False)
-
-# ---------------- Community ----------------
-print("\n🌐 Community")
-check(".github/ISSUE_TEMPLATE exists", lambda: Path(".github/ISSUE_TEMPLATE").exists())
-check("CONTRIBUTING.md exists", lambda: Path("CONTRIBUTING.md").exists())
-
-# ---------------- Summary ----------------
-print("\n" + "=" * 60)
-total = checks_passed + checks_failed
-print(f"Results: {checks_passed}/{total} checks passed")
-
-if checks_failed == 0:
-    print("\n🎉 ALL CHECKS PASSED! Ready to launch!")
-else:
-    print(f"\n⚠️  {checks_failed} check(s) failed. Fix before launching.")
-    sys.exit(1)
+    def compute_loss(self, x, recon, mu, logvar):
+        recon_loss = F.mse_loss(recon, x, reduction="sum") / x.size(0)
+        kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / x.size(0)
+        total_loss = recon_loss + self.beta * kl_loss
+        return {"loss": total_loss, "recon_loss": recon_loss, "kl_loss": kl_loss}
