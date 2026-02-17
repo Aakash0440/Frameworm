@@ -2,7 +2,7 @@ Metadata-Version: 2.4
 Name: frameworm
 Version: 1.0.0
 Summary: Complete Machine Learning Framework for Production
-Author-email: Your Name <you@example.com>
+Author-email: Aakash Ali <Aakashali0440@gmail.com>
 License: MIT License
         
         Copyright (c) 2026 Aakash Ali
@@ -36,12 +36,12 @@ Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
 Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
-Requires-Python: >=3.8
+Requires-Python: >=3.14
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: torch>=2.0.0
