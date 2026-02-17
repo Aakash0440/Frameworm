@@ -1,6 +1,6 @@
 """Distributed training utilities"""
 
-from distributed.utils import (
+from .utils import (
     is_distributed,
     get_world_size,
     get_rank,
@@ -16,7 +16,9 @@ from distributed.utils import (
     DistributedContext
 )
 
-from distributed.sampler import (
+from .trainer import DistributedTrainer
+
+from .sampler import (
     DistributedSampler,
     get_distributed_sampler
 )
@@ -35,6 +37,7 @@ __all__ = [
     'broadcast',
     'synchronize',
     'DistributedContext',
+    'DistributedTrainer',
     'DistributedSampler',
     'get_distributed_sampler',
 ]

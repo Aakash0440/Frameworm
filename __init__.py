@@ -1,4 +1,5 @@
 """Frameworm package"""
+
 # Search
 from search import (
     GridSearch,
@@ -8,16 +9,17 @@ from search import (
     Integer,
     Real
 )
+
 # Distributed
 from distributed import (
     DistributedTrainer,
-    DataParallelTrainer,
     setup_distributed,
     cleanup_distributed,
     is_distributed,
     get_world_size,
     get_rank
 )
+
 from distributed.data_loader import OptimizedDataLoader
 from distributed.profiler import PerformanceProfiler
 
@@ -32,4 +34,18 @@ __all__ = [
     '__version__',
     '__author__',
     '__email__',
+    'GridSearch',
+    'RandomSearch',
+    'SearchAnalyzer',
+    'Categorical',
+    'Integer',
+    'Real',
+    'DistributedTrainer',
+    'setup_distributed',
+    'cleanup_distributed',
+    'is_distributed',
+    'get_world_size',
+    'get_rank',
+    'OptimizedDataLoader',
+    'PerformanceProfiler',
 ]

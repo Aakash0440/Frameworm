@@ -2,6 +2,7 @@ benchmark
 core
 data
 experiment
+experiments
 models
 optimization
 pipelines

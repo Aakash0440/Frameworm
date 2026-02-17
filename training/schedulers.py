@@ -149,3 +149,5 @@ def get_scheduler(
         raise ValueError(f"Unknown scheduler: {name}. Available: {list(schedulers.keys())}")
     
     return schedulers[name](optimizer, **kwargs)
+
+LearningRateScheduler = get_scheduler
