@@ -36,6 +36,174 @@ def cli():
     """
     pass
 
+@cli.group()
+def plugins():
+    """Manage plugins"""
+    pass
+
+
+@plugins.command('list')
+@click.option('--verbose', '-v', is_flag=True, help='Show detailed info')
+def list_plugins(verbose):
+    """
+    List all available plugins.
+    
+    Example:
+        frameworm plugins list
+        frameworm plugins list --verbose
+    """
+    from plugins.loader import get_plugin_loader
+    
+    loader = get_plugin_loader()
+    
+    if verbose:
+        loader.print_plugins()
+    else:
+        plugins = loader.list_plugins()
+        click.echo(f"\nAvailable plugins: {len(plugins)}")
+        for name, meta in plugins.items():
+            status = '✓' if loader._loaded.get(name) else '○'
+            click.echo(f"  {status} {name} ({meta.version}) - {meta.description}")
+
+
+@plugins.command('load')
+@click.argument('plugin_name')
+def load_plugin_cmd(plugin_name):
+    """
+    Load a specific plugin.
+    
+    Example:
+        frameworm plugins load custom-resnet
+    """
+    from plugins.loader import get_plugin_loader
+    
+    loader = get_plugin_loader()
+    
+    if loader.load(plugin_name):
+        click.echo(f"✓ Loaded: {plugin_name}")
+    else:
+        click.echo(f"✗ Failed to load: {plugin_name}")
+        raise click.Abort()
+
+
+@plugins.command('unload')
+@click.argument('plugin_name')
+def unload_plugin_cmd(plugin_name):
+    """Unload a plugin"""
+    from plugins.loader import get_plugin_loader
+    
+    loader = get_plugin_loader()
+    loader.unload(plugin_name)
+    click.echo(f"✓ Unloaded: {plugin_name}")
+
+
+@plugins.command('info')
+@click.argument('plugin_name')
+def plugin_info(plugin_name):
+    """
+    Show detailed plugin information.
+    
+    Example:
+        frameworm plugins info custom-resnet
+    """
+    from plugins.loader import get_plugin_loader
+    
+    loader = get_plugin_loader()
+    plugins = loader.list_plugins()
+    
+    if plugin_name not in plugins:
+        click.echo(f"Plugin '{plugin_name}' not found")
+        raise click.Abort()
+    
+    meta = plugins[plugin_name]
+    
+    click.echo(f"\nPlugin: {meta.name}")
+    click.echo(f"  Version: {meta.version}")
+    click.echo(f"  Author: {meta.author}")
+    click.echo(f"  Description: {meta.description}")
+    click.echo(f"  Entry point: {meta.entry_point}")
+    click.echo(f"  Hooks: {', '.join(meta.hooks)}")
+    click.echo(f"  Dependencies: {', '.join(meta.dependencies)}")
+    click.echo(f"  Enabled: {meta.enabled}")
+
+
+@plugins.command('create')
+@click.argument('name')
+@click.option('--dir', default='frameworm_plugins', help='Plugin directory')
+def create_plugin(name, dir):
+    """
+    Create a new plugin template.
+    
+    Example:
+        frameworm plugins create my-custom-plugin
+    """
+    from pathlib import Path
+    import yaml
+    
+    plugin_dir = Path(dir) / name
+    plugin_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Create plugin.yaml
+    metadata = {
+        'name': name,
+        'version': '0.1.0',
+        'author': 'Your Name',
+        'description': f'{name} plugin',
+        'entry_point': 'plugin:register',
+        'dependencies': ['torch>=2.0.0'],
+        'hooks': ['model']
+    }
+    
+    with open(plugin_dir / 'plugin.yaml', 'w') as f:
+        yaml.dump(metadata, f)
+    
+    # Create __init__.py
+    template = '''"""
+{name} plugin for FRAMEWORM.
+"""
+
+from frameworm.core import register_model
+from frameworm.plugins.hooks import HookRegistry
+import torch.nn as nn
+
+
+class CustomModel(nn.Module):
+    """Your custom model"""
+    
+    def __init__(self, config):
+        super().__init__()
+        # Your model architecture here
+        pass
+    
+    def forward(self, x):
+        # Forward pass
+        return x
+    
+    def compute_loss(self, x, y=None):
+        """FRAMEWORM Trainer compatibility"""
+        # Compute and return loss dict
+        return {{'loss': 0.0}}
+
+
+def register():
+    """Plugin entry point"""
+    register_model('{name}_model', CustomModel)
+    print(f"✓ Registered: {name}_model")
+    
+    # Example: Register a hook
+    @HookRegistry.on('on_epoch_end')
+    def log_custom(trainer, epoch, metrics):
+        print(f"Custom hook: epoch {{epoch}}")
+'''
+    
+    with open(plugin_dir / '__init__.py', 'w') as f:
+        f.write(template.format(name=name))
+    
+    click.echo(f"✓ Created plugin template: {plugin_dir}")
+    click.echo(f"\nNext steps:")
+    click.echo(f"  1. Edit {plugin_dir}/__init__.py")
+    click.echo(f"  2. Edit {plugin_dir}/plugin.yaml")
+    click.echo(f"  3. Load: frameworm plugins load {name}")
 
 # ================= DASHBOARD =================
 @cli.command()
