@@ -2,8 +2,9 @@
 Experiment logging integrations.
 """
 
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 import torch
 
 

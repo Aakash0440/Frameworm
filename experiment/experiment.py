@@ -2,15 +2,15 @@
 Experiment tracking and versioning.
 """
 
-from typing import Dict, Any, Optional, List
-from pathlib import Path
 import json
-import time
-import subprocess
-from datetime import datetime
-import sqlite3
-import uuid
 import shutil
+import sqlite3
+import subprocess
+import time
+import uuid
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class Experiment:
@@ -175,7 +175,7 @@ class Experiment:
 
         cursor.execute(
             """
-            INSERT INTO experiments 
+            INSERT INTO experiments
             (experiment_id, name, description, status, git_hash, git_dirty, path, tags)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
@@ -312,7 +312,7 @@ class Experiment:
 
         cursor.executemany(
             """
-            INSERT INTO metrics 
+            INSERT INTO metrics
             (experiment_id, metric_name, metric_value, step, epoch, metric_type)
             VALUES (:experiment_id, :metric_name, :metric_value, :step, :epoch, :metric_type)
         """,
@@ -348,7 +348,7 @@ class Experiment:
 
         cursor.execute(
             """
-            INSERT INTO artifacts 
+            INSERT INTO artifacts
             (experiment_id, artifact_type, artifact_path, artifact_name)
             VALUES (?, ?, ?, ?)
         """,
@@ -377,7 +377,7 @@ class Experiment:
 
         cursor.execute(
             """
-            UPDATE experiments 
+            UPDATE experiments
             SET status = ?, updated_at = CURRENT_TIMESTAMP
             WHERE experiment_id = ?
         """,
@@ -417,7 +417,7 @@ class Experiment:
         if metric_name:
             cursor.execute(
                 """
-                SELECT * FROM metrics 
+                SELECT * FROM metrics
                 WHERE experiment_id = ? AND metric_name = ?
                 ORDER BY step, epoch
             """,
@@ -426,7 +426,7 @@ class Experiment:
         else:
             cursor.execute(
                 """
-                SELECT * FROM metrics 
+                SELECT * FROM metrics
                 WHERE experiment_id = ?
                 ORDER BY step, epoch
             """,

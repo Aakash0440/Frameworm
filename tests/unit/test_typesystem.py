@@ -3,12 +3,12 @@
 import tempfile
 from pathlib import Path
 
-import torch
 import pytest
+import torch
 
+from core import Config
 from core.types import *
 from models import BaseModel
-from core import Config
 
 
 class TestTypeSystem:

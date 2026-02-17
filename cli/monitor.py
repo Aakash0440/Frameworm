@@ -2,13 +2,14 @@
 Training monitoring and dashboards.
 """
 
-from pathlib import Path
 import json
+import time
+from pathlib import Path
+
 from click import echo
 from rich.console import Console
-from rich.table import Table
 from rich.live import Live
-import time
+from rich.table import Table
 
 
 class TrainingMonitor:

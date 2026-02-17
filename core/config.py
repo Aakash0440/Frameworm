@@ -8,12 +8,14 @@ Features:
 - Immutable after loading
 """
 
-from pydantic import BaseModel, Field, validator
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, Type
+from typing import Any, Dict, List, Optional, Type, Union
+
 import yaml
-from core.registry import get_model
+from pydantic import BaseModel, Field, validator
+
 from core.exceptions import ConfigInheritanceError
+from core.registry import get_model
 
 
 class ConfigNode(dict):

@@ -2,8 +2,10 @@
 Model evaluation during training.
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 import torch
+
 from metrics.evaluator import MetricEvaluator
 from training.evaluation import EvaluationCallback
 

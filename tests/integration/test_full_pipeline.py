@@ -2,15 +2,17 @@
 End-to-end integration tests for the complete FRAMEWORM pipeline.
 """
 
+import tempfile
+import time
+from pathlib import Path
+
 import pytest
 import torch
 import torch.nn as nn
-from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
-import tempfile
-import time
-from training.trainer import Trainer
+
 from training.callbacks import ModelCheckpoint
+from training.trainer import Trainer
 
 # ------------------ Fixtures ------------------
 

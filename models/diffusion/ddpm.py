@@ -4,11 +4,13 @@ DDPM (Denoising Diffusion Probabilistic Model) implementation for Frameworm.
 Compatible with Frameworm registry and unit tests.
 """
 
+import math
+from typing import Optional
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import math
-from typing import Optional
+
 from core import register_model
 from models import BaseModel
 

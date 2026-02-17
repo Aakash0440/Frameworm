@@ -3,8 +3,10 @@ Hyperparameter search space definitions.
 """
 
 from typing import Any, Dict, List
+
 import numpy as np
-from search.space_objects import Real, Integer, Categorical, SearchSpace
+
+from search.space_objects import Categorical, Integer, Real, SearchSpace
 
 
 def expand_search_space(search_space: Dict[str, Any]) -> Dict[str, SearchSpace]:

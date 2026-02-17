@@ -2,10 +2,12 @@
 Model export command.
 """
 
-from deployment import ModelExporter
-import torch
 from pathlib import Path
+
+import torch
 from click import echo
+
+from deployment import ModelExporter
 
 
 def export_model(

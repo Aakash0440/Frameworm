@@ -2,8 +2,8 @@
 Test discover_plugins to see if it's finding files
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, os.getcwd())
@@ -44,7 +44,7 @@ for f in filtered:
 
 # Step 4: Now test the actual discover_plugins function
 print("\n4. Testing discover_plugins()...")
-from core.registry import discover_plugins, reset_discovery, list_models
+from core.registry import discover_plugins, list_models, reset_discovery
 
 reset_discovery()
 

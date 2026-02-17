@@ -4,12 +4,13 @@ FID (Fréchet Inception Distance) implementation.
 Based on: "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium"
 """
 
+from typing import Optional, Tuple
+
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
-from torchvision import models
 from scipy import linalg
-from typing import Tuple, Optional
+from torchvision import models
 from tqdm import tqdm
 
 

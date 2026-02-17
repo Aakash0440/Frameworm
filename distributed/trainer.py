@@ -2,26 +2,27 @@
 Distributed training wrapper for Trainer.
 """
 
+import os
+from typing import Any, Dict, Optional
+
 import torch
 import torch.nn as nn
+from torch.cuda.amp import GradScaler, autocast
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
-from typing import Optional, Dict, Any
-import os
-from torch.cuda.amp import autocast, GradScaler
 
-from training import Trainer
+from distributed.sampler import get_distributed_sampler
 from distributed.utils import (
-    is_distributed,
-    get_rank,
+    all_reduce_dict,
+    barrier,
+    cleanup_distributed,
     get_local_rank,
+    get_rank,
+    is_distributed,
     is_master,
     setup_distributed,
-    cleanup_distributed,
-    barrier,
-    all_reduce_dict,
 )
-from distributed.sampler import get_distributed_sampler
+from training import Trainer
 
 
 class DistributedTrainer(Trainer):

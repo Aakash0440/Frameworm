@@ -1,14 +1,16 @@
 """Integration tests for plugin system"""
 
-import pytest
-from pathlib import Path
-import tempfile
 import shutil
+import tempfile
+from pathlib import Path
+
+import pytest
+
 from core.config import Config
 from core.registry import (
-    register_model,
-    get_model,
     discover_plugins,
+    get_model,
+    register_model,
     reset_discovery,
 )
 from models.base import BaseModel
@@ -44,7 +46,7 @@ class IntegrationTestModel(BaseModel):
     def __init__(self, config):
         super().__init__(config)
         self.net = nn.Linear(10, 10)
-    
+
     def forward(self, x):
         return self.net(x)
 """

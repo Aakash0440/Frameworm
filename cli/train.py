@@ -2,12 +2,14 @@
 Training command implementation.
 """
 
-import torch
 from pathlib import Path
-from core import Config, get_model
-from training import Trainer
-from experiment import Experiment
+
+import torch
 from click import echo, progressbar
+
+from core import Config, get_model
+from experiment import Experiment
+from training import Trainer
 
 
 def run_training(

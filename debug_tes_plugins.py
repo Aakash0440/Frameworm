@@ -2,8 +2,8 @@
 Test plugin discovery with detailed logging
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add project to path
@@ -79,7 +79,7 @@ except Exception as e:
 # Step 4: Test discover_plugins function
 print("\n4. Testing discover_plugins() function...")
 try:
-    from core.registry import discover_plugins, reset_discovery, list_models
+    from core.registry import discover_plugins, list_models, reset_discovery
 
     reset_discovery()
     print("   Registry reset")

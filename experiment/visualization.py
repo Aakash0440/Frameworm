@@ -2,10 +2,11 @@
 Experiment visualization tools.
 """
 
-import matplotlib.pyplot as plt
-from typing import List, Optional
-import pandas as pd
 from pathlib import Path
+from typing import List, Optional
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def plot_metric_comparison(

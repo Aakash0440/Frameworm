@@ -3,9 +3,10 @@
 import pytest
 import torch
 import torch.nn as nn
-from training.advanced import GradientAccumulator, GradientClipper, EMAModel
-from training import Trainer
 from torch.utils.data import DataLoader, TensorDataset
+
+from training import Trainer
+from training.advanced import EMAModel, GradientAccumulator, GradientClipper
 
 
 class SimpleModel(nn.Module):

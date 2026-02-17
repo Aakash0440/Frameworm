@@ -2,9 +2,9 @@
 Callback system for training.
 """
 
-from typing import Dict, Any, Optional
-from pathlib import Path
 import csv
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 # Import your EarlyStopper correctly
 from search.early_stopping import EarlyStopper
@@ -74,9 +74,9 @@ class CSVLogger(Callback):
         self.filename = Path(filename)
         self.separator = separator
         self.append = append
-        self.keys = None
-        self.writer = None
-        self.file = None
+        self.keys: Optional[list] = None
+        self.writer: Optional[csv.writer] = None
+        self.file: Optional[Any] = None
 
     def on_train_begin(self, trainer):
         mode = "a" if self.append else "w"

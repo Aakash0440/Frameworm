@@ -2,10 +2,11 @@
 Model evaluation command.
 """
 
-from core import Config, get_model
-from metrics import MetricEvaluator
 import torch
 from click import echo
+
+from core import Config, get_model
+from metrics import MetricEvaluator
 
 
 def run_evaluation(config_path: str, checkpoint_path: str, metrics: list, num_samples: int = 10000):

@@ -8,18 +8,19 @@ Compares:
 - With/without gradient accumulation
 """
 
+import time
+
 import torch
 import torch.nn as nn
+from tabulate import tabulate
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-import time
-from tabulate import tabulate
 
 from core import Config, get_model
-from training import Trainer
-from distributed import DistributedTrainer, DataParallelTrainer
+from distributed import DataParallelTrainer, DistributedTrainer
 from distributed.data_loader import OptimizedDataLoader
 from distributed.profiler import PerformanceProfiler
+from training import Trainer
 
 
 def get_mnist_loaders_benchmark(batch_size=128):

@@ -4,9 +4,11 @@ Config System Examples
 This file demonstrates various config system features.
 """
 
-from core.config import Config
-from pydantic import BaseModel, Field
 from pathlib import Path
+
+from pydantic import BaseModel, Field
+
+from core.config import Config
 
 
 def example_basic_loading():

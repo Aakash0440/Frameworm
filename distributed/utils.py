@@ -3,11 +3,12 @@ Distributed training utilities.
 """
 
 import os
+import pickle
+import socket
+from typing import Any, Optional
+
 import torch
 import torch.distributed as dist
-from typing import Optional, Any
-import socket
-import pickle
 
 
 def is_distributed() -> bool:

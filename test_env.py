@@ -1,5 +1,7 @@
 import os
+
 import yaml
+
 from core import Config
 
 # Set environment variable

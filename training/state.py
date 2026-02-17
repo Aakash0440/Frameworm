@@ -4,10 +4,11 @@ Training state management.
 Tracks current training progress, metrics, and configuration.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import torch
 
 

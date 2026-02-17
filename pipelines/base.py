@@ -1,10 +1,10 @@
 """Base class for pipelines"""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Callable, Dict, List, Optional
+
 from core import Config
 from graph import Graph, Node
-from typing import Callable, Optional, List, Dict, Any
 
 
 class BasePipeline(ABC):

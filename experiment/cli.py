@@ -2,11 +2,13 @@
 Command-line interface for experiment management.
 """
 
-import click
 from pathlib import Path
+
+import click
+from tabulate import tabulate
+
 from experiment.manager import ExperimentManager
 from experiment.visualization import plot_metric_comparison, plot_multiple_metrics
-from tabulate import tabulate
 
 
 @click.group()

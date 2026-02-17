@@ -4,15 +4,17 @@ Example: Comprehensive Search Method Comparison
 Compares Grid, Random, and Bayesian search on same problem.
 """
 
-from core import Config, get_model
-from training import Trainer
-from search import GridSearch, RandomSearch, SearchAnalyzer
-from search.space import Real, Integer
+import time
+
+import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-import matplotlib.pyplot as plt
-import time
+
+from core import Config, get_model
+from search import GridSearch, RandomSearch, SearchAnalyzer
+from search.space import Integer, Real
+from training import Trainer
 
 try:
     from search import BayesianSearch

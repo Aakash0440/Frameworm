@@ -2,11 +2,12 @@
 Memory optimization utilities.
 """
 
+import gc
+from contextlib import contextmanager
+from typing import Dict, List, Optional
+
 import torch
 import torch.nn as nn
-from typing import Optional, List, Dict
-from contextlib import contextmanager
-import gc
 
 
 class MemoryMonitor:

@@ -2,9 +2,8 @@
 Comprehensive plugin registry system for models, trainers, pipelines, datasets.
 """
 
-from collections import OrderedDict
 import warnings
-from os import PathLike
+from collections import OrderedDict
 
 
 # ------------------- Base Registry -------------------
@@ -252,9 +251,9 @@ def _discover_one(path, recursive: bool = False, force: bool = False) -> dict:
     Internal: discover plugins in a single directory.
     Returns dict of newly registered keys per category.
     """
+    import importlib.util
     import sys
     import time
-    import importlib.util
     from pathlib import Path
 
     path = Path(path).resolve()

@@ -4,6 +4,7 @@ Hyperparameter search space objects.
 
 from abc import ABC, abstractmethod
 from typing import Any, List
+
 import numpy as np
 
 

@@ -3,9 +3,9 @@
 import pytest
 
 try:
-    from search import BayesianSearch
-    from search.space import Real, Integer
     from core import Config
+    from search import BayesianSearch
+    from search.space import Integer, Real
 
     BAYESIAN_AVAILABLE = True
 except ImportError:

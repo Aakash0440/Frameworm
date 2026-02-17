@@ -4,11 +4,11 @@ Node class for dependency graph.
 A Node represents a unit of computation with dependencies.
 """
 
-from typing import Any, Callable, List, Optional, Dict
-from enum import Enum
-import time
 import hashlib
 import pickle
+import time
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 
 class NodeStatus(Enum):

@@ -5,8 +5,10 @@ Hyperband adaptively allocates resources to promising configurations
 by using successive halving.
 """
 
-from typing import Dict, Any, Callable, Optional, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
 import numpy as np
+
 from core import Config
 
 

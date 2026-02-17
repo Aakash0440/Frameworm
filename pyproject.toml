@@ -8,9 +8,9 @@ version = "1.0.0"
 description = "Complete Machine Learning Framework for Production"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8"
+requires-python = ">=3.14"
 authors = [
-    {name = "Your Name", email = "you@example.com"},
+    {name = "Aakash Ali", email = "Aakashali0440@gmail.com"},
 ]
 keywords = [
     "machine-learning", "deep-learning", "pytorch",
@@ -22,10 +22,10 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
@@ -91,12 +91,13 @@ addopts = "--tb=short"
 
 [tool.black]
 line-length = 100
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.isort]
 profile = "black"
 line_length = 100
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.12"
 ignore_missing_imports = true
+exclude = ["distributed/", "deployment/"]

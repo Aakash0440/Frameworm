@@ -2,18 +2,18 @@
 Web UI API backend.
 """
 
-from fastapi import FastAPI, WebSocket, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel
-from pathlib import Path
 import json
 from datetime import datetime
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from experiment import ExperimentManager
+from typing import Any, Dict, List, Optional
+
+from fastapi import FastAPI, HTTPException, Query, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
 from deployment import ModelExporter
+from experiment import ExperimentManager
 
 
 # Pydantic models
@@ -222,8 +222,8 @@ async def export_model(request: ModelExportRequest):
 @app.get("/api/system/status")
 async def get_system_status():
     """Get system status"""
-    import torch
     import psutil
+    import torch
 
     status = {
         "cpu_percent": psutil.cpu_percent(interval=1),
@@ -249,8 +249,8 @@ async def get_system_status():
 @app.get("/api/system/resources")
 async def get_resource_usage():
     """Get current resource usage"""
-    import torch
     import psutil
+    import torch
 
     resources = {
         "cpu": psutil.cpu_percent(percpu=True),

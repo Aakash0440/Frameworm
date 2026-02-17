@@ -4,8 +4,9 @@ Example: Diffusion Model Image Generation
 Demonstrates using DDPM for generation and interpolation.
 """
 
-from core import Config, get_model
 import torch
+
+from core import Config, get_model
 
 
 def main():

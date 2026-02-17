@@ -1,4 +1,5 @@
 import pytest
+
 from core.config import Config
 from graph.graph import Graph, Node
 from models.gan.dcgan import DCGAN

@@ -1,11 +1,12 @@
 """Tests for dependency graph system"""
 
-import pytest
-from graph.node import Node, NodeStatus
-from graph.graph import Graph, CycleDetectedError, GraphError
-from graph.graph import CachedGraph
-import time
 import threading
+import time
+
+import pytest
+
+from graph.graph import CachedGraph, CycleDetectedError, Graph, GraphError
+from graph.node import Node, NodeStatus
 
 
 def process_test_fn():

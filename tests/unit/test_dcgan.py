@@ -1,11 +1,13 @@
 """Tests for DCGAN model"""
 
-import pytest
-import torch
-from core import Config, get_model
-from models.gan.dcgan import DCGAN
 import tempfile
 from pathlib import Path
+
+import pytest
+import torch
+
+from core import Config, get_model
+from models.gan.dcgan import DCGAN
 
 
 class TestDCGAN:
