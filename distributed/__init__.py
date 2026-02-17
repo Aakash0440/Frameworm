@@ -13,31 +13,28 @@ from .utils import (
     all_gather,
     broadcast,
     synchronize,
-    DistributedContext
+    DistributedContext,
 )
 
 from .trainer import DistributedTrainer
 
-from .sampler import (
-    DistributedSampler,
-    get_distributed_sampler
-)
+from .sampler import DistributedSampler, get_distributed_sampler
 
 __all__ = [
-    'is_distributed',
-    'get_world_size',
-    'get_rank',
-    'get_local_rank',
-    'is_master',
-    'setup_distributed',
-    'cleanup_distributed',
-    'barrier',
-    'all_reduce',
-    'all_gather',
-    'broadcast',
-    'synchronize',
-    'DistributedContext',
-    'DistributedTrainer',
-    'DistributedSampler',
-    'get_distributed_sampler',
+    "is_distributed",
+    "get_world_size",
+    "get_rank",
+    "get_local_rank",
+    "is_master",
+    "setup_distributed",
+    "cleanup_distributed",
+    "barrier",
+    "all_reduce",
+    "all_gather",
+    "broadcast",
+    "synchronize",
+    "DistributedContext",
+    "DistributedTrainer",
+    "DistributedSampler",
+    "get_distributed_sampler",
 ]

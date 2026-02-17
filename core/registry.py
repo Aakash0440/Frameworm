@@ -1,729 +1,355 @@
 """
-Plugin registry system for Frameworm.
-
-Provides a flexible plugin architecture where users can register custom
-models, trainers, pipelines, and other components.
-
-Example:
-    >>> @register_model("my-gan")
-    >>> class MyGAN(BaseModel):
-    ...     def forward(self, x):
-    ...         return x
-    >>> 
-    >>> model_class = get_model("my-gan")
-    >>> model = model_class(config)
+Comprehensive plugin registry system for models, trainers, pipelines, datasets.
 """
 
-from typing import Type, Dict, Any, Optional, List, Callable
-from abc import ABC
-import importlib
-import inspect
-from pathlib import Path
+from collections import OrderedDict
 import warnings
-import sys
-import os
-from core.exceptions import (
-    ModelNotFoundError,
-    PluginError,
-    PluginValidationError,
-)
+from os import PathLike
 
 
+# ------------------- Base Registry -------------------
 class Registry:
-    """
-    Base registry class for managing plugins.
-    
-    Each namespace (models, trainers, pipelines) has its own Registry instance.
-    
-    Example:
-        >>> registry = Registry(name="models")
-        >>> registry.register("my-model", MyModel)
-        >>> model_class = registry.get("my-model")
-    """
-    
-    def __init__(self, name: str):
-        """
-        Initialize registry.
-        
-        Args:
-            name: Registry namespace (e.g., "models", "trainers")
-        """
-        self.name = name
-        self._registry: Dict[str, Type] = {}
-        self._metadata: Dict[str, Dict[str, Any]] = {}
-    
-    def register(
-        self,
-        name: str,
-        cls: Type,
-        override: bool = False,
-        **metadata
-    ) -> Type:
-        """
-        Register a class in the registry.
-        
-        Args:
-            name: Name to register under
-            cls: Class to register
-            override: If True, allow overriding existing registration
-            **metadata: Additional metadata about the plugin
-            
-        Returns:
-            The registered class (for use as decorator)
-            
-        Raises:
-            ValueError: If name already registered and override=False
-            TypeError: If cls doesn't meet requirements
-        """
-        # Check for duplicate registration
-        if name in self._registry and not override:
-            raise ValueError(
-                f"'{name}' is already registered in {self.name} registry. "
-                f"Use override=True to replace it."
-            )
-        
-        # Validate class
-        self._validate(cls)
-        
-        # Register
-        self._registry[name] = cls
-        self._metadata[name] = {
-            'module': cls.__module__,
-            'qualname': cls.__qualname__,
-            **metadata
-        }
-        
-        return cls
-    
-    def get(self, name: str):
-        """
-        Retrieve a registered class by name.
-        """
-        if name in self._registry:
-            return self._registry[name]
+    def __init__(self, name):
+        self._name = name
+        self._items = OrderedDict()
+        self._metadata = {}
 
-        available = list(self._registry.keys())
+    def register(self, key, cls, override=False, **metadata):
+        if not isinstance(cls, type):
+            raise TypeError(f"{key} must be a class")
+        if key in self._items and not override:
+            raise ValueError(f"{key} already registered in {self._name}")
+        self._items[key] = cls
+        self._metadata[key] = metadata
 
-        if self.name == "models":
-            raise ModelNotFoundError(name, available=available)
-        else:
-            raise KeyError(
-                f"'{name}' not found in {self.name} registry. "
-                f"Available: {', '.join(available)}"
-            )
+    def get(self, key):
+        if key not in self._items:
+            raise KeyError(f"{key} not found in {self._name}")
+        return self._items[key]
 
-    
-    def has(self, name: str) -> bool:
-        """
-        Check if name is registered.
-        
-        Args:
-            name: Name to check
-            
-        Returns:
-            True if registered
-        """
-        return name in self._registry
-    
-    def list(self) -> List[str]:
-        """
-        List all registered names.
-        
-        Returns:
-            List of registered names
-        """
-        return sorted(self._registry.keys())
-    
-    def remove(self, name: str):
-        """
-        Remove a registration.
-        
-        Args:
-            name: Name to remove
-            
-        Raises:
-            KeyError: If name not found
-        """
-        if name not in self._registry:
-            raise KeyError(f"'{name}' not found in {self.name} registry")
-        
-        del self._registry[name]
-        del self._metadata[name]
-    
+    def remove(self, key):
+        self._items.pop(key, None)
+        self._metadata.pop(key, None)
+
     def clear(self):
-        """Clear all registrations"""
-        self._registry.clear()
+        self._items.clear()
         self._metadata.clear()
-    
-    def get_metadata(self, name: str) -> Dict[str, Any]:
-        """
-        Get metadata for a registered item.
-        
-        Args:
-            name: Registered name
-            
-        Returns:
-            Metadata dictionary
-        """
-        if name not in self._metadata:
-            raise KeyError(f"'{name}' not found in {self.name} registry")
-        
-        return self._metadata[name].copy()
-    
-    def _validate(self, cls: Type):
-        """
-        Validate a class before registration.
-        
-        Override in subclasses for namespace-specific validation.
-        
-        Args:
-            cls: Class to validate
-            
-        Raises:
-            TypeError: If validation fails
-        """
-        if not inspect.isclass(cls):
-            raise TypeError(f"Expected a class, got {type(cls)}")
-    
-    def __len__(self) -> int:
-        """Number of registered items"""
-        return len(self._registry)
-    
-    def __contains__(self, name: str) -> bool:
-        """Check if name is registered"""
-        return name in self._registry
-    
-    def __repr__(self) -> str:
-        """String representation"""
-        return f"Registry(name='{self.name}', items={len(self)})"
+
+    def has(self, key):
+        return key in self._items
+
+    def list(self):
+        return list(self._items.keys())
+
+    def get_metadata(self, key):
+        return self._metadata.get(key, {})
+
+    def __len__(self):
+        return len(self._items)
+
+
+# ------------------- Specific Registries -------------------
 
 
 class ModelRegistry(Registry):
-    """
-    Registry for models.
-    
-    Validates that registered classes inherit from BaseModel.
-    """
-    
-    def __init__(self):
-        super().__init__(name="models")
-    
-    def _validate(self, cls: Type):
-        super()._validate(cls)
-
-        required_methods = ['forward']
-        missing = [m for m in required_methods if not hasattr(cls, m)]
-
-        if missing:
+    def register(self, key, cls, override=False, **metadata):
+        # Use cls.__dict__ (not hasattr) so inherited methods don't satisfy
+        # the check — the subclass must explicitly define forward().
+        if "forward" not in cls.__dict__ or not callable(cls.__dict__["forward"]):
             from core.exceptions import PluginValidationError
-            raise PluginValidationError(
-                f"Model class validation failed",
-                plugin_name=cls.__name__,
-                missing_methods=missing
-            )
 
+            raise PluginValidationError(
+                f"{cls.__name__} must implement forward",
+                plugin_name=cls.__name__,
+                missing_methods=["forward"],
+            )
+        super().register(key, cls, override, **metadata)
+
+    def get(self, key):
+        if key not in self._items:
+            from core.exceptions import ModelNotFoundError
+
+            raise ModelNotFoundError(key, available=self.list())
+        return self._items[key]
 
 
 class TrainerRegistry(Registry):
-    """
-    Registry for trainers.
-    
-    Validates that registered classes inherit from BaseTrainer.
-    """
-    
-    def __init__(self):
-        super().__init__(name="trainers")
-    
-    def _validate(self, cls: Type):
-        """Validate trainer class"""
-        super()._validate(cls)
-        
-        # Check for required methods
-        required_methods = ['training_step', 'validation_step']
-        for method in required_methods:
-            if not hasattr(cls, method):
-                raise TypeError(
-                    f"Trainer class {cls.__name__} must implement {method}() method"
-                )
+    def register(self, key, cls, override=False, **metadata):
+        # Use cls.__dict__ so inherited training_step() doesn't count.
+        if "training_step" not in cls.__dict__ or not callable(cls.__dict__["training_step"]):
+            from core.exceptions import PluginValidationError
+
+            raise PluginValidationError(
+                f"{cls.__name__} must implement training_step",
+                plugin_name=cls.__name__,
+                missing_methods=["training_step"],
+            )
+        super().register(key, cls, override, **metadata)
 
 
 class PipelineRegistry(Registry):
-    """
-    Registry for pipelines.
-    
-    Validates that registered classes inherit from BasePipeline.
-    """
-    
-    def __init__(self):
-        super().__init__(name="pipelines")
-    
-    def _validate(self, cls: Type):
-        """Validate pipeline class"""
-        super()._validate(cls)
-        
-        # Check for required methods
-        required_methods = ['run']
-        for method in required_methods:
-            if not hasattr(cls, method):
-                raise TypeError(
-                    f"Pipeline class {cls.__name__} must implement {method}() method"
-                )
+    pass
 
 
 class DatasetRegistry(Registry):
-    """Registry for datasets"""
-    
-    def __init__(self):
-        super().__init__(name="datasets")
-    
-    def _validate(self, cls: Type):
-        """Validate dataset class"""
-        super()._validate(cls)
-        
-        # Check for required methods
-        required_methods = ['__len__', '__getitem__']
-        for method in required_methods:
-            if not hasattr(cls, method):
-                raise TypeError(
-                    f"Dataset class {cls.__name__} must implement {method}() method"
-                )
+    pass
 
 
-# Create global registry instances
-_MODEL_REGISTRY = ModelRegistry()
-_TRAINER_REGISTRY = TrainerRegistry()
-_PIPELINE_REGISTRY = PipelineRegistry()
-_DATASET_REGISTRY = DatasetRegistry()
+# Instantiate subclass registries so validation actually runs
+_MODEL_REGISTRY = ModelRegistry("models")
+_TRAINER_REGISTRY = TrainerRegistry("trainers")
+_PIPELINE_REGISTRY = PipelineRegistry("pipelines")
+_DATASET_REGISTRY = DatasetRegistry("datasets")
 
 
-# ==================== Decorator Functions ====================
-
-def register_model(name: str, **metadata):
-    """
-    Decorator to register a model.
-    
-    Args:
-        name: Name to register under
-        **metadata: Additional metadata
-        
-    Example:
-        >>> @register_model("my-gan")
-        >>> class MyGAN(BaseModel):
-        ...     def forward(self, x):
-        ...         return x
-    """
-    def decorator(cls: Type) -> Type:
-        _MODEL_REGISTRY.register(name, cls, **metadata)
+# ------------------- Decorators -------------------
+def register_model(key, **metadata):
+    def decorator(cls):
+        _MODEL_REGISTRY.register(key, cls, **metadata)
         return cls
+
     return decorator
 
 
-def register_trainer(name: str, **metadata):
-    """
-    Decorator to register a trainer.
-    
-    Args:
-        name: Name to register under
-        **metadata: Additional metadata
-        
-    Example:
-        >>> @register_trainer("my-trainer")
-        >>> class MyTrainer(BaseTrainer):
-        ...     def training_step(self, batch, idx):
-        ...         return {'loss': 0.0}
-    """
-    def decorator(cls: Type) -> Type:
-        _TRAINER_REGISTRY.register(name, cls, **metadata)
+def register_trainer(key, **metadata):
+    def decorator(cls):
+        _TRAINER_REGISTRY.register(key, cls, **metadata)
         return cls
+
     return decorator
 
 
-def register_pipeline(name: str, **metadata):
-    """
-    Decorator to register a pipeline.
-    
-    Args:
-        name: Name to register under
-        **metadata: Additional metadata
-    """
-    def decorator(cls: Type) -> Type:
-        _PIPELINE_REGISTRY.register(name, cls, **metadata)
+def register_pipeline(key, **metadata):
+    def decorator(cls):
+        _PIPELINE_REGISTRY.register(key, cls, **metadata)
         return cls
+
     return decorator
 
 
-def register_dataset(name: str, **metadata):
-    """
-    Decorator to register a dataset.
-    
-    Args:
-        name: Name to register under
-        **metadata: Additional metadata
-    """
-    def decorator(cls: Type) -> Type:
-        _DATASET_REGISTRY.register(name, cls, **metadata)
+def register_dataset(key, **metadata):
+    def decorator(cls):
+        _DATASET_REGISTRY.register(key, cls, **metadata)
         return cls
+
     return decorator
 
-_AUTO_DISCOVER = True  # Global flag for auto-discovery
 
-def set_auto_discover(enabled: bool):
-    """
-    Enable/disable automatic plugin discovery.
-    
-    Args:
-        enabled: If True, auto-discover plugins on first access
-    """
-    global _AUTO_DISCOVER
-    _AUTO_DISCOVER = enabled
-
-# ==================== Getter Functions ====================
-
-def get_model(name: str, auto_discover: Optional[bool] = None) -> Type:
-    """Get a registered model class."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()  # call the plugin discovery function
-    
-    return _MODEL_REGISTRY.get(name)
+# ------------------- Accessors: Models -------------------
+def get_model(key, auto_discover=True):
+    if auto_discover and _auto_discover:
+        discover_plugins()
+    return _MODEL_REGISTRY.get(key)
 
 
-def get_trainer(name: str, auto_discover: Optional[bool] = None) -> Type:
-    """Get a registered trainer class."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
-    return _TRAINER_REGISTRY.get(name)
-
-
-def get_pipeline(name: str, auto_discover: Optional[bool] = None) -> Type:
-    """Get a registered pipeline class."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
-    return _PIPELINE_REGISTRY.get(name)
-
-
-def get_dataset(name: str, auto_discover: Optional[bool] = None) -> Type:
-    """Get a registered dataset class."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
-    return _DATASET_REGISTRY.get(name)
-
-
-# ==================== List Functions ====================
-
-def list_models(auto_discover: Optional[bool] = None) -> List[str]:
-    """List all registered models."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
+def list_models(auto_discover=True):
+    if auto_discover and _auto_discover:
+        discover_plugins()
     return _MODEL_REGISTRY.list()
 
 
-def list_trainers(auto_discover: Optional[bool] = None) -> List[str]:
-    """List all registered trainers."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
+def has_model(key):
+    return _MODEL_REGISTRY.has(key)
+
+
+def get_model_metadata(key):
+    return _MODEL_REGISTRY.get_metadata(key)
+
+
+# ------------------- Accessors: Trainers -------------------
+def get_trainer(key):
+    return _TRAINER_REGISTRY.get(key)
+
+
+def list_trainers():
     return _TRAINER_REGISTRY.list()
 
 
-def list_pipelines(auto_discover: Optional[bool] = None) -> List[str]:
-    """List all registered pipelines."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
+def has_trainer(key):
+    return _TRAINER_REGISTRY.has(key)
+
+
+# ------------------- Accessors: Pipelines -------------------
+def get_pipeline(key):
+    return _PIPELINE_REGISTRY.get(key)
+
+
+def list_pipelines():
     return _PIPELINE_REGISTRY.list()
 
 
-def list_datasets(auto_discover: Optional[bool] = None) -> List[str]:
-    """List all registered datasets."""
-    should_discover = auto_discover if auto_discover is not None else _AUTO_DISCOVER
-    if should_discover:
-        _auto_discover_plugins()
-    
+def has_pipeline(key):
+    return _PIPELINE_REGISTRY.has(key)
+
+
+# ------------------- Accessors: Datasets -------------------
+def get_dataset(key):
+    return _DATASET_REGISTRY.get(key)
+
+
+def list_datasets():
     return _DATASET_REGISTRY.list()
 
-# ==================== Has Functions ====================
 
-def has_model(name: str) -> bool:
-    """Check if model is registered"""
-    return _MODEL_REGISTRY.has(name)
+def has_dataset(key):
+    return _DATASET_REGISTRY.has(key)
 
 
-def has_trainer(name: str) -> bool:
-    """Check if trainer is registered"""
-    return _TRAINER_REGISTRY.has(name)
-
-
-def has_pipeline(name: str) -> bool:
-    """Check if pipeline is registered"""
-    return _PIPELINE_REGISTRY.has(name)
-
-
-def has_dataset(name: str) -> bool:
-    """Check if dataset is registered"""
-    return _DATASET_REGISTRY.has(name)
-
-# ==================== Plugin Discovery ====================
-
-_PLUGINS_DISCOVERED = False
-_DISCOVERY_CACHE = set()
-
-
-def discover_plugins(
-    plugins_dir: PathLike = "plugins",
-    recursive: bool = True,
-    force: bool = False
-) -> Dict[str, List[str]]:
-    """
-    Discover and import plugins from directory.
-    
-    Scans the plugins directory for Python files and imports them.
-    Registration happens automatically via decorators.
-    
-    Args:
-        plugins_dir: Directory to scan for plugins
-        recursive: If True, scan subdirectories
-        force: If True, re-discover even if already done
-        
-    Returns:
-        Dictionary mapping registry names to newly discovered items
-        
-    Example:
-        >>> discovered = discover_plugins("plugins")
-        >>> print(f"Found {len(discovered['models'])} new models")
-    """
-    global _PLUGINS_DISCOVERED, _DISCOVERY_CACHE
-    
-    if _PLUGINS_DISCOVERED and not force:
-        return {
-            'models': [],
-            'trainers': [],
-            'pipelines': [],
-            'datasets': []
-        }
-    
-    plugins_path = Path(plugins_dir)
-    
-    if not plugins_path.exists():
-        warnings.warn(f"Plugins directory not found: {plugins_path}")
-        return {
-            'models': [],
-            'trainers': [],
-            'pipelines': [],
-            'datasets': []
-        }
-    
-    # Get counts before discovery
-    before_counts = {
-        'models': len(_MODEL_REGISTRY),
-        'trainers': len(_TRAINER_REGISTRY),
-        'pipelines': len(_PIPELINE_REGISTRY),
-        'datasets': len(_DATASET_REGISTRY),
-    }
-    
-    # Find all Python files
-    if recursive:
-        python_files = list(plugins_path.rglob("*.py"))
-    else:
-        python_files = list(plugins_path.glob("*.py"))
-    
-    # Filter out __init__.py and already discovered
-    python_files = [
-        f for f in python_files
-        if f.name != '__init__.py' and str(f) not in _DISCOVERY_CACHE
-    ]
-    
-    # Import each file
-    for py_file in python_files:
-        _import_plugin_file(py_file, plugins_path)
-        _DISCOVERY_CACHE.add(str(py_file))
-    
-    # Mark as discovered
-    _PLUGINS_DISCOVERED = True
-    
-    # Get counts after discovery
-    after_counts = {
-        'models': len(_MODEL_REGISTRY),
-        'trainers': len(_TRAINER_REGISTRY),
-        'pipelines': len(_PIPELINE_REGISTRY),
-        'datasets': len(_DATASET_REGISTRY),
-    }
-    
-    # Calculate newly discovered
-    newly_discovered = {
-        key: _get_new_items(key, before_counts[key])
-        for key in before_counts.keys()
-    }
-    
-    return newly_discovered
-
-
-def _import_plugin_file(file_path: Path, base_path: Path):
-    """
-    Import a plugin file using direct path loading.
-    This works for temporary directories and test environments.
-    """
-    import importlib.util
-    import sys
-    import warnings
-
-    try:
-        module_name = f"_frameworm_plugin_{file_path.stem}_{abs(hash(str(file_path)))}"
-
-        spec = importlib.util.spec_from_file_location(module_name, file_path)
-        module = importlib.util.module_from_spec(spec)
-
-        sys.modules[module_name] = module
-        spec.loader.exec_module(module)
-
-    except Exception as e:
-        warnings.warn(
-            f"Failed to import plugin {file_path}: {e}",
-            ImportWarning
-        )
-
-def _get_new_items(registry_name: str, old_count: int) -> List[str]:
-    """Return all current items in the registry."""
-    registry_map = {
-        'models': _MODEL_REGISTRY,
-        'trainers': _TRAINER_REGISTRY,
-        'pipelines': _PIPELINE_REGISTRY,
-        'datasets': _DATASET_REGISTRY,
-    }
-
-    registry = registry_map[registry_name]
-    return registry.list()
-
-    if len(all_items) > old_count:
-        # Return the new ones (assumes they're at the end when sorted)
-        return all_items[old_count:]
-    return []
-
-
-def reset_discovery():
-    """
-    Reset plugin discovery state.
-    
-    Useful for testing or when plugins directory changes.
-    """
-    global _PLUGINS_DISCOVERED, _DISCOVERY_CACHE
-    _PLUGINS_DISCOVERED = False
-    _DISCOVERY_CACHE.clear()
-
-
-def auto_discover():
-    """
-    Automatically discover plugins if not already done.
-    
-    This is called automatically when getting/listing plugins
-    if auto-discovery is enabled.
-    """
-    discover_plugins()
-
-def _auto_discover_plugins():
-    """Internal helper to discover plugins"""
-    discover_plugins()
-
-def get_model_metadata(name: str) -> Dict[str, Any]:
-    """Get metadata for a registered model"""
-    return _MODEL_REGISTRY.get_metadata(name)
-
-
-def get_trainer_metadata(name: str) -> Dict[str, Any]:
-    """Get metadata for a registered trainer"""
-    return _TRAINER_REGISTRY.get_metadata(name)
-
-
-def search_models(query: str) -> List[str]:
-    """
-    Search for models by name.
-    
-    Args:
-        query: Search query (case-insensitive substring match)
-        
-    Returns:
-        List of matching model names
-    """
-    auto_discover()
-    all_models = _MODEL_REGISTRY.list()
+# ------------------- Search & Summary -------------------
+def search_models(query: str):
     query_lower = query.lower()
-    return [name for name in all_models if query_lower in name.lower()]
-
-
-def search_trainers(query: str) -> List[str]:
-    """Search for trainers by name"""
-    auto_discover()
-    all_trainers = _TRAINER_REGISTRY.list()
-    query_lower = query.lower()
-    return [name for name in all_trainers if query_lower in name.lower()]
+    return [k for k in _MODEL_REGISTRY.list() if query_lower in k.lower()]
 
 
 def print_registry_summary():
-    """
-    Print a summary of all registries.
-    
-    Useful for debugging and seeing what's available.
-    """
-    auto_discover()
-    
-    print("\nFrameworm Registry Summary")
-    print("=" * 60)
-    
-    print(f"\nModels ({len(_MODEL_REGISTRY)}):")
-    for name in list_models(auto_discover=False):
-        metadata = _MODEL_REGISTRY.get_metadata(name)
-        print(f"  - {name} ({metadata['module']})")
-    
-    print(f"\nTrainers ({len(_TRAINER_REGISTRY)}):")
-    for name in list_trainers(auto_discover=False):
-        metadata = _TRAINER_REGISTRY.get_metadata(name)
-        print(f"  - {name} ({metadata['module']})")
-    
-    print(f"\nPipelines ({len(_PIPELINE_REGISTRY)}):")
-    for name in list_pipelines(auto_discover=False):
-        metadata = _PIPELINE_REGISTRY.get_metadata(name)
-        print(f"  - {name} ({metadata['module']})")
-    
-    print(f"\nDatasets ({len(_DATASET_REGISTRY)}):")
-    for name in list_datasets(auto_discover=False):
-        metadata = _DATASET_REGISTRY.get_metadata(name)
-        print(f"  - {name} ({metadata['module']})")
-    
-    print("=" * 60 + "\n")
+    print("Models:", list_models(auto_discover=False))
+    print("Trainers:", list_trainers())
+    print("Pipelines:", list_pipelines())
+    print("Datasets:", list_datasets())
 
 
-def create_model_from_config(config) -> Any:
+# ------------------- Plugin Discovery -------------------
+_auto_discover = True
+_discovered_paths = set()
+_extra_plugin_paths: list = []
+
+
+def set_auto_discover(value: bool):
+    global _auto_discover
+    _auto_discover = value
+
+
+def reset_discovery():
+    global _discovered_paths
+    _discovered_paths.clear()
+
+
+def add_plugin_path(path) -> None:
+    """Register an additional directory to scan during auto-discovery."""
+    from pathlib import Path
+
+    resolved = Path(path).resolve()
+    if resolved not in _extra_plugin_paths:
+        _extra_plugin_paths.append(resolved)
+
+
+def remove_plugin_path(path) -> None:
+    """Remove a previously registered extra plugin path."""
+    from pathlib import Path
+
+    resolved = Path(path).resolve()
+    if resolved in _extra_plugin_paths:
+        _extra_plugin_paths.remove(resolved)
+
+
+def clear_plugin_paths() -> None:
+    """Remove all extra plugin paths."""
+    _extra_plugin_paths.clear()
+
+
+def _discover_one(path, recursive: bool = False, force: bool = False) -> dict:
     """
-    Create a model instance from config.
-    
-    The config must have a 'type' field specifying the model name.
-    
-    Args:
-        config: Config object with 'type' field
-        
-    Returns:
-        Model instance
-        
-    Example:
-        >>> config = Config.from_template('gan')
-        >>> config.model.type = 'my-registered-model'
-        >>> model = create_model_from_config(config)
+    Internal: discover plugins in a single directory.
+    Returns dict of newly registered keys per category.
     """
-    if not hasattr(config, 'model') or not hasattr(config.model, 'type'):
-        raise ValueError(
-            "Config must have 'model.type' field specifying model name"
-        )
-    
-    model_name = config.model.type
-    model_class = get_model(model_name)
-    return model_class(config)
+    import sys
+    import time
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(path).resolve()
+
+    if force:
+        _discovered_paths.discard(path)
+
+    if path in _discovered_paths:
+        return {"models": [], "trainers": [], "pipelines": [], "datasets": []}
+
+    if not path.exists():
+        return {"models": [], "trainers": [], "pipelines": [], "datasets": []}
+
+    # Ensure project root is on sys.path so plugin imports resolve correctly.
+    cwd = str(Path.cwd())
+    inserted = False
+    if cwd not in sys.path:
+        sys.path.insert(0, cwd)
+        inserted = True
+
+    py_files = list(path.rglob("*.py") if recursive else path.glob("*.py"))
+
+    # Snapshot registry keys BEFORE loading so we can diff afterwards.
+    # On force re-discovery the models are already registered, so we use an
+    # EMPTY baseline — everything in the registry after loading is "discovered".
+    # On normal discovery we diff against what was there before.
+    if force:
+        before = {
+            "models": set(),
+            "trainers": set(),
+            "pipelines": set(),
+            "datasets": set(),
+        }
+    else:
+        before = {
+            "models": set(_MODEL_REGISTRY.list()),
+            "trainers": set(_TRAINER_REGISTRY.list()),
+            "pipelines": set(_PIPELINE_REGISTRY.list()),
+            "datasets": set(_DATASET_REGISTRY.list()),
+        }
+
+    for f in py_files:
+        if f.name == "__init__.py":
+            continue
+        # On force, use a time-based suffix so Python's module cache never
+        # returns a stale module — the file always re-executes fresh.
+        if force:
+            unique_name = f"_plugin_{f.stem}_{abs(hash(str(f)))}_{time.time_ns()}"
+        else:
+            unique_name = f"_plugin_{f.stem}_{abs(hash(str(f)))}"
+        try:
+            spec = importlib.util.spec_from_file_location(unique_name, f)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        except ValueError:
+            # Duplicate registration on non-force run: already registered,
+            # will be captured by the diff below — nothing to do.
+            pass
+        except Exception as e:
+            warnings.warn(f"Failed to import {f}: {e}", ImportWarning)
+
+    if inserted:
+        sys.path.remove(cwd)
+
+    _discovered_paths.add(path)
+
+    return {
+        "models": [k for k in _MODEL_REGISTRY.list() if k not in before["models"]],
+        "trainers": [k for k in _TRAINER_REGISTRY.list() if k not in before["trainers"]],
+        "pipelines": [k for k in _PIPELINE_REGISTRY.list() if k not in before["pipelines"]],
+        "datasets": [k for k in _DATASET_REGISTRY.list() if k not in before["datasets"]],
+    }
+
+
+def discover_plugins(path=None, recursive=False, force=False):
+    """
+    Discover plugin Python files and import them.
+
+    If `path` is given, only that directory is scanned.
+    If `path` is None (auto-discovery), scans:
+      1. <cwd>/plugins
+      2. Any paths registered via add_plugin_path()
+
+    Returns a dict with keys 'models', 'trainers', 'pipelines', 'datasets',
+    each containing the registry keys newly registered in this call.
+    """
+    from pathlib import Path
+
+    if path is not None:
+        return _discover_one(path, recursive=recursive, force=force)
+
+    combined = {"models": [], "trainers": [], "pipelines": [], "datasets": []}
+    for p in [Path.cwd() / "plugins"] + list(_extra_plugin_paths):
+        result = _discover_one(p, recursive=recursive, force=force)
+        for category in combined:
+            combined[category].extend(result[category])
+
+    return combined

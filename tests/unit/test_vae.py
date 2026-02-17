@@ -4,22 +4,17 @@ from types import SimpleNamespace
 from models.vae.vanilla import VAE
 import torch
 
+
 # -----------------------------
 # Dummy Config for testing
 # -----------------------------
 class DummyConfig:
     def __init__(self):
         # model must have latent_dim and channels
-        self.model = SimpleNamespace(
-            latent_dim=16,
-            channels=3
-        )
+        self.model = SimpleNamespace(latent_dim=16, channels=3)
         # Add other configs if needed
-        self.training = SimpleNamespace(
-            lr=0.001,
-            beta1=0.9,
-            beta2=0.999
-        )
+        self.training = SimpleNamespace(lr=0.001, beta1=0.9, beta2=0.999)
+
 
 # -----------------------------
 # Dummy VAE patch for init_weights
@@ -28,6 +23,7 @@ class TestVAE(VAE):
     def init_weights(self):
         # Override original call for testing
         pass
+
 
 # -----------------------------
 # Pytest Fixture
@@ -38,6 +34,7 @@ def vae_model():
     model = TestVAE(cfg)
     return model
 
+
 # -----------------------------
 # Tests
 # -----------------------------
@@ -46,7 +43,8 @@ def test_forward_pass(vae_model):
     out = vae_model(x)
     assert out is not None
     # You can assert shapes if your VAE returns reconstruction and latent
-    # assert out[0].shape == x.shape  
+    # assert out[0].shape == x.shape
+
 
 def test_loss_computation(vae_model):
     x = torch.randn(2, 3, 32, 32)
@@ -56,6 +54,7 @@ def test_loss_computation(vae_model):
     kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
     loss = recon_loss + kl_loss
     assert loss.item() >= 0
+
 
 def test_sampling(vae_model):
     z = torch.randn(2, vae_model.latent_dim)

@@ -1,6 +1,7 @@
 """
 Test discover_plugins to see if it's finding files
 """
+
 import sys
 import os
 from pathlib import Path
@@ -36,7 +37,7 @@ for f in python_files:
     print(f"   - {f}")
 
 # Step 3: Filter out __init__.py
-filtered = [f for f in python_files if f.name != '__init__.py']
+filtered = [f for f in python_files if f.name != "__init__.py"]
 print(f"\n3. After filtering __init__.py: {len(filtered)} files")
 for f in filtered:
     print(f"   - {f}")

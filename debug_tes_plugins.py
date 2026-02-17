@@ -1,6 +1,7 @@
 """
 Test plugin discovery with detailed logging
 """
+
 import sys
 import os
 from pathlib import Path
@@ -28,6 +29,7 @@ if os.path.exists(TEST_PLUGIN_DIR):
 print("\n2. Testing module path calculation...")
 
 from pathlib import Path
+
 plugin_file = Path(TEST_PLUGIN_DIR) / "plugin_model.py"
 base_path = Path(TEST_PLUGIN_DIR)
 
@@ -38,7 +40,7 @@ print(f"   CWD: {Path.cwd()}")
 # What the fixed code should do
 relative_path = plugin_file.relative_to(Path.cwd())
 module_parts = list(relative_path.parts[:-1]) + [relative_path.stem]
-module_name = '.'.join(module_parts)
+module_name = ".".join(module_parts)
 
 print(f"   Relative path: {relative_path}")
 print(f"   Module parts: {module_parts}")
@@ -49,7 +51,7 @@ print(f"\n3. Testing manual import of '{module_name}'...")
 try:
     import importlib
     import sys
-    
+
     if module_name in sys.modules:
         print(f"   Module already in sys.modules, reloading...")
         importlib.reload(sys.modules[module_name])
@@ -57,45 +59,48 @@ try:
         print(f"   Importing module for first time...")
         mod = importlib.import_module(module_name)
         print(f"   ✓ Import successful: {mod}")
-    
+
     from core.registry import list_models
+
     models = list_models(auto_discover=False)
     print(f"   Models after import: {models}")
-    
+
     if "test-plugin-model" in models:
         print("   ✓✓ SUCCESS: Model registered!")
     else:
         print("   ✗ Model not registered even after import")
-        
+
 except Exception as e:
     print(f"   ✗ Import failed: {e}")
     import traceback
+
     traceback.print_exc()
 
 # Step 4: Test discover_plugins function
 print("\n4. Testing discover_plugins() function...")
 try:
     from core.registry import discover_plugins, reset_discovery, list_models
-    
+
     reset_discovery()
     print("   Registry reset")
-    
+
     # Enable verbose mode by monkey-patching
     discovered = discover_plugins(TEST_PLUGIN_DIR)
     print(f"   Discovered result: {discovered}")
-    
+
     models = list_models(auto_discover=False)
     print(f"   Models in registry: {models}")
-    
+
     if "test-plugin-model" in models:
         print("   ✓✓ SUCCESS: discover_plugins() works!")
     else:
         print("   ✗ discover_plugins() didn't register the model")
         print("   This means _import_plugin_file is failing silently")
-        
+
 except Exception as e:
     print(f"   ✗ Error: {e}")
     import traceback
+
     traceback.print_exc()
 
 # Step 5: Add verbose logging to see what's happening

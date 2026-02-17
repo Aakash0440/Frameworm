@@ -6,7 +6,6 @@ from experiment.experiment import Experiment
 from training.trainer import Trainer
 
 
-
 def test_trainer_experiment_integration(tmp_path):
     """
     Integration test for Trainer + Experiment logging.
@@ -26,7 +25,7 @@ def test_trainer_experiment_integration(tmp_path):
             return self.fc(x)
 
         def compute_loss(self, x, y):
-            return {'loss': nn.MSELoss()(self.forward(x), y)}
+            return {"loss": nn.MSELoss()(self.forward(x), y)}
 
     # Dummy dataset
     X = torch.randn(50, 10)
@@ -37,16 +36,12 @@ def test_trainer_experiment_integration(tmp_path):
     root_dir = tmp_path / "test_experiments"
 
     # Create experiment
-    exp = Experiment(
-        name="trainer-test",
-        config={'lr': 0.001},
-        root_dir=str(root_dir)
-    )
+    exp = Experiment(name="trainer-test", config={"lr": 0.001}, root_dir=str(root_dir))
 
     # Setup trainer
     model = Model()
     optimizer = torch.optim.Adam(model.parameters())
-    trainer = Trainer(model, optimizer, device='cpu')
+    trainer = Trainer(model, optimizer, device="cpu")
     trainer.set_experiment(exp)
 
     # Run training inside experiment context

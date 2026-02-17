@@ -4,6 +4,7 @@ from graph.graph import Graph, Node
 from models.gan.dcgan import DCGAN
 from models.vae.vanilla import VAE
 
+
 class TestCompleteWorkflow:
 
     def test_model_pipeline_integration(self):
@@ -14,7 +15,7 @@ class TestCompleteWorkflow:
 
         # Node functions
         def create_model():
-            cfg = Config('configs/models/gan/dcgan.yaml')
+            cfg = Config("configs/models/gan/dcgan.yaml")
             return DCGAN(cfg)
 
         def generate(model):
@@ -43,15 +44,14 @@ class TestCompleteWorkflow:
 
         # Load models
         def load_dcgan():
-            cfg = Config('configs/models/gan/dcgan.yaml')
+            cfg = Config("configs/models/gan/dcgan.yaml")
             return DCGAN(cfg)
 
         def load_vae():
-            cfg = Config('configs/models/vae/vanilla.yaml')
+            cfg = Config("configs/models/vae/vanilla.yaml")
             # Patch removed call to init_weights if needed
             # VAE will initialize weights internally
             return VAE(cfg)
-
 
         # Generate outputs
         def gen_dcgan(model):
@@ -62,10 +62,7 @@ class TestCompleteWorkflow:
 
         # Compare outputs
         def compare(dcgan_out, vae_out):
-            return {
-                'dcgan_mean': dcgan_out.mean().item(),
-                'vae_mean': vae_out.mean().item()
-            }
+            return {"dcgan_mean": dcgan_out.mean().item(), "vae_mean": vae_out.mean().item()}
 
         # Add nodes
         graph.add_node(Node("dcgan", load_dcgan))

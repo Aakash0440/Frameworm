@@ -25,7 +25,7 @@ class TestFinalVerification:
 
     def test_config_system_basic(self):
         """Config system should load YAML and coerce types"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write('value: "123"\nenabled: "true"')
             cfg_path = f.name
 
@@ -39,8 +39,8 @@ class TestFinalVerification:
 
     def test_type_system(self):
         """Type system checks"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
-            f.write('key: value')
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write("key: value")
             cfg_path = f.name
 
         cfg = Config(cfg_path)
@@ -51,6 +51,6 @@ class TestFinalVerification:
 
     def test_template_system(self):
         """Config.from_template should return a valid Config"""
-        cfg = Config.from_template('gan')
+        cfg = Config.from_template("gan")
         assert isinstance(cfg, Config)
-        assert hasattr(cfg, 'model') or hasattr(cfg, 'training')
+        assert hasattr(cfg, "model") or hasattr(cfg, "training")

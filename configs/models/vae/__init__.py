@@ -2,4 +2,4 @@
 
 from models.vae.vanilla import VAE
 
-__all__ = ['VAE']
+__all__ = ["VAE"]

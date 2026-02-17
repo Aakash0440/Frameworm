@@ -1,4 +1,3 @@
-
 """
 Project initialization.
 """
@@ -8,20 +7,20 @@ import shutil
 from click import echo
 
 
-def create_project(project_path: Path, template: str = 'basic'):
+def create_project(project_path: Path, template: str = "basic"):
     """Create new FRAMEWORM project"""
-    
+
     # Create directory structure
     project_path.mkdir(parents=True, exist_ok=True)
-    
-    (project_path / 'configs').mkdir(exist_ok=True)
-    (project_path / 'data').mkdir(exist_ok=True)
-    (project_path / 'experiments').mkdir(exist_ok=True)
-    (project_path / 'checkpoints').mkdir(exist_ok=True)
-    (project_path / 'scripts').mkdir(exist_ok=True)
-    
+
+    (project_path / "configs").mkdir(exist_ok=True)
+    (project_path / "data").mkdir(exist_ok=True)
+    (project_path / "experiments").mkdir(exist_ok=True)
+    (project_path / "checkpoints").mkdir(exist_ok=True)
+    (project_path / "scripts").mkdir(exist_ok=True)
+
     # Create README
-    readme = project_path / 'README.md'
+    readme = project_path / "README.md"
     readme.write_text(f"""# {project_path.name}
 
 FRAMEWORM project created with template: {template}
@@ -49,9 +48,9 @@ frameworm serve exported/model.pt
 - `checkpoints/` - Model checkpoints
 - `scripts/` - Custom scripts
 """)
-    
+
     # Create basic config
-    config = project_path / 'configs' / 'config.yaml'
+    config = project_path / "configs" / "config.yaml"
     config.write_text(f"""# FRAMEWORM Configuration
 
 model:
@@ -69,9 +68,9 @@ data:
   root: data/
   image_size: 64
 """)
-    
+
     # Create .gitignore
-    gitignore = project_path / '.gitignore'
+    gitignore = project_path / ".gitignore"
     gitignore.write_text("""__pycache__/
 *.pyc
 *.pyo
@@ -87,7 +86,7 @@ experiments/
 checkpoints/
 .DS_Store
 """)
-    
+
     echo(f"✓ Created directory structure")
     echo(f"✓ Created README.md")
     echo(f"✓ Created config.yaml")

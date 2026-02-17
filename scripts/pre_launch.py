@@ -65,6 +65,17 @@ check("Getting started guide exists", lambda: Path("docs/getting-started/quickst
 
 # ---------------- CLI ----------------
 print("\n💻 CLI")
+
+
+def check_cli():
+    result = subprocess.run(
+        [sys.executable, "cli/main.py", "--help"], capture_output=True, text=True
+    )
+    print("CLI stdout:\n", result.stdout)
+    print("CLI stderr:\n", result.stderr)
+    return result.returncode == 0
+
+
 cli_result = subprocess.run(
     [sys.executable, "cli/main.py", "--help"], capture_output=True, text=True
 )
@@ -81,22 +92,16 @@ try:
     from core.registry import get_model
 
     check("Config imports", lambda: True)
-
     try:
-        # FIX: import the VAE module so @register_model("vae") decorator fires
-        # before we try to look it up in the registry.
-        from models.vae.vanilla import VAE
-
-        check("Model registry works", lambda: get_model("vae", auto_discover=False) is not None)
+        check("Model registry works", lambda: get_model("vae") is not None)
     except Exception as e:
         print("Error in get_model:", e)
         traceback.print_exc()
-        checks_failed += 1
-
+        check("Model registry works", lambda: False)
 except Exception as e:
     print("Error importing core:", e)
     traceback.print_exc()
-    checks_failed += 1
+    check("Core imports", lambda: False)
 
 try:
     from training import Trainer

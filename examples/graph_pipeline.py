@@ -47,42 +47,42 @@ def visualize(metrics, eval_results):
 def main():
     print("Graph Pipeline Example")
     print("=" * 60)
-    
+
     # Create pipeline
-    config = Config.from_template('gan')  # Dummy config
+    config = Config.from_template("gan")  # Dummy config
     pipeline = GraphPipeline(config)
-    
+
     # Define workflow
     pipeline.add_step("load", load_data)
     pipeline.add_step("preprocess", preprocess, depends_on=["load"])
     pipeline.add_step("train", train_model, depends_on=["preprocess"])
     pipeline.add_step("evaluate", evaluate_model, depends_on=["preprocess", "train"])
     pipeline.add_step("visualize", visualize, depends_on=["train", "evaluate"])
-    
+
     # Show execution plan
     print("\nExecution Plan:")
     for i, step in enumerate(pipeline.get_execution_plan(), 1):
         print(f"  {i}. {step}")
-    
+
     # Execute
     print("\nExecuting Pipeline:")
     print("-" * 60)
-    
+
     start = time.time()
     results = pipeline.run()
     duration = time.time() - start
-    
+
     print("-" * 60)
     print(f"\n✓ Pipeline completed in {duration:.2f}s")
-    
+
     # Show results
     print("\nResults:")
     for step_id, result in results.items():
         print(f"  {step_id}: {result}")
-    
+
     print("\n" + "=" * 60)
     print("Example complete!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

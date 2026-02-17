@@ -1,4 +1,3 @@
-
 """Comprehensive tests for plugin registry system"""
 
 import pytest
@@ -20,6 +19,7 @@ from core.registry import (
     list_models,
     list_trainers,
     has_model,
+    has_trainer,
     discover_plugins,
     reset_discovery,
     set_auto_discover,
@@ -28,6 +28,7 @@ from core.registry import (
     _MODEL_REGISTRY,
     _TRAINER_REGISTRY,
 )
+from core.exceptions import PluginValidationError  # FIX: import for validation tests
 from models.base import BaseModel
 from trainers.base import BaseTrainer
 from pipelines.base import BasePipeline
@@ -35,209 +36,192 @@ from pipelines.base import BasePipeline
 
 class TestRegistry:
     """Test base Registry class"""
-    
+
     def setup_method(self):
-        """Setup for each test"""
         self.registry = Registry("test")
-    
+
     def test_registration(self):
-        """Should register classes"""
         class TestClass:
             pass
-        
+
         self.registry.register("test-item", TestClass)
         assert self.registry.has("test-item")
         assert self.registry.get("test-item") == TestClass
-    
+
     def test_duplicate_registration(self):
-        """Should raise error on duplicate registration"""
         class TestClass1:
             pass
+
         class TestClass2:
             pass
-        
+
         self.registry.register("test-item", TestClass1)
-        
         with pytest.raises(ValueError, match="already registered"):
             self.registry.register("test-item", TestClass2)
-    
+
     def test_override_registration(self):
-        """Should allow override if specified"""
         class TestClass1:
             pass
+
         class TestClass2:
             pass
-        
+
         self.registry.register("test-item", TestClass1)
         self.registry.register("test-item", TestClass2, override=True)
-        
         assert self.registry.get("test-item") == TestClass2
-    
+
     def test_get_nonexistent(self):
-        """Should raise error for nonexistent item"""
         with pytest.raises(KeyError, match="not found"):
             self.registry.get("nonexistent")
-    
+
     def test_list(self):
-        """Should list all registered items"""
         class TestClass1:
             pass
+
         class TestClass2:
             pass
-        
+
         self.registry.register("item1", TestClass1)
         self.registry.register("item2", TestClass2)
-        
         items = self.registry.list()
         assert "item1" in items
         assert "item2" in items
         assert len(items) == 2
-    
+
     def test_remove(self):
-        """Should remove registration"""
         class TestClass:
             pass
-        
+
         self.registry.register("test-item", TestClass)
         assert self.registry.has("test-item")
-        
         self.registry.remove("test-item")
         assert not self.registry.has("test-item")
-    
+
     def test_clear(self):
-        """Should clear all registrations"""
         class TestClass:
             pass
-        
+
         self.registry.register("item1", TestClass)
         self.registry.register("item2", TestClass)
         assert len(self.registry) == 2
-        
         self.registry.clear()
         assert len(self.registry) == 0
-    
+
     def test_metadata(self):
-        """Should store and retrieve metadata"""
         class TestClass:
             pass
-        
-        self.registry.register(
-            "test-item",
-            TestClass,
-            version="1.0",
-            author="test"
-        )
-        
+
+        self.registry.register("test-item", TestClass, version="1.0", author="test")
         metadata = self.registry.get_metadata("test-item")
-        assert metadata['version'] == "1.0"
-        assert metadata['author'] == "test"
+        assert metadata["version"] == "1.0"
+        assert metadata["author"] == "test"
 
 
 class TestModelRegistry:
     """Test ModelRegistry validation"""
-    
+
     def setup_method(self):
-        """Setup for each test"""
         _MODEL_REGISTRY.clear()
         reset_discovery()
-    
+
     def test_valid_model_registration(self):
-        """Should register valid model"""
         @register_model("test-model")
         class TestModel(BaseModel):
             def __init__(self, config):
                 super().__init__(config)
+
             def forward(self, x):
                 return x
-        
+
         assert has_model("test-model")
         assert get_model("test-model") == TestModel
-    
+
     def test_invalid_model_no_forward(self):
         """Should reject model without forward()"""
-        with pytest.raises(TypeError, match="must implement forward"):
+        # FIX: registry now raises PluginValidationError, not TypeError
+        with pytest.raises(PluginValidationError, match="must implement forward"):
+
             @register_model("invalid-model")
             class InvalidModel(BaseModel):
                 def __init__(self, config):
                     super().__init__(config)
+
                 # Missing forward()
-    
+
     def test_model_metadata(self):
-        """Should store model metadata"""
         @register_model("test-model", version="2.0", author="tester")
         class TestModel(BaseModel):
             def __init__(self, config):
                 super().__init__(config)
+
             def forward(self, x):
                 return x
-        
+
         from core.registry import get_model_metadata
+
         metadata = get_model_metadata("test-model")
-        assert metadata['version'] == "2.0"
-        assert metadata['author'] == "tester"
+        assert metadata["version"] == "2.0"
+        assert metadata["author"] == "tester"
 
 
 class TestTrainerRegistry:
     """Test TrainerRegistry validation"""
-    
+
     def setup_method(self):
-        """Setup for each test"""
         _TRAINER_REGISTRY.clear()
         reset_discovery()
-    
+
     def test_valid_trainer_registration(self):
-        """Should register valid trainer"""
         @register_trainer("test-trainer")
         class TestTrainer(BaseTrainer):
             def __init__(self, model, config):
                 super().__init__(model, config)
+
             def training_step(self, batch, idx):
-                return {'loss': 0.0}
+                return {"loss": 0.0}
+
             def validation_step(self, batch, idx):
-                return {'loss': 0.0}
-        
+                return {"loss": 0.0}
+
         assert has_trainer("test-trainer")
         from core import get_trainer
+
         assert get_trainer("test-trainer") == TestTrainer
-    
+
     def test_invalid_trainer_no_training_step(self):
         """Should reject trainer without training_step()"""
-        with pytest.raises(TypeError, match="must implement training_step"):
+        # FIX: registry now raises PluginValidationError, not TypeError
+        with pytest.raises(PluginValidationError, match="must implement training_step"):
+
             @register_trainer("invalid-trainer")
             class InvalidTrainer(BaseTrainer):
                 def __init__(self, model, config):
                     super().__init__(model, config)
+
                 def validation_step(self, batch, idx):
                     return {}
+
                 # Missing training_step()
 
 
 class TestPluginDiscovery:
     """Test plugin discovery system"""
-    
+
     def setup_method(self):
-        """Setup test plugins directory"""
         self.test_dir = Path(tempfile.mkdtemp())
         self.plugins_dir = self.test_dir / "test_plugins"
         self.plugins_dir.mkdir()
-        
-        # Create __init__.py
         (self.plugins_dir / "__init__.py").write_text("")
-        
-        # Clear registries
         _MODEL_REGISTRY.clear()
         reset_discovery()
-        set_auto_discover(False)  # Disable auto-discovery for tests
-    
+        set_auto_discover(False)
+
     def teardown_method(self):
-        """Cleanup test directory"""
         shutil.rmtree(self.test_dir)
         reset_discovery()
-    
+
     def test_discover_single_plugin(self):
-        """Should discover single plugin file"""
-        # Create a test plugin
-        plugin_code = '''
+        plugin_code = """
 from models.base import BaseModel
 from core.registry import register_model
 
@@ -247,21 +231,15 @@ class DiscoveredModel(BaseModel):
         super().__init__(config)
     def forward(self, x):
         return x
-'''
+"""
         (self.plugins_dir / "test_model.py").write_text(plugin_code)
-        
-        # Discover plugins
         discovered = discover_plugins(self.plugins_dir)
-        
-        # Check discovery
-        assert len(discovered['models']) > 0
+        assert len(discovered["models"]) > 0
         assert has_model("discovered-model")
-    
+
     def test_discover_multiple_plugins(self):
-        """Should discover multiple plugins"""
-        # Create multiple plugin files
         for i in range(3):
-            plugin_code = f'''
+            plugin_code = f"""
 from models.base import BaseModel
 from core.registry import register_model
 
@@ -271,26 +249,18 @@ class Model{i}(BaseModel):
         super().__init__(config)
     def forward(self, x):
         return x
-'''
+"""
             (self.plugins_dir / f"model_{i}.py").write_text(plugin_code)
-        
-        # Discover
-        discovered = discover_plugins(self.plugins_dir)
-        
-        # Check all discovered
+        discover_plugins(self.plugins_dir)
         assert has_model("model-0")
         assert has_model("model-1")
         assert has_model("model-2")
-    
+
     def test_discover_recursive(self):
-        """Should discover plugins in subdirectories"""
-        # Create subdirectory
         subdir = self.plugins_dir / "subdir"
         subdir.mkdir()
         (subdir / "__init__.py").write_text("")
-        
-        # Create plugin in subdirectory
-        plugin_code = '''
+        plugin_code = """
 from models.base import BaseModel
 from core.registry import register_model
 
@@ -300,29 +270,21 @@ class NestedModel(BaseModel):
         super().__init__(config)
     def forward(self, x):
         return x
-'''
+"""
         (subdir / "nested.py").write_text(plugin_code)
-        
-        # Discover with recursive=True
         discover_plugins(self.plugins_dir, recursive=True)
-        
         assert has_model("nested-model")
-    
+
     def test_import_error_handling(self):
-        """Should handle import errors gracefully"""
-        # Create plugin with import error
-        bad_plugin = '''
+        bad_plugin = """
 from nonexistent_module import something
-'''
+"""
         (self.plugins_dir / "bad_plugin.py").write_text(bad_plugin)
-        
-        # Should not raise, just warn
         with pytest.warns(ImportWarning):
             discover_plugins(self.plugins_dir)
-    
+
     def test_discovery_caching(self):
-        """Should cache discovered plugins"""
-        plugin_code = '''
+        plugin_code = """
 from models.base import BaseModel
 from core.registry import register_model
 
@@ -332,35 +294,32 @@ class CachedModel(BaseModel):
         super().__init__(config)
     def forward(self, x):
         return x
-'''
+"""
         (self.plugins_dir / "cached.py").write_text(plugin_code)
-        
+
         # First discovery
         discovered1 = discover_plugins(self.plugins_dir)
-        assert len(discovered1['models']) > 0
-        
+        assert len(discovered1["models"]) > 0
+
         # Second discovery (should use cache)
         discovered2 = discover_plugins(self.plugins_dir)
-        assert len(discovered2['models']) == 0  # Already discovered
-        
+        assert len(discovered2["models"]) == 0  # Already discovered
+
         # Force re-discovery
         reset_discovery()
         discovered3 = discover_plugins(self.plugins_dir, force=True)
-        assert len(discovered3['models']) > 0
+        assert len(discovered3["models"]) > 0
 
 
 class TestAutoDiscovery:
     """Test automatic plugin discovery"""
-    
+
     def setup_method(self):
-        """Setup test plugins"""
         self.test_dir = Path(tempfile.mkdtemp())
         self.plugins_dir = self.test_dir / "plugins"
         self.plugins_dir.mkdir()
         (self.plugins_dir / "__init__.py").write_text("")
-        
-        # Create a plugin
-        plugin_code = '''
+        plugin_code = """
 from models.base import BaseModel
 from core.registry import register_model
 
@@ -370,30 +329,23 @@ class AutoModel(BaseModel):
         super().__init__(config)
     def forward(self, x):
         return x
-'''
+"""
         (self.plugins_dir / "auto.py").write_text(plugin_code)
-        
         _MODEL_REGISTRY.clear()
         reset_discovery()
         set_auto_discover(True)
-    
+
     def teardown_method(self):
-        """Cleanup"""
         shutil.rmtree(self.test_dir)
         reset_discovery()
         set_auto_discover(False)
-    
+
     def test_auto_discover_on_get(self):
-        """Should auto-discover when getting model"""
-        # Manually trigger discovery since we can't override plugins path in test
         discover_plugins(self.plugins_dir)
-        
-        # Get should work
         model_class = get_model("auto-discovered-model", auto_discover=False)
         assert model_class is not None
-    
+
     def test_auto_discover_on_list(self):
-        """Should auto-discover when listing models"""
         discover_plugins(self.plugins_dir)
         models = list_models(auto_discover=False)
         assert "auto-discovered-model" in models
@@ -401,83 +353,76 @@ class AutoModel(BaseModel):
 
 class TestSearchAndMetadata:
     """Test search and metadata features"""
-    
+
     def setup_method(self):
-        """Setup test models"""
         _MODEL_REGISTRY.clear()
         reset_discovery()
-        
+
         @register_model("gan-basic")
         class GANBasic(BaseModel):
             def __init__(self, config):
                 super().__init__(config)
+
             def forward(self, x):
                 return x
-        
+
         @register_model("gan-advanced")
         class GANAdvanced(BaseModel):
             def __init__(self, config):
                 super().__init__(config)
+
             def forward(self, x):
                 return x
-        
+
         @register_model("diffusion-ddpm", version="1.0", author="test")
         class DiffusionDDPM(BaseModel):
             def __init__(self, config):
                 super().__init__(config)
+
             def forward(self, x):
                 return x
-    
+
     def test_search_models(self):
-        """Should search models by name"""
         results = search_models("gan")
         assert len(results) == 2
         assert "gan-basic" in results
         assert "gan-advanced" in results
-    
+
     def test_search_case_insensitive(self):
-        """Should be case-insensitive"""
         results = search_models("GAN")
         assert len(results) == 2
-    
+
     def test_search_partial_match(self):
-        """Should match partial strings"""
         results = search_models("diff")
         assert "diffusion-ddpm" in results
-    
+
     def test_metadata_retrieval(self):
-        """Should retrieve metadata"""
         from core import get_model_metadata
+
         metadata = get_model_metadata("diffusion-ddpm")
-        assert metadata['version'] == "1.0"
-        assert metadata['author'] == "test"
+        assert metadata["version"] == "1.0"
+        assert metadata["author"] == "test"
 
 
 class TestEdgeCases:
     """Test edge cases and error conditions"""
-    
+
     def setup_method(self):
-        """Setup"""
         _MODEL_REGISTRY.clear()
         reset_discovery()
-    
+
     def test_register_non_class(self):
-        """Should reject non-class objects"""
         registry = Registry("test")
-        
         with pytest.raises(TypeError):
             registry.register("not-a-class", "string value")
-    
+
     def test_empty_registry(self):
-        """Should handle empty registry"""
         assert len(list_models(auto_discover=False)) == 0
-    
+
     def test_registry_summary_empty(self):
-        """Should print summary even when empty"""
-        # Should not raise
         print_registry_summary()
 
 
 # Run tests
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--cov=frameworm.core.registry'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--cov=frameworm.core.registry"])

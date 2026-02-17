@@ -2,4 +2,4 @@
 
 from models.gan.dcgan import DCGAN
 
-__all__ = ['DCGAN']
+__all__ = ["DCGAN"]

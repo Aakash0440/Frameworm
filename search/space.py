@@ -10,10 +10,10 @@ from search.space_objects import Real, Integer, Categorical, SearchSpace
 def expand_search_space(search_space: Dict[str, Any]) -> Dict[str, SearchSpace]:
     """
     Convert user-provided search space specs into SearchSpace objects.
-    
+
     Args:
         search_space: Dictionary of name -> spec
-    
+
     Returns:
         Dictionary of name -> SearchSpace object
     """
@@ -28,10 +28,7 @@ def expand_search_space(search_space: Dict[str, Any]) -> Dict[str, SearchSpace]:
     return expanded
 
 
-def sample_configuration(
-    search_space: Dict[str, SearchSpace],
-    random_state=None
-) -> Dict[str, Any]:
+def sample_configuration(search_space: Dict[str, SearchSpace], random_state=None) -> Dict[str, Any]:
     """
     Sample a configuration from search space.
     """

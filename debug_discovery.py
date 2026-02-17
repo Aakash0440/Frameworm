@@ -1,6 +1,7 @@
 """
 Debug why discover_plugins isn't importing files
 """
+
 import sys
 import os
 from pathlib import Path
@@ -29,6 +30,7 @@ import core.registry as registry_module
 
 original_import = registry_module._import_plugin_file
 
+
 def debug_import(file_path, base_path):
     print(f"\n[DEBUG _import_plugin_file] Called with:")
     print(f"  file_path: {file_path}")
@@ -36,6 +38,7 @@ def debug_import(file_path, base_path):
     result = original_import(file_path, base_path)
     print(f"  Result: {result}")
     return result
+
 
 registry_module._import_plugin_file = debug_import
 
@@ -50,5 +53,6 @@ result = discover_plugins(str(TEST_PLUGIN_DIR))
 print(f"\nResult: {result}")
 
 from core.registry import list_models
+
 models = list_models(auto_discover=False)
 print(f"Models: {models}")
