@@ -1,0 +1,9 @@
+name: wandb-logger
+version: 1.0.0
+author: FRAMEWORM Team
+description: Weights & Biases integration
+entry_point: plugin:register
+dependencies:
+  - wandb>=0.16.0
+hooks:
+  - callback

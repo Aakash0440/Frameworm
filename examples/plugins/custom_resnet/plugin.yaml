@@ -1,0 +1,9 @@
+name: custom-resnet
+version: 1.0.0
+author: FRAMEWORM Team
+description: Custom ResNet-based VAE model
+entry_point: plugin:register
+dependencies:
+  - torch>=2.0.0
+hooks:
+  - model
