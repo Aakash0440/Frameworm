@@ -1,21 +1,23 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "frameworm"
-version = "0.1.0"
-description = "Advanced generative AI framework with plugin system and dependency graphs"
+version = "1.0.0"
+description = "Complete Machine Learning Framework for Production"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.8"
-license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Your Name", email = "you@example.com"},
 ]
-keywords = ["deep-learning", "generative-models", "gan", "diffusion", "framework"]
-
+keywords = [
+    "machine-learning", "deep-learning", "pytorch",
+    "training", "deployment", "experiments"
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
@@ -23,45 +25,78 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 dependencies = [
     "torch>=2.0.0",
     "torchvision>=0.15.0",
+    "numpy>=1.23.0",
     "pyyaml>=6.0",
-    "pydantic>=2.0",
-    "click>=8.0",
-    "rich>=13.0",
-    "tqdm>=4.65",
-    "numpy>=1.24",
-    "pillow>=9.0",
+    "click>=8.0.0",
+    "click-completion>=0.5.0",
+    "rich>=13.0.0",
+    "tqdm>=4.65.0",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "black>=23.0",
-    "flake8>=6.0",
-    "mypy>=1.0",
+search = ["scikit-optimize>=0.9.0"]
+deployment = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "onnx>=1.15.0",
+    "onnxruntime>=1.16.0",
 ]
+dashboard = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "psutil>=5.9.0",
+]
+metrics = ["lpips>=0.1.4"]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "isort>=5.12.0",
+    "pre-commit>=3.4.0",
+]
+all = ["frameworm[search,deployment,dashboard,metrics]"]
 
 [project.scripts]
-frameworm = "frameworm.cli.main:cli"
+frameworm = "cli.main:cli"
+
+
+
+[project.urls]
+Homepage = "https://github.com/Aakash0440/frameworm"
+Documentation = "https://frameworm.readthedocs.io"
+Repository = "https://github.com/Aakash0440/frameworm"
+"Bug Tracker" = "https://github.com/Aakash0440/frameworm/issues"
+Changelog = "https://github.com/Aakash0440/frameworm/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core*", "models*", "data*", "utils*", "benchmark*", "experiment*", "trainers*", "pipelines*", "optimization*", "plugins*"]
+include = ["cli", "core", "data", "distributed", "metrics", "models", "pipelines", "search", "training", "trainers", "utils", "deployment", "experiment", "graph", "plugins"]
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = "test_*.py"
-python_functions = "test_*"
-pythonpath = ["."]
-addopts = "--cov=frameworm --cov-report=html --cov-report=term-missing"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--tb=short"
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+target-version = ["py38", "py39", "py310", "py311"]
 
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true

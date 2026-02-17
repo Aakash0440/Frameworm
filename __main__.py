@@ -1,8 +1,5 @@
-"""
-FRAMEWORM CLI entry point.
-"""
+# __main__.py at the project root
+from cli.main import cli  # <-- your existing CLI function
 
-from cli.main import cli
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

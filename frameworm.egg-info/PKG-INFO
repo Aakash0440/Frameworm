@@ -1,11 +1,37 @@
 Metadata-Version: 2.4
 Name: frameworm
-Version: 0.1.0
-Summary: Advanced generative AI framework with plugin system and dependency graphs
-Author-email: Your Name <your.email@example.com>
-License: MIT
-Keywords: deep-learning,generative-models,gan,diffusion,framework
-Classifier: Development Status :: 3 - Alpha
+Version: 1.0.0
+Summary: Complete Machine Learning Framework for Production
+Author-email: Your Name <you@example.com>
+License: MIT License
+        
+        Copyright (c) 2026 Aakash Ali
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/Aakash0440/frameworm
+Project-URL: Documentation, https://frameworm.readthedocs.io
+Project-URL: Repository, https://github.com/Aakash0440/frameworm
+Project-URL: Bug Tracker, https://github.com/Aakash0440/frameworm/issues
+Project-URL: Changelog, https://github.com/Aakash0440/frameworm/blob/main/CHANGELOG.md
+Keywords: machine-learning,deep-learning,pytorch,training,deployment,experiments
+Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
 Classifier: License :: OSI Approved :: MIT License
@@ -13,25 +39,42 @@ Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
 Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: torch>=2.0.0
 Requires-Dist: torchvision>=0.15.0
+Requires-Dist: numpy>=1.23.0
 Requires-Dist: pyyaml>=6.0
-Requires-Dist: pydantic>=2.0
-Requires-Dist: click>=8.0
-Requires-Dist: rich>=13.0
-Requires-Dist: tqdm>=4.65
-Requires-Dist: numpy>=1.24
-Requires-Dist: pillow>=9.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: click-completion>=0.5.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: tqdm>=4.65.0
+Provides-Extra: search
+Requires-Dist: scikit-optimize>=0.9.0; extra == "search"
+Provides-Extra: deployment
+Requires-Dist: fastapi>=0.104.0; extra == "deployment"
+Requires-Dist: uvicorn[standard]>=0.24.0; extra == "deployment"
+Requires-Dist: onnx>=1.15.0; extra == "deployment"
+Requires-Dist: onnxruntime>=1.16.0; extra == "deployment"
+Provides-Extra: dashboard
+Requires-Dist: fastapi>=0.104.0; extra == "dashboard"
+Requires-Dist: uvicorn[standard]>=0.24.0; extra == "dashboard"
+Requires-Dist: psutil>=5.9.0; extra == "dashboard"
+Provides-Extra: metrics
+Requires-Dist: lpips>=0.1.4; extra == "metrics"
 Provides-Extra: dev
-Requires-Dist: pytest>=7.0; extra == "dev"
-Requires-Dist: pytest-cov>=4.0; extra == "dev"
-Requires-Dist: black>=23.0; extra == "dev"
-Requires-Dist: flake8>=6.0; extra == "dev"
-Requires-Dist: mypy>=1.0; extra == "dev"
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: pre-commit>=3.4.0; extra == "dev"
+Provides-Extra: all
+Requires-Dist: frameworm[dashboard,deployment,metrics,search]; extra == "all"
 Dynamic: license-file
 
 # FRAMEWORM
