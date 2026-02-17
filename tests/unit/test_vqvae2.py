@@ -33,7 +33,7 @@ class TestVQVAE2:
         assert out['recon'].max() <= 1.0 + 1e-5
     
     def test_codebook_sizes(self, config):
-        from frameworm.models.vqvae2 import VectorQuantizer
+        from models.vqvae2 import VectorQuantizer
         vq = VectorQuantizer(num_embeddings=128, embedding_dim=32)
         assert vq.embedding.weight.shape == (128, 32)
     
@@ -45,7 +45,7 @@ class TestVQVAE2:
         assert x.grad is not None, "Gradients must flow through VQ layer"
     
     def test_trainer_compatible(self, config):
-        from frameworm.training import Trainer
+        from training import Trainer
         from torch.utils.data import DataLoader, TensorDataset
         
         model = get_model('vqvae2')(config)

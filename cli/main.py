@@ -351,7 +351,7 @@ def evaluate(config, checkpoint, metrics, num_samples):
 @click.option("--parallel", type=int, default=1)
 def search(config, space, method, trials, parallel):
     """Run hyperparameter search."""
-    from cli.search import run_search
+    from cli.search_cli import run_search
 
     click.echo(f"Starting {method} search with {trials} trials and {parallel} parallel jobs")
     run_search(
