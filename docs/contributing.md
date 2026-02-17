@@ -1,100 +1,123 @@
 # Contributing to FRAMEWORM
 
-We love your input! We want to make contributing as easy as possible.
+Thank you for contributing! 🎉
 
 ---
 
-## Development Setup
+## Quick Start
 ```bash
-# Clone repo
-git clone https://github.com/yourusername/frameworm.git
+# Fork and clone
+git clone https://github.com/YOURNAME/frameworm.git
 cd frameworm
 
 # Create virtual environment
-python -m venv venv
-source venv/bin/activate
+python -m venv venv && source venv/bin/activate
 
-# Install in development mode
+# Install in dev mode
 pip install -e ".[dev]"
 
 # Install pre-commit hooks
 pre-commit install
+
+# Run tests to verify setup
+pytest tests/unit/ -q
 ```
 
 ---
 
 ## Development Workflow
 
-1. **Create a branch**
-```bash
-   git checkout -b feature/my-feature
-```
-
-2. **Make changes**
-   - Write code
-   - Add tests
-   - Update docs
-
-3. **Run tests**
-```bash
-   pytest tests/
-```
-
-4. **Format code**
-```bash
-   black frameworm/
-   isort frameworm/
-```
-
-5. **Submit PR**
-```bash
-   git push origin feature/my-feature
-```
+1. **Create issue** describing your change
+2. **Create branch** `git checkout -b feat/my-feature`
+3. **Make changes** with tests
+4. **Run tests** `pytest tests/ -q`
+5. **Format code** `black frameworm/ && isort frameworm/`
+6. **Submit PR**
 
 ---
 
 ## Code Style
 
-We use:
-- **black** for formatting
-- **isort** for imports
-- **mypy** for type checking
-- **flake8** for linting
+We use **black** for formatting (100 char line length).
+```bash
+black frameworm/ tests/
+isort frameworm/ tests/
+flake8 frameworm/ --max-line-length=100
+```
 
 ---
 
-## Testing
-```bash
-# Run all tests
-pytest
+## Writing Tests
+```python
+# tests/unit/test_my_feature.py
 
-# Run specific test
-pytest tests/test_training.py
+import pytest
+from frameworm.my_module import MyClass
 
-# Run with coverage
-pytest --cov=frameworm
+class TestMyClass:
+    def test_basic_usage(self):
+        obj = MyClass()
+        result = obj.do_something()
+        assert result == expected_value
+    
+    def test_edge_case(self):
+        with pytest.raises(ValueError):
+            MyClass(invalid_param=-1)
 ```
+
+**Coverage requirement:** >90% for new code.
 
 ---
 
 ## Documentation
 
-- Use Google-style docstrings
-- Add examples to docstrings
-- Update user guides for new features
+All public functions need:
+```python
+def my_function(arg1: str, arg2: int = 0) -> str:
+    """
+    One-line description.
+    
+    Longer description if needed.
+    
+    Args:
+        arg1: Description of arg1
+        arg2: Description of arg2
+        
+    Returns:
+        Description of return value
+        
+    Raises:
+        ValueError: When arg1 is empty
+        
+    Example:
+        >>> result = my_function("hello", arg2=5)
+        >>> print(result)
+        "hello-5"
+    """
+```
 
 ---
 
-## Pull Request Process
+## Release Process (Maintainers)
+```bash
+# Update version in pyproject.toml
+# Update CHANGELOG.md
+# Commit: git commit -m "chore: release v1.1.0"
+# Tag: git tag v1.1.0
+# Push: git push && git push --tags
+# CI/CD handles PyPI publish automatically
+```
 
-1. Update README.md if needed
-2. Add tests for new features
-3. Update documentation
-4. Ensure CI passes
-5. Request review
+---
+
+## Getting Help
+
+- [Discord](https://discord.gg/frameworm)
+- [GitHub Discussions](https://github.com/Aakash0440/frameworm/discussions)
+- [Email](Aakashali0440@example.com)
 
 ---
 
 ## Code of Conduct
 
-Be respectful and inclusive. See CODE_OF_CONDUCT.md.
+Be kind, inclusive, and constructive. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
