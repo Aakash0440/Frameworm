@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from core import register_model
-from models import BaseModel
+from models.base import BaseModel
 
 
 def get_timestep_embedding(timesteps: torch.Tensor, embedding_dim: int) -> torch.Tensor:
