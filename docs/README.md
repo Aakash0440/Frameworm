@@ -17,7 +17,7 @@ mkdocs build
 ## Structure
 
 - `getting-started/` - Installation and quick start
-- `user-guide/` - Feature guides
+- `user_guide/` - Feature guides
 - `tutorials/` - Step-by-step tutorials
 - `api-reference/` - API documentation
 - `examples/` - Code examples

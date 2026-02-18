@@ -25,7 +25,7 @@ notebook = {
                 "\n",
                 "Complete ML workflow: **Train → Track → Search → Deploy**\n",
                 "\n",
-                "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yourusername/frameworm/blob/main/examples/demo.ipynb)\n"
+                "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aakash0440/frameworm/blob/main/examples/demo.ipynb)\n"
             ]
         },
         {

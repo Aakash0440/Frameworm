@@ -7,7 +7,7 @@ docs/
 │   ├── installation.md
 │   ├── quickstart.md
 │   └── first-model.md
-├── user-guide/
+├── user_guide/
 │   ├── configuration.md
 │   ├── training.md
 │   ├── hyperparameter-search.md

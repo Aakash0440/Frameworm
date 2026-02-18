@@ -32,7 +32,7 @@ frameworm serve model.pt --port 8000
 - 84 git commits
 - 25+ documentation pages
 
-GitHub: github.com/yourusername/frameworm
+GitHub: github.com/Aakash0440/frameworm
 Docs: frameworm.readthedocs.io
 
 Would love feedback from the community!

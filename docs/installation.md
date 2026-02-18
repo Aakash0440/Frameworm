@@ -7,7 +7,7 @@ pip install frameworm
 
 ## From Source
 ```bash
-git clone https://github.com/yourusername/frameworm
+git clone https://github.com/Aakash0440/frameworm
 cd frameworm
 pip install -e .
 ```

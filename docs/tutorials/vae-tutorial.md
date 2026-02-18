@@ -309,4 +309,4 @@ After 100 epochs, you should see:
 
 - [GAN Tutorial](gan-tutorial.md) - Adversarial training
 - [DDPM Tutorial](ddpm-tutorial.md) - Diffusion models
-- [Hyperparameter Search](../user-guide/hyperparameter-search.md) - Optimize performance
+- [Hyperparameter Search](../user_guide/hyperparameter-search.md) - Optimize performance

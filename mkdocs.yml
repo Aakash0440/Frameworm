@@ -1,22 +1,20 @@
 site_name: FRAMEWORM
 site_description: Complete Machine Learning Framework
-site_author: Your Name
-site_url: https://frameworm.readthedocs.io
+site_author: Aakash Ali
+site_url: https://aakash0440.github.io/Frameworm/
 
-repo_name: yourusername/frameworm
-repo_url: https://github.com/yourusername/frameworm
+repo_name: Aakash0440/frameworm
+repo_url: https://github.com/Aakash0440/frameworm
 
 theme:
   name: material
   palette:
-    # Light mode
     - scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Dark mode
     - scheme: slate
       primary: indigo
       accent: indigo
@@ -51,9 +49,6 @@ markdown_extensions:
       alternate_style: true
   - admonition
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
   - attr_list
   - md_in_html
   - toc:
@@ -61,29 +56,30 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Installation: installation.md
   - Getting Started:
-    - Installation: getting-started/installation.md
     - Quick Start: getting-started/quickstart.md
-    - First Model: getting-started/first-model.md
   - User Guide:
     - Configuration: user_guide/configuration.md
     - Training: user_guide/training.md
-    - Hyperparameter Search: user_guide/hyperparameter-search.md
+    - Hyperparameter Search: user_guide/hyperparameter_search.md
     - Deployment: user_guide/deployment.md
     - CLI: user_guide/cli.md
     - Dashboard: user_guide/dashboard.md
+    - Plugins: user_guide/plugins.md
+    - Experiment Tracking: user_guide/experiment_tracking.md
+    - Distributed Training: user_guide/distributed_training.md
+    - Metrics: user_guide/metrics.md
+    - Error Handling: user_guide/error_handling.md
+    - Integrations: user_guide/integrations.md
+    - Models: user_guide/models.md
   - Tutorials:
     - VAE Tutorial: tutorials/vae-tutorial.md
-    - GAN Tutorial: tutorials/gan-tutorial.md
-    - DDPM Tutorial: tutorials/ddpm-tutorial.md
-    - Distributed Training: tutorials/distributed-training.md
   - API Reference:
     - Core: api-reference/core.md
-    - Training: api-reference/training.md
-    - Search: api-reference/search.md
-    - Deployment: api-reference/deployment.md
-    - Distributed: api-reference/distributed.md
   - Examples:
     - Basic Training: examples/basic-training.md
     - Advanced Training: examples/advanced-training.md
-    - Production Deployment: examples/production-deployment.md
+  - Developer Guide:
+    - Creating Plugins: developer-guide/creating-plugins.md
+  - FAQ: faq.md

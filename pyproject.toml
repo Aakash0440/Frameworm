@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frameworm"
-version = "1.0.0"
+version = "1.0.7"
 description = "Complete Machine Learning Framework for Production"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -72,10 +72,12 @@ frameworm = "cli.main:cli"
 
 [project.urls]
 Homepage = "https://github.com/Aakash0440/frameworm"
-Documentation = "https://frameworm.readthedocs.io"
+Documentation = "https://aakash0440.github.io/Frameworm/"
 Repository = "https://github.com/Aakash0440/frameworm"
 "Bug Tracker" = "https://github.com/Aakash0440/frameworm/issues"
 Changelog = "https://github.com/Aakash0440/frameworm/blob/main/CHANGELOG.md"
+"Contributing" = "https://github.com/Aakash0440/frameworm/blob/main/contributing.md"
+"License" = "https://github.com/Aakash0440/frameworm/blob/main/LICENSE"
 
 [tool.setuptools.packages.find]
 where = ["."]
