@@ -1,0 +1,9 @@
+author: Your Name
+dependencies:
+- torch>=2.0.0
+description: my-plugin plugin
+entry_point: plugin:register
+hooks:
+- model
+name: my-plugin
+version: 0.1.0
