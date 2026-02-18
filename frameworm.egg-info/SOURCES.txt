@@ -53,9 +53,14 @@ metrics/inception_score.py
 metrics/lpips.py
 models/__init__.py
 models/base.py
+models/cfg_ddpm.py
+models/vitgan.py
+models/vqvae2.py
 pipelines/__init__.py
 pipelines/base.py
 plugins/__init__.py
+plugins/hooks.py
+plugins/loader.py
 search/__init__.py
 search/analysis.py
 search/bayesian_search.py

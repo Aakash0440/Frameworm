@@ -106,7 +106,7 @@ Stats after 200 hours:
 ---
 
 **Tweet 10:**
-🌟 Star on GitHub: github.com/yourusername/frameworm
+🌟 Star on GitHub: github.com/Aakash0440/frameworm
 📚 Full docs: frameworm.readthedocs.io
 💬 Discord: discord.gg/frameworm
 

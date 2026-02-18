@@ -106,8 +106,8 @@ curl -X POST http://localhost:8000/predict \
 
 ## Next Steps
 
-- [Configuration Guide](../user-guide/configuration.md) - Customize your setup
-- [Training Guide](../user-guide/training.md) - Advanced training techniques
+- [Configuration Guide](../user_guide/configuration.md) - Customize your setup
+- [Training Guide](../user_guide/training.md) - Advanced training techniques
 - [Tutorials](../tutorials/vae-tutorial.md) - Step-by-step tutorials
 - [API Reference](../api-reference/core.md) - Complete API documentation
 

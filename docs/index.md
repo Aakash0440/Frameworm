@@ -3,9 +3,9 @@
 **Complete Machine Learning Framework for Production**
 
 [![PyPI](https://img.shields.io/pypi/v/frameworm)](https://pypi.org/project/frameworm/)
-[![Tests](https://img.shields.io/github/workflow/status/yourusername/frameworm/tests)](https://github.com/yourusername/frameworm/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/yourusername/frameworm)](https://codecov.io/gh/yourusername/frameworm)
-[![License](https://img.shields.io/github/license/yourusername/frameworm)](https://github.com/yourusername/frameworm/blob/main/LICENSE)
+[![Tests](https://img.shields.io/github/workflow/status/Aakash0440/frameworm/tests)](https://github.com/Aakash0440/frameworm/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/Aakash0440/frameworm)](https://codecov.io/gh/Aakash0440/frameworm)
+[![License](https://img.shields.io/github/license/Aakash0440/frameworm)](https://github.com/Aakash0440/Aakash0440/blob/main/LICENSE)
 
 ---
 
@@ -88,17 +88,17 @@ Web UI for experiment tracking, model management, and training monitoring.
 pip install frameworm
 ```
 
-See [Installation Guide](getting-started/installation.md) for more options.
+See [Installation Guide](getting-started/quickstart.md) for more options.
 
 ---
 
 ## Quick Links
 
 - [Quick Start Guide](getting-started/quickstart.md)
-- [User Guide](user-guide/configuration.md)
+- [User Guide](user_guide/configuration.md)
 - [Tutorials](tutorials/vae-tutorial.md)
 - [API Reference](api-reference/core.md)
-- [GitHub](https://github.com/yourusername/frameworm)
+- [GitHub](https://github.com/Aakash0440/frameworm)
 
 ---
 
@@ -118,7 +118,7 @@ See [Installation Guide](getting-started/installation.md) for more options.
 
 ## Community
 
-- [GitHub Discussions](https://github.com/yourusername/frameworm/discussions)
+- [GitHub Discussions](https://github.com/Aakash0440/frameworm/discussions)
 - [Discord](https://discord.gg/frameworm)
 - [Twitter](https://twitter.com/frameworm)
 
@@ -126,4 +126,4 @@ See [Installation Guide](getting-started/installation.md) for more options.
 
 ## License
 
-FRAMEWORM is released under the MIT License. See [LICENSE](https://github.com/yourusername/frameworm/blob/main/LICENSE) for details.
+FRAMEWORM is released under the MIT License. See [LICENSE](https://github.com/Aakash0440/frameworm/LICENSE) for details.

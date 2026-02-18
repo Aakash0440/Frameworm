@@ -9,12 +9,16 @@
         <meta name="description" content="Complete Machine Learning Framework">
       
       
-        <meta name="author" content="Your Name">
+        <meta name="author" content="Aakash Ali">
       
       
-        <link rel="canonical" href="https://frameworm.readthedocs.io/user_guide/models/">
+        <link rel="canonical" href="https://aakash0440.github.io/Frameworm/user_guide/models/">
       
       
+        <link rel="prev" href="../integrations/">
+      
+      
+        <link rel="next" href="../../tutorials/vae-tutorial/">
       
       
         
@@ -78,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#models" class="md-skip">
+        <a href="#model-zoo" class="md-skip">
           Skip to content
         </a>
       
@@ -194,13 +198,13 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/yourusername/frameworm" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/Aakash0440/frameworm" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    yourusername/frameworm
+    Aakash0440/frameworm
   </div>
 </a>
       </div>
@@ -243,10 +247,29 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
-        <a href="../../getting-started/installation.md" class="md-tabs__link">
+        <a href="../../getting-started/quickstart/" class="md-tabs__link">
           
   
   
@@ -262,10 +285,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../configuration/" class="md-tabs__link">
           
   
@@ -338,6 +363,45 @@
   
 
       
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer-guide/creating-plugins/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -370,13 +434,13 @@
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/yourusername/frameworm" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/Aakash0440/frameworm" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    yourusername/frameworm
+    Aakash0440/frameworm
   </div>
 </a>
     </div>
@@ -416,62 +480,8 @@
   
   
   
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Getting Started
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../getting-started/installation.md" class="md-nav__link">
+      <a href="../../installation/" class="md-nav__link">
         
   
   
@@ -487,70 +497,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../getting-started/quickstart/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Start
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../getting-started/first-model.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    First Model
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -587,7 +533,7 @@
   <span class="md-ellipsis">
     
   
-    User Guide
+    Getting Started
   
 
     
@@ -600,6 +546,98 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -672,7 +710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-search.md" class="md-nav__link">
+      <a href="../hyperparameter_search/" class="md-nav__link">
         
   
   
@@ -777,67 +815,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tutorials
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Tutorials
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -845,14 +822,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/vae-tutorial/" class="md-nav__link">
+      <a href="../plugins/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    VAE Tutorial
+    Plugins
   
 
     
@@ -873,14 +850,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/gan-tutorial.md" class="md-nav__link">
+      <a href="../experiment_tracking/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    GAN Tutorial
+    Experiment Tracking
   
 
     
@@ -901,35 +878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/ddpm-tutorial.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DDPM Tutorial
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/distributed-training.md" class="md-nav__link">
+      <a href="../distributed_training/" class="md-nav__link">
         
   
   
@@ -945,6 +894,242 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error_handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vae-variational-autoencoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VAE — Variational Autoencoder
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dcgan-deep-convolutional-gan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCGAN — Deep Convolutional GAN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ddpm-denoising-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DDPM — Denoising Diffusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vq-vae-2-vector-quantized-vae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VQ-VAE-2 — Vector Quantized VAE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vit-gan-vision-transformer-gan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ViT-GAN — Vision Transformer GAN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-ddpm-classifier-free-guidance-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG-DDPM — Classifier-Free Guidance Diffusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -989,7 +1174,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Tutorials
   
 
     
@@ -1005,7 +1190,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    API Reference
+    Tutorials
   
 
           </label>
@@ -1018,126 +1203,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/core/" class="md-nav__link">
+      <a href="../../tutorials/vae-tutorial/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Core
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/training.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Training
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/search.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Search
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/deployment.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-reference/distributed.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Distributed
+    VAE Tutorial
   
 
     
@@ -1190,7 +1263,7 @@
   <span class="md-ellipsis">
     
   
-    Examples
+    API Reference
   
 
     
@@ -1203,6 +1276,95 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1268,6 +1430,67 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1275,14 +1498,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/production-deployment.md" class="md-nav__link">
+      <a href="../../developer-guide/creating-plugins/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Production Deployment
+    Creating Plugins
   
 
     
@@ -1299,6 +1522,33 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1330,91 +1580,79 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#available-models" class="md-nav__link">
+  <a href="#vae-variational-autoencoder" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Available Models
+        VAE — Variational Autoencoder
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Available Models">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#dcgan" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DCGAN
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-custom-models" class="md-nav__link">
+  <a href="#dcgan-deep-convolutional-gan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating Custom Models
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Creating Custom Models">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Requirements
+        DCGAN — Deep Convolutional GAN
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#ddpm-denoising-diffusion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example
+        DDPM — Denoising Diffusion
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#vae-variational-autoencoder" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#vq-vae-2-vector-quantized-vae" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VAE (Variational Autoencoder)
+        VQ-VAE-2 — Vector Quantized VAE
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#ddpm-denoising-diffusion-probabilistic-model" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#vit-gan-vision-transformer-gan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DDPM (Denoising Diffusion Probabilistic Model)
+        ViT-GAN — Vision Transformer GAN
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-ddpm-classifier-free-guidance-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG-DDPM — Classifier-Free Guidance Diffusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1438,156 +1676,129 @@
   
 
 
-<h1 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h1>
-<h2 id="available-models">Available Models<a class="headerlink" href="#available-models" title="Permanent link">&para;</a></h2>
-<h3 id="dcgan">DCGAN<a class="headerlink" href="#dcgan" title="Permanent link">&para;</a></h3>
-<p>Deep Convolutional GAN for image generation.</p>
-<p><strong>Usage:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_model</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Load config</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s1">&#39;configs/models/gan/dcgan.yaml&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Get model</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">model_class</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;dcgan&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">model</span> <span class="o">=</span> <span class="n">model_class</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Generate images</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">images</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>  <span class="c1"># (4, 3, 64, 64)</span>
+<h1 id="model-zoo">Model Zoo<a class="headerlink" href="#model-zoo" title="Permanent link">&para;</a></h1>
+<p>FRAMEWORM includes 6 production-ready generative models.</p>
+<hr />
+<h2 id="vae-variational-autoencoder">VAE — Variational Autoencoder<a class="headerlink" href="#vae-variational-autoencoder" title="Permanent link">&para;</a></h2>
+<p>Classic VAE with KL regularization.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vae&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>Config Options:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dcgan</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">latent_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w">      </span><span class="c1"># Latent vector dimension</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w">       </span><span class="c1"># Output image size</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">          </span><span class="c1"># Color channels</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">ngf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w">             </span><span class="c1"># Generator feature maps</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">ndf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w">             </span><span class="c1"># Discriminator feature maps</span>
+<p><strong>Best for:</strong> Fast prototyping, smooth latent space</p>
+<hr />
+<h2 id="dcgan-deep-convolutional-gan">DCGAN — Deep Convolutional GAN<a class="headerlink" href="#dcgan-deep-convolutional-gan" title="Permanent link">&para;</a></h2>
+<p>Stable GAN training with spectral normalization.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;dcgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>Architecture:</strong>
-- Generator: 4 transposed conv layers
-- Discriminator: 4 conv layers
-- BatchNorm + ReLU/LeakyReLU</p>
-<h2 id="creating-custom-models">Creating Custom Models<a class="headerlink" href="#creating-custom-models" title="Permanent link">&para;</a></h2>
-<p>See <a href="../plugins/">Plugin Guide</a> for creating custom models.</p>
-<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Inherit from <code>BaseModel</code></li>
-<li>Implement <code>forward()</code> method</li>
-<li>Register with <code>@register_model()</code></li>
-</ul>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_model</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nd">@register_model</span><span class="p">(</span><span class="s2">&quot;my-model&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="c1"># Build architecture</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="p">)</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="vae-variational-autoencoder">VAE (Variational Autoencoder)<a class="headerlink" href="#vae-variational-autoencoder" title="Permanent link">&para;</a></h3>
-<p>Learn a latent representation and generate new samples.</p>
-<p><strong>Usage:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_model</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Load config</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s1">&#39;configs/models/vae/vanilla.yaml&#39;</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Get model</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">vae</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;vae&quot;</span><span class="p">)(</span><span class="n">cfg</span><span class="p">)</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Reconstruct images</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">images</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">reconstructed</span> <span class="o">=</span> <span class="n">vae</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c1"># Generate new samples</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">vae</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="c1"># Training</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="n">recon</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="n">vae</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="n">loss_dict</span> <span class="o">=</span> <span class="n">vae</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">recon</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="n">loss</span> <span class="o">=</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>
+<p><strong>Best for:</strong> Quick image generation</p>
+<hr />
+<h2 id="ddpm-denoising-diffusion">DDPM — Denoising Diffusion<a class="headerlink" href="#ddpm-denoising-diffusion" title="Permanent link">&para;</a></h2>
+<p>Original DDPM with linear noise schedule.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>Config Options:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vae</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">latent_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128</span><span class="w">      </span><span class="c1"># Latent space dimension</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w">       </span><span class="c1"># Input image size</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">          </span><span class="c1"># Color channels</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">beta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span><span class="w">           </span><span class="c1"># β coefficient (&gt;1 for β-VAE)</span>
+<p><strong>Best for:</strong> High quality unconditional generation</p>
+<hr />
+<h2 id="vq-vae-2-vector-quantized-vae">VQ-VAE-2 — Vector Quantized VAE<a class="headerlink" href="#vq-vae-2-vector-quantized-vae" title="Permanent link">&para;</a></h2>
+<p>Hierarchical codebook latents. Sharp reconstructions.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vqvae2&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>β-VAE:</strong></p>
-<p>Use β &gt; 1 for better disentanglement:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">beta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.0</span><span class="w">  </span><span class="c1"># Emphasizes KL divergence</span>
+<p><strong>Best for:</strong> Compression, tokenization, discrete representations</p>
+<p>Key feature — two-level hierarchy:
+- Bottom level: local details (64x64)
+- Top level: global structure (16x16)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">,</span> <span class="n">vq_loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">recon</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>Architecture:</strong>
-- Encoder: 4 conv layers → latent distribution
-- Reparameterization: z = μ + σ * ε<br />
-- Decoder: 4 transposed conv layers → reconstruction</p>
-<p><strong>Loss:</strong>
-- Reconstruction: MSE between input and output
-- KL Divergence: Regularization to N(0, I)
-- Total: recon_loss + β * kl_loss</p>
-<h3 id="ddpm-denoising-diffusion-probabilistic-model">DDPM (Denoising Diffusion Probabilistic Model)<a class="headerlink" href="#ddpm-denoising-diffusion-probabilistic-model" title="Permanent link">&para;</a></h3>
-<p>Generate images through iterative denoising.</p>
-<p><strong>Usage:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_model</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Load config</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s1">&#39;configs/models/diffusion/ddpm.yaml&#39;</span><span class="p">)</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Get model</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">ddpm</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;ddpm&quot;</span><span class="p">)(</span><span class="n">cfg</span><span class="p">)</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Generate samples (slow - 1000 steps)</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">ddpm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="c1"># Training</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="n">loss_dict</span> <span class="o">=</span> <span class="n">ddpm</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="n">loss</span> <span class="o">=</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>
+<hr />
+<h2 id="vit-gan-vision-transformer-gan">ViT-GAN — Vision Transformer GAN<a class="headerlink" href="#vit-gan-vision-transformer-gan" title="Permanent link">&para;</a></h2>
+<p>Transformer discriminator for global coherence.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vitgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>Config Options:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ddpm</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">timesteps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w">      </span><span class="c1"># Number of diffusion steps</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w">       </span><span class="c1"># Output image size</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">          </span><span class="c1"># Color channels</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">base_channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128</span><span class="w">   </span><span class="c1"># U-Net base channels</span>
+<p><strong>Best for:</strong> High-resolution, globally coherent generation
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">model</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vitgan</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">patch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nt">vit_embed_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">384</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="nt">vit_depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span>
 </code></pre></div></p>
-<p><strong>Architecture:</strong>
-- U-Net with time embeddings
-- 1000 denoising steps
-- Linear beta schedule
-- MSE loss on noise prediction</p>
-<p><strong>Notes:</strong>
-- Generation is slow (~1000 forward passes)
-- Requires substantial training
-- Quality improves with more timesteps
-- Use EMA for best results</p>
-<p><strong>Advantages:</strong>
-- High-quality samples
-- Stable training
-- Principled framework</p>
-<p><strong>Disadvantages:</strong>
-- Very slow sampling
-- Computationally expensive</p>
+<hr />
+<h2 id="cfg-ddpm-classifier-free-guidance-diffusion">CFG-DDPM — Classifier-Free Guidance Diffusion<a class="headerlink" href="#cfg-ddpm-classifier-free-guidance-diffusion" title="Permanent link">&para;</a></h2>
+<p>Conditional generation with guidance scale control.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;cfg_ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Best for:</strong> Conditional generation, text-to-image, class-guided synthesis
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Train conditionally</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">losses</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">))</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Sample with guidance</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">class_label</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># Generate class 3</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">guidance_scale</span><span class="o">=</span><span class="mf">7.5</span>       <span class="c1"># Higher = more faithful but less diverse</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Guidance scale guide:</strong>
+- 1.0 = no guidance (unconditional)
+- 3.0–5.0 = mild guidance
+- 7.5 = recommended (Stable Diffusion default)
+- 15+ = strong guidance, reduced diversity</p>
+<hr />
+<h2 id="comparison">Comparison<a class="headerlink" href="#comparison" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Quality</th>
+<th>Speed</th>
+<th>Controllable</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAE</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>❌</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>DCGAN</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>❌</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>DDPM</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐</td>
+<td>❌</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>VQ-VAE-2</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>❌</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>ViT-GAN</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>❌</td>
+<td>High</td>
+</tr>
+<tr>
+<td>CFG-DDPM</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐</td>
+<td>✅</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
 
 
 

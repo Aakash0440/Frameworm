@@ -4,10 +4,10 @@
 
 [![PyPI](https://img.shields.io/pypi/v/frameworm)](https://pypi.org/project/frameworm/)
 [![Python](https://img.shields.io/pypi/pyversions/frameworm)](https://python.org)
-[![Tests](https://img.shields.io/github/workflow/status/yourusername/frameworm/tests)](https://github.com/yourusername/frameworm/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/yourusername/frameworm)](https://codecov.io/gh/yourusername/frameworm)
+[![Tests](https://img.shields.io/github/workflow/status/Aakash0440/frameworm/tests)](https://github.com/Aakash0440/frameworm/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/Aakash0440/frameworm)](https://codecov.io/gh/Aakash0440/frameworm)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://frameworm.readthedocs.io)
-[![License](https://img.shields.io/github/license/yourusername/frameworm)](https://github.com/yourusername/frameworm/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/Aakash0440/frameworm)](https://github.com/Aakash0440/frameworm/blob/main/LICENSE)
 [![Discord](https://img.shields.io/discord/123456789)](https://discord.gg/frameworm)
 
 ---
@@ -31,7 +31,7 @@ cd my-project
 frameworm train --config config.yaml
 ```
 
-See [documentation](https://frameworm.readthedocs.io) for more.
+See [documentation](https://aakash0440.github.io/Frameworm/) for more.
 
 ---
 
@@ -50,23 +50,23 @@ See [documentation](https://frameworm.readthedocs.io) for more.
 
 ## Documentation
 
-- [Quick Start](https://frameworm.readthedocs.io/getting-started/quickstart/)
-- [User Guide](https://frameworm.readthedocs.io/user-guide/training/)
-- [Tutorials](https://frameworm.readthedocs.io/tutorials/vae-tutorial/)
-- [API Reference](https://frameworm.readthedocs.io/api-reference/core/)
-- [Examples](https://frameworm.readthedocs.io/examples/basic-training/)
+- [Quick Start](https://aakash0440.github.io/Frameworm/getting-started/quickstart/)
+- [User Guide](https://aakash0440.github.io/Frameworm/user_guide/configuration/)
+- [Tutorials](https://aakash0440.github.io/Frameworm/tutorials/vae-tutorial/)
+- [API Reference](https://aakash0440.github.io/Frameworm/api-reference/core/)
+- [Examples](https://aakash0440.github.io/Frameworm/examples/basic-training/)
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/Aakash0440/frameworm/blob/main/CONTRIBUTING.md)
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE)
+MIT License - see [LICENSE](https://github.com/Aakash0440/frameworm/blob/main/LICENSE)
 
 ---
 
