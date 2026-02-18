@@ -12,7 +12,7 @@
         <meta name="author" content="Your Name">
       
       
-        <link rel="canonical" href="https://frameworm.readthedocs.io/user_guide/models/">
+        <link rel="canonical" href="https://frameworm.readthedocs.io/deployment/production-checklist/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Model Zoo - FRAMEWORM</title>
+        <title>Production Deployment Checklist - FRAMEWORM</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#model-zoo" class="md-skip">
+        <a href="#production-deployment-checklist" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Model Zoo
+              Production Deployment Checklist
             
           </span>
         </div>
@@ -266,7 +266,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../configuration/" class="md-tabs__link">
+        <a href="../../user_guide/configuration/" class="md-tabs__link">
           
   
   
@@ -616,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
+      <a href="../../user_guide/configuration/" class="md-nav__link">
         
   
   
@@ -644,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../training/" class="md-nav__link">
+      <a href="../../user_guide/training/" class="md-nav__link">
         
   
   
@@ -672,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-search.md" class="md-nav__link">
+      <a href="../../user_guide/hyperparameter-search.md" class="md-nav__link">
         
   
   
@@ -700,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment/" class="md-nav__link">
+      <a href="../../user_guide/deployment/" class="md-nav__link">
         
   
   
@@ -728,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+      <a href="../../user_guide/cli/" class="md-nav__link">
         
   
   
@@ -756,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dashboard/" class="md-nav__link">
+      <a href="../../user_guide/dashboard/" class="md-nav__link">
         
   
   
@@ -1330,79 +1330,285 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vae-variational-autoencoder" class="md-nav__link">
+  <a href="#pre-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VAE — Variational Autoencoder
+        Pre-Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Code Quality
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#dcgan-deep-convolutional-gan" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#2-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DCGAN — Deep Convolutional GAN
+        2. Configuration
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#ddpm-denoising-diffusion" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#3-performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DDPM — Denoising Diffusion
+        3. Performance
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#vq-vae-2-vector-quantized-vae" class="md-nav__link">
+  <a href="#deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VQ-VAE-2 — Vector Quantized VAE
+        Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Health Checks
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#vit-gan-vision-transformer-gan" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#2-graceful-shutdown" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ViT-GAN — Vision Transformer GAN
+        2. Graceful Shutdown
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#cfg-ddpm-classifier-free-guidance-diffusion" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#3-rate-limiting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CFG-DDPM — Classifier-Free Guidance Diffusion
+        3. Rate Limiting
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#comparison" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#4-request-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Comparison
+        4. Request Validation
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tracing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Alerting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-smoke-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Smoke Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-gradual-rollout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Gradual Rollout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaster Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Disaster Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-rollback-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Rollback Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-incident-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Incident Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1426,129 +1632,157 @@
   
 
 
-<h1 id="model-zoo">Model Zoo<a class="headerlink" href="#model-zoo" title="Permanent link">&para;</a></h1>
-<p>FRAMEWORM includes 6 production-ready generative models.</p>
+<h1 id="production-deployment-checklist">Production Deployment Checklist<a class="headerlink" href="#production-deployment-checklist" title="Permanent link">&para;</a></h1>
+<p>Complete checklist for deploying FRAMEWORM to production.</p>
 <hr />
-<h2 id="vae-variational-autoencoder">VAE — Variational Autoencoder<a class="headerlink" href="#vae-variational-autoencoder" title="Permanent link">&para;</a></h2>
-<p>Classic VAE with KL regularization.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vae&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Fast prototyping, smooth latent space</p>
+<h2 id="pre-deployment">Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permanent link">&para;</a></h2>
+<h3 id="1-code-quality">1. Code Quality<a class="headerlink" href="#1-code-quality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] All tests passing (<code>pytest tests/</code>)</li>
+<li>[ ] Code coverage &gt;90% (<code>pytest --cov</code>)</li>
+<li>[ ] Linting clean (<code>black</code>, <code>flake8</code>, <code>mypy</code>)</li>
+<li>[ ] No security vulnerabilities (<code>bandit frameworm/</code>)</li>
+</ul>
+<h3 id="2-configuration">2. Configuration<a class="headerlink" href="#2-configuration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Config externalized (environment variables)</li>
+<li>[ ] Secrets in vault (not in code)</li>
+<li>[ ] Logging configured for production</li>
+<li>[ ] Error tracking setup (Sentry, etc.)</li>
+</ul>
+<h3 id="3-performance">3. Performance<a class="headerlink" href="#3-performance" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Load tested (wrk, locust)</li>
+<li>[ ] Memory profiled (no leaks)</li>
+<li>[ ] Database queries optimized</li>
+<li>[ ] Caching strategy implemented</li>
+</ul>
 <hr />
-<h2 id="dcgan-deep-convolutional-gan">DCGAN — Deep Convolutional GAN<a class="headerlink" href="#dcgan-deep-convolutional-gan" title="Permanent link">&para;</a></h2>
-<p>Stable GAN training with spectral normalization.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;dcgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Quick image generation</p>
+<h2 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h2>
+<h3 id="1-health-checks">1. Health Checks<a class="headerlink" href="#1-health-checks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">HealthChecker</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">health</span> <span class="o">=</span> <span class="n">HealthChecker</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">health</span><span class="o">.</span><span class="n">add_liveness_check</span><span class="p">(</span><span class="s1">&#39;basic&#39;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">HealthStatus</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">health</span><span class="o">.</span><span class="n">add_readiness_check</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">check_model_loaded</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">health</span><span class="o">.</span><span class="n">add_readiness_check</span><span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="n">check_db_connection</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="2-graceful-shutdown">2. Graceful Shutdown<a class="headerlink" href="#2-graceful-shutdown" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">GracefulShutdown</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">shutdown</span> <span class="o">=</span> <span class="n">GracefulShutdown</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nd">@shutdown</span><span class="o">.</span><span class="n">on_shutdown</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">():</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">save_final_checkpoint</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">close_database_connections</span><span class="p">()</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">shutdown</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="3-rate-limiting">3. Rate Limiting<a class="headerlink" href="#3-rate-limiting" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimiter</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">limiter</span> <span class="o">=</span> <span class="n">RateLimiter</span><span class="p">(</span><span class="n">max_requests</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">window_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># In request handler</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">limiter</span><span class="o">.</span><span class="n">allow</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Rate limit exceeded&#39;</span><span class="p">},</span> <span class="mi">429</span>
+</code></pre></div>
+<h3 id="4-request-validation">4. Request Validation<a class="headerlink" href="#4-request-validation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestValidator</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">validator</span> <span class="o">=</span> <span class="n">RequestValidator</span><span class="p">()</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">validator</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">max_size_mb</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">validator</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s1">&#39;batch_size&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Validate all requests</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">request_data</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="5-security">5. Security<a class="headerlink" href="#5-security" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIKeyAuth</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">APIKeyAuth</span><span class="p">()</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Create key for user</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">api_key</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">create_key</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Verify in requests</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">verify_key</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-API-Key&#39;</span><span class="p">]):</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Unauthorized&#39;</span><span class="p">},</span> <span class="mi">401</span>
+</code></pre></div>
 <hr />
-<h2 id="ddpm-denoising-diffusion">DDPM — Denoising Diffusion<a class="headerlink" href="#ddpm-denoising-diffusion" title="Permanent link">&para;</a></h2>
-<p>Original DDPM with linear noise schedule.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> High quality unconditional generation</p>
+<h2 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="1-metrics">1. Metrics<a class="headerlink" href="#1-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Expose Prometheus metrics on <code>/metrics</code></li>
+<li>Track: request rate, latency p50/p95/p99, error rate, GPU utilization</li>
+</ul>
+<h3 id="2-logging">2. Logging<a class="headerlink" href="#2-logging" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Structured JSON logs</li>
+<li>Include: request_id, user_id, latency, status</li>
+<li>Forward to centralized logging (ELK, Datadog)</li>
+</ul>
+<h3 id="3-tracing">3. Tracing<a class="headerlink" href="#3-tracing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.production</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_tracing</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">tracer</span> <span class="o">=</span> <span class="n">setup_tracing</span><span class="p">(</span><span class="s1">&#39;frameworm-api&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://jaeger:4317&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="4-alerting">4. Alerting<a class="headerlink" href="#4-alerting" title="Permanent link">&para;</a></h3>
+<ul>
+<li>CPU &gt;80% for 5min</li>
+<li>Memory &gt;90%</li>
+<li>Error rate &gt;1%</li>
+<li>p99 latency &gt;500ms</li>
+</ul>
 <hr />
-<h2 id="vq-vae-2-vector-quantized-vae">VQ-VAE-2 — Vector Quantized VAE<a class="headerlink" href="#vq-vae-2-vector-quantized-vae" title="Permanent link">&para;</a></h2>
-<p>Hierarchical codebook latents. Sharp reconstructions.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vqvae2&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Compression, tokenization, discrete representations</p>
-<p>Key feature — two-level hierarchy:
-- Bottom level: local details (64x64)
-- Top level: global structure (16x16)
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">,</span> <span class="n">vq_loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">recon</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">)</span>
-</code></pre></div></p>
+<h2 id="post-deployment">Post-Deployment<a class="headerlink" href="#post-deployment" title="Permanent link">&para;</a></h2>
+<h3 id="1-smoke-tests">1. Smoke Tests<a class="headerlink" href="#1-smoke-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Health endpoints responding</li>
+<li>[ ] Sample inference succeeds</li>
+<li>[ ] Metrics being collected</li>
+<li>[ ] Logs flowing</li>
+</ul>
+<h3 id="2-gradual-rollout">2. Gradual Rollout<a class="headerlink" href="#2-gradual-rollout" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Start with 5% traffic</li>
+<li>Monitor metrics for 30min</li>
+<li>Increase to 25%, 50%, 100%</li>
+<li>Rollback if errors spike</li>
+</ul>
+<h3 id="3-monitoring">3. Monitoring<a class="headerlink" href="#3-monitoring" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Set up dashboard (Grafana)</li>
+<li>Configure alerts (PagerDuty)</li>
+<li>Review logs daily</li>
+<li>Weekly performance review</li>
+</ul>
 <hr />
-<h2 id="vit-gan-vision-transformer-gan">ViT-GAN — Vision Transformer GAN<a class="headerlink" href="#vit-gan-vision-transformer-gan" title="Permanent link">&para;</a></h2>
-<p>Transformer discriminator for global coherence.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vitgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> High-resolution, globally coherent generation
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vitgan</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">patch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nt">vit_embed_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">384</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="nt">vit_depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span>
-</code></pre></div></p>
-<hr />
-<h2 id="cfg-ddpm-classifier-free-guidance-diffusion">CFG-DDPM — Classifier-Free Guidance Diffusion<a class="headerlink" href="#cfg-ddpm-classifier-free-guidance-diffusion" title="Permanent link">&para;</a></h2>
-<p>Conditional generation with guidance scale control.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;cfg_ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Conditional generation, text-to-image, class-guided synthesis
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Train conditionally</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">losses</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">))</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Sample with guidance</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">class_label</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># Generate class 3</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">guidance_scale</span><span class="o">=</span><span class="mf">7.5</span>       <span class="c1"># Higher = more faithful but less diverse</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Guidance scale guide:</strong>
-- 1.0 = no guidance (unconditional)
-- 3.0–5.0 = mild guidance
-- 7.5 = recommended (Stable Diffusion default)
-- 15+ = strong guidance, reduced diversity</p>
-<hr />
-<h2 id="comparison">Comparison<a class="headerlink" href="#comparison" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Model</th>
-<th>Quality</th>
-<th>Speed</th>
-<th>Controllable</th>
-<th>Memory</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VAE</td>
-<td>⭐⭐</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Low</td>
-</tr>
-<tr>
-<td>DCGAN</td>
-<td>⭐⭐⭐</td>
-<td>⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Low</td>
-</tr>
-<tr>
-<td>DDPM</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐</td>
-<td>❌</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td>VQ-VAE-2</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td>ViT-GAN</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐⭐</td>
-<td>❌</td>
-<td>High</td>
-</tr>
-<tr>
-<td>CFG-DDPM</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>⭐</td>
-<td>✅</td>
-<td>High</td>
-</tr>
-</tbody>
-</table>
+<h2 id="disaster-recovery">Disaster Recovery<a class="headerlink" href="#disaster-recovery" title="Permanent link">&para;</a></h2>
+<h3 id="1-backups">1. Backups<a class="headerlink" href="#1-backups" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Model checkpoints: Daily to S3</li>
+<li>Database: Continuous replication</li>
+<li>Configs: Version controlled in Git</li>
+</ul>
+<h3 id="2-rollback-plan">2. Rollback Plan<a class="headerlink" href="#2-rollback-plan" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Rollback deployment</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>undo<span class="w"> </span>deployment/frameworm-api
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Restore database</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>pg_restore<span class="w"> </span>--clean<span class="w"> </span>backup.sql
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Revert model version</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>frameworm<span class="w"> </span>registry<span class="w"> </span>promote<span class="w"> </span>vae-mnist<span class="w"> </span><span class="m">1</span>.0.0<span class="w"> </span>production
+</code></pre></div>
+<h3 id="3-incident-response">3. Incident Response<a class="headerlink" href="#3-incident-response" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Acknowledge alert</li>
+<li>Check metrics/logs</li>
+<li>Apply fix or rollback</li>
+<li>Post-mortem write-up</li>
+</ol>
 
 
 

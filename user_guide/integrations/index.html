@@ -12,7 +12,7 @@
         <meta name="author" content="Your Name">
       
       
-        <link rel="canonical" href="https://frameworm.readthedocs.io/user_guide/models/">
+        <link rel="canonical" href="https://frameworm.readthedocs.io/user_guide/integrations/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Model Zoo - FRAMEWORM</title>
+        <title>Third-Party Integrations - FRAMEWORM</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#model-zoo" class="md-skip">
+        <a href="#third-party-integrations" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Model Zoo
+              Third-Party Integrations
             
           </span>
         </div>
@@ -1330,76 +1330,138 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vae-variational-autoencoder" class="md-nav__link">
+  <a href="#experiment-tracking" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VAE — Variational Autoencoder
+        Experiment Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Experiment Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#weights-biases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weights &amp; Biases
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#dcgan-deep-convolutional-gan" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#mlflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DCGAN — Deep Convolutional GAN
+        MLflow
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#ddpm-denoising-diffusion" class="md-nav__link">
+  <a href="#cloud-storage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DDPM — Denoising Diffusion
+        Cloud Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cloud Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS S3
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#vq-vae-2-vector-quantized-vae" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-storage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VQ-VAE-2 — Vector Quantized VAE
+        Google Cloud Storage
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#vit-gan-vision-transformer-gan" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#azure-blob-storage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ViT-GAN — Vision Transformer GAN
+        Azure Blob Storage
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#cfg-ddpm-classifier-free-guidance-diffusion" class="md-nav__link">
+  <a href="#notifications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CFG-DDPM — Classifier-Free Guidance Diffusion
+        Notifications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Notifications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slack
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#comparison" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#email" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Comparison
+        Email
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
       
     </span>
   </a>
@@ -1426,129 +1488,117 @@
   
 
 
-<h1 id="model-zoo">Model Zoo<a class="headerlink" href="#model-zoo" title="Permanent link">&para;</a></h1>
-<p>FRAMEWORM includes 6 production-ready generative models.</p>
+<h1 id="third-party-integrations">Third-Party Integrations<a class="headerlink" href="#third-party-integrations" title="Permanent link">&para;</a></h1>
+<p>FRAMEWORM integrates with popular ML tools and services.</p>
 <hr />
-<h2 id="vae-variational-autoencoder">VAE — Variational Autoencoder<a class="headerlink" href="#vae-variational-autoencoder" title="Permanent link">&para;</a></h2>
-<p>Classic VAE with KL regularization.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vae&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Fast prototyping, smooth latent space</p>
+<h2 id="experiment-tracking">Experiment Tracking<a class="headerlink" href="#experiment-tracking" title="Permanent link">&para;</a></h2>
+<h3 id="weights-biases">Weights &amp; Biases<a class="headerlink" href="#weights-biases" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">WandBIntegration</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">wandb_logger</span> <span class="o">=</span> <span class="n">WandBIntegration</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">project</span><span class="o">=</span><span class="s1">&#39;my-project&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">entity</span><span class="o">=</span><span class="s1">&#39;my-team&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;vae&#39;</span><span class="p">,</span> <span class="s1">&#39;experiment-1&#39;</span><span class="p">]</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">wandb_logger</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Auto-logs to W&amp;B</span>
+</code></pre></div>
+<h3 id="mlflow">MLflow<a class="headerlink" href="#mlflow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLflowIntegration</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">mlflow_logger</span> <span class="o">=</span> <span class="n">MLflowIntegration</span><span class="p">(</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">experiment_name</span><span class="o">=</span><span class="s1">&#39;vae-training&#39;</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">tracking_uri</span><span class="o">=</span><span class="s1">&#39;http://mlflow-server:5000&#39;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">mlflow_logger</span><span class="p">)</span>
+</code></pre></div>
 <hr />
-<h2 id="dcgan-deep-convolutional-gan">DCGAN — Deep Convolutional GAN<a class="headerlink" href="#dcgan-deep-convolutional-gan" title="Permanent link">&para;</a></h2>
-<p>Stable GAN training with spectral normalization.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;dcgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Quick image generation</p>
+<h2 id="cloud-storage">Cloud Storage<a class="headerlink" href="#cloud-storage" title="Permanent link">&para;</a></h2>
+<h3 id="aws-s3">AWS S3<a class="headerlink" href="#aws-s3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">s3</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;my-ml-models&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;experiments/vae&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-east-1&#39;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>  <span class="c1"># Auto-uploads checkpoints</span>
+</code></pre></div>
+<h3 id="google-cloud-storage">Google Cloud Storage<a class="headerlink" href="#google-cloud-storage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">gcs</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;my-ml-models&#39;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;experiments&#39;</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">credentials_path</span><span class="o">=</span><span class="s1">&#39;service-account.json&#39;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">gcs</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="azure-blob-storage">Azure Blob Storage<a class="headerlink" href="#azure-blob-storage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AzureStorage</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">azure</span> <span class="o">=</span> <span class="n">AzureStorage</span><span class="p">(</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">account_name</span><span class="o">=</span><span class="s1">&#39;myaccount&#39;</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">container</span><span class="o">=</span><span class="s1">&#39;ml-models&#39;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">azure</span><span class="p">)</span>
+</code></pre></div>
 <hr />
-<h2 id="ddpm-denoising-diffusion">DDPM — Denoising Diffusion<a class="headerlink" href="#ddpm-denoising-diffusion" title="Permanent link">&para;</a></h2>
-<p>Original DDPM with linear noise schedule.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> High quality unconditional generation</p>
+<h2 id="notifications">Notifications<a class="headerlink" href="#notifications" title="Permanent link">&para;</a></h2>
+<h3 id="slack">Slack<a class="headerlink" href="#slack" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlackNotifier</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">slack</span> <span class="o">=</span> <span class="n">SlackNotifier</span><span class="p">(</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">webhook_url</span><span class="o">=</span><span class="s1">&#39;https://hooks.slack.com/...&#39;</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">notify_on_epoch</span><span class="o">=</span><span class="mi">10</span>  <span class="c1"># Every 10 epochs</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">)</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">slack</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="email">Email<a class="headerlink" href="#email" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmailNotifier</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">email</span> <span class="o">=</span> <span class="n">EmailNotifier</span><span class="p">(</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">smtp_server</span><span class="o">=</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">sender_email</span><span class="o">=</span><span class="s1">&#39;your@gmail.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">sender_password</span><span class="o">=</span><span class="s1">&#39;app_password&#39;</span><span class="p">,</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">recipient_email</span><span class="o">=</span><span class="s1">&#39;notify@example.com&#39;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+</code></pre></div>
 <hr />
-<h2 id="vq-vae-2-vector-quantized-vae">VQ-VAE-2 — Vector Quantized VAE<a class="headerlink" href="#vq-vae-2-vector-quantized-vae" title="Permanent link">&para;</a></h2>
-<p>Hierarchical codebook latents. Sharp reconstructions.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vqvae2&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Compression, tokenization, discrete representations</p>
-<p>Key feature — two-level hierarchy:
-- Bottom level: local details (64x64)
-- Top level: global structure (16x16)
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">,</span> <span class="n">vq_loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">recon</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z_top</span><span class="p">,</span> <span class="n">z_bottom</span><span class="p">)</span>
-</code></pre></div></p>
-<hr />
-<h2 id="vit-gan-vision-transformer-gan">ViT-GAN — Vision Transformer GAN<a class="headerlink" href="#vit-gan-vision-transformer-gan" title="Permanent link">&para;</a></h2>
-<p>Transformer discriminator for global coherence.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;vitgan&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> High-resolution, globally coherent generation
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">model</span><span class="p">:</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vitgan</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">image_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">patch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nt">vit_embed_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">384</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="nt">vit_depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span>
-</code></pre></div></p>
-<hr />
-<h2 id="cfg-ddpm-classifier-free-guidance-diffusion">CFG-DDPM — Classifier-Free Guidance Diffusion<a class="headerlink" href="#cfg-ddpm-classifier-free-guidance-diffusion" title="Permanent link">&para;</a></h2>
-<p>Conditional generation with guidance scale control.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s1">&#39;cfg_ddpm&#39;</span><span class="p">)(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Best for:</strong> Conditional generation, text-to-image, class-guided synthesis
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Train conditionally</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">losses</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">))</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Sample with guidance</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">class_label</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># Generate class 3</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">guidance_scale</span><span class="o">=</span><span class="mf">7.5</span>       <span class="c1"># Higher = more faithful but less diverse</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>Guidance scale guide:</strong>
-- 1.0 = no guidance (unconditional)
-- 3.0–5.0 = mild guidance
-- 7.5 = recommended (Stable Diffusion default)
-- 15+ = strong guidance, reduced diversity</p>
-<hr />
-<h2 id="comparison">Comparison<a class="headerlink" href="#comparison" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Model</th>
-<th>Quality</th>
-<th>Speed</th>
-<th>Controllable</th>
-<th>Memory</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VAE</td>
-<td>⭐⭐</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Low</td>
-</tr>
-<tr>
-<td>DCGAN</td>
-<td>⭐⭐⭐</td>
-<td>⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Low</td>
-</tr>
-<tr>
-<td>DDPM</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐</td>
-<td>❌</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td>VQ-VAE-2</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐⭐⭐</td>
-<td>❌</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td>ViT-GAN</td>
-<td>⭐⭐⭐⭐</td>
-<td>⭐⭐⭐</td>
-<td>❌</td>
-<td>High</td>
-</tr>
-<tr>
-<td>CFG-DDPM</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>⭐</td>
-<td>✅</td>
-<td>High</td>
-</tr>
-</tbody>
-</table>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_model</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">WandBIntegration</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">S3Storage</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">SlackNotifier</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">)</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># Setup integrations</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">wandb</span> <span class="o">=</span> <span class="n">WandBIntegration</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;my-project&#39;</span><span class="p">)</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">s3</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;my-models&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;exp1&#39;</span><span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="n">slack</span> <span class="o">=</span> <span class="n">SlackNotifier</span><span class="p">(</span><span class="n">webhook_url</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="c1"># Train with all integrations</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">wandb</span><span class="p">)</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="n">trainer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">slack</span><span class="p">)</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</code></pre></div>
+<p>Result:
+- ✅ Metrics logged to W&amp;B
+- ✅ Checkpoints uploaded to S3
+- ✅ Slack notifications on completion</p>
 
 
 
