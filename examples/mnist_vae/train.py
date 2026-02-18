@@ -9,9 +9,9 @@ import argparse
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from frameworm import Config, get_model, Trainer
-from frameworm.training.callbacks import EarlyStopping, ModelCheckpoint
-from frameworm.experiment import Experiment
+from core import Config, get_model, Trainer
+from training.callbacks import EarlyStopping, ModelCheckpoint
+from experiment import Experiment
 import matplotlib.pyplot as plt
 
 
