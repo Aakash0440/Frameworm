@@ -64,7 +64,7 @@ class CooldownManager:
             expired = [
                 atype
                 for atype, registered_step in self._last_action_step.items()
-                if current_step - registered_step >= self.cooldown_steps
+                if current_step - registered_step > self.cooldown_steps
             ]
             for atype in expired:
                 del self._last_action_step[atype]

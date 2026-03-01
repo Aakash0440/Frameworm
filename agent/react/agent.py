@@ -171,6 +171,7 @@ class FramewormAgent:
         prompt_builder: PromptBuilder,
         log_dir: Path = Path("experiments/agent_logs"),
         max_consecutive_actions: int = 5,
+        predictor=None
     ) -> None:
         self.stream = stream
         self.rule_engine = rule_engine
@@ -180,7 +181,7 @@ class FramewormAgent:
         self.prompt_builder = prompt_builder
         self.log_dir = log_dir
         self.max_consecutive_actions = max_consecutive_actions
-
+        self.predictor = predictor  # FailurePredictor — optional
         # Internal state
         self.parser = ActionParser()
         self.queue = AnomalyPriorityQueue()
@@ -246,6 +247,15 @@ class FramewormAgent:
         if snapshot is None:
             time.sleep(1.0)
             return
+        # Proactive forecaster tick
+        if self.predictor is not None and self.predictor.is_ready:
+            pred_result = self.predictor.tick(
+                window=self.stream.window,
+                current_step=snapshot.step,
+                control=self.control,
+        )
+        if pred_result and pred_result.is_alarming:
+            logger.info(f"[Forecaster] {pred_result.summary()}")
 
         # 2. Extract signals
         signals = self.stream.signals()
@@ -435,6 +445,12 @@ class FramewormAgent:
             cooldown_steps=int(agent_cfg.get("cooldown_steps", 200))
         )
         control = AgentControlPlugin(cooldown=cooldown)
+
+        from agent.forecaster.failure_predictor import FailurePredictor
+        predictor = FailurePredictor(
+            confidence_threshold=float(agent_cfg.get("forecast_confidence", 0.80)),
+            run_every=int(agent_cfg.get("forecast_run_every", 25)),
+        )
 
         return cls(
             stream=stream,

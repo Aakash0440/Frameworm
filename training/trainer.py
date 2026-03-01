@@ -61,7 +61,10 @@ class Trainer:
         self.mixed_precision = False
         self.grad_scaler: Optional[torch.cuda.amp.GradScaler] = None
         self.gradient_accumulation_steps = gradient_accumulation_steps
-
+        self._agent_plugin = None
+        self._last_loss = 0.0
+        self._last_grad_norm = 0.0
+        self._weight_update_ratio = 0.0
         # Training state
         self.state = TrainingState()
         self.train_tracker = MetricsTracker()
@@ -247,7 +250,10 @@ class Trainer:
 
             if self.gradient_accumulator:
                 loss = self.gradient_accumulator.scale_loss(loss)
-
+            # After loss is computed in _compute_loss / before backward:
+            self._last_loss = float(loss_dict["loss"].item())
+            if self.gradient_clipper:
+                self._last_grad_norm = loss_dict.get("grad_norm", 0.0)
             # Hook: before backward
             if self.enable_hooks:
                 HookRegistry.call("on_backward_begin", trainer=self, loss=loss)
@@ -284,7 +290,10 @@ class Trainer:
             self.callbacks.on_batch_end(batch_idx, loss_dict, self)
             self.logger.log_batch(epoch + 1, batch_idx, len(train_loader), loss_dict)
             self.state.global_step += 1
-
+            # FRAMEWORM-AGENT hook — 4 lines, safe if agent not running
+            if hasattr(self, '_agent_plugin') and self._agent_plugin is not None:
+                if self.state.global_step % 50 == 0:
+                    self._agent_plugin.check_commands()
         return self.train_tracker.epoch_end()
 
     # ------------------ Loss & Validation ------------------

@@ -43,3 +43,5 @@ agent:
 
   # Cooldown (added in Part 2)
   cooldown_steps: 200             # steps between same anomaly actions
+  forecast_confidence: 0.80
+  forecast_run_every: 25
