@@ -19,3 +19,27 @@ logging:
 paths:
   output_dir: ./outputs
   data_dir: ./data
+
+
+# ─────────────────────────────────────────────
+# FRAMEWORM-AGENT configuration
+# ─────────────────────────────────────────────
+agent:
+  enabled: true
+  poll_every: 10                  # seconds between metric polls
+  window_size: 500                # rolling window capacity (steps)
+
+  # Rule engine thresholds
+  grad_explosion_threshold: 10.0
+  vanishing_grad_threshold: 0.001
+  loss_spike_z_score: 3.0
+  plateau_score_threshold: 0.05
+  plateau_min_steps: 100
+  divergence_score_threshold: 0.75
+  divergence_min_steps: 50
+  oscillation_score_threshold: 0.01
+  early_training_lenience: true
+  early_lenience_factor: 2.0
+
+  # Cooldown (added in Part 2)
+  cooldown_steps: 200             # steps between same anomaly actions
