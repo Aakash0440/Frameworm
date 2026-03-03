@@ -1,5 +1,0 @@
-experiment:
-  name: ${EXPERIMENT_NAME}
-paths:
-  data_dir: ${DATA_ROOT}/images
-  output_dir: ./outputs/${EXPERIMENT_NAME}
