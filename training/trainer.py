@@ -4,7 +4,8 @@ Main Trainer class for training models.
 
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
-from plugins.hooks import HookRegistry
+from plugins.hooks import get_default_registry
+HookRegistry = get_default_registry()
 import torch
 import torch.nn as nn
 from torch.optim import Optimizer
@@ -268,6 +269,18 @@ class Trainer:
                 loss_dict["grad_norm"] = self.gradient_clipper.clip(self.model.parameters())
 
             # Hook: optimizer step
+
+            # Write metrics for agent monitoring
+            import json, pathlib, os
+            _agent_path = pathlib.Path(os.environ.get('TEMP', '/tmp')) / 'frameworm_agent_metrics.json'
+            _agent_metrics = {
+                'step': self.state.global_step,
+                'loss': float(loss_dict.get('loss', loss).item() if hasattr(loss_dict.get('loss', loss), 'item') else loss_dict.get('loss', 0)),
+                'grad_norm': float(loss_dict.get('grad_norm', 0)),
+                'lr': float(self.optimizer.param_groups[0]['lr']),
+                'epoch': epoch,
+            }
+            _agent_path.write_text(json.dumps(_agent_metrics))
             if self.enable_hooks:
                 HookRegistry.call("on_optimizer_step", trainer=self)
 

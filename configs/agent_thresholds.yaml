@@ -1,0 +1,42 @@
+
+# FRAMEWORM-AGENT thresholds
+# Override in your model-specific configs.
+# All values tunable without touching code.
+
+agent:
+  enabled: true
+  poll_every: 10                    # seconds between metric polls
+  window_size: 500                  # rolling window capacity (steps)
+
+  # ── Rule engine thresholds ──────────────────────────────────────
+  grad_explosion_threshold: 10.0    # grad_norm > this → GRADIENT_EXPLOSION
+  vanishing_grad_threshold: 0.001   # grad_norm < this → VANISHING_GRAD
+  loss_spike_z_score: 3.0           # z-score > this → LOSS_SPIKE
+  plateau_score_threshold: 0.05     # plateau_score < this → (potential plateau)
+  plateau_min_steps: 100            # confirm plateau after N steps
+  divergence_score_threshold: 0.75  # divergence_score > this → (potential divergence)
+  divergence_min_steps: 50          # confirm divergence after N steps
+  oscillation_score_threshold: 0.01 # oscillation_score > this → OSCILLATING
+  early_training_lenience: true     # relax thresholds in first 10% of training
+  early_lenience_factor: 2.0        # multiply all thresholds by this during early training
+
+  # ── Cooldown ────────────────────────────────────────────────────
+  cooldown_steps: 200               # steps between same-type actions
+
+  # ── Forecaster (Part 3) ─────────────────────────────────────────
+  forecaster_confidence_threshold: 0.75   # P(failure) needed for proactive action
+  forecaster_min_steps_between: 200       # steps between proactive interventions
+  proactive_lr_factor: 0.8               # gentle LR reduction for proactive
+
+  # ── CQL policy (Part 5) ─────────────────────────────────────────
+  policy_min_samples_per_type: 20   # transitions needed before trusting policy
+  policy_confidence_threshold: 1.0  # min Q-value to prefer policy over LLM
+
+  # ── Twin runner (Part 4) ────────────────────────────────────────
+  shadow_steps: 200                 # steps per counterfactual shadow run
+  shadow_mode: in_process           # in_process or subprocess
+
+  # ── LLM ─────────────────────────────────────────────────────────
+  llm_model: gpt-4o-mini            # or: llama3.2 (Ollama), etc.
+  llm_max_tokens: 300
+  llm_temperature: 0.2

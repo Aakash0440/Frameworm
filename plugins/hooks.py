@@ -33,6 +33,9 @@ logger = logging.getLogger(__name__)
 
 # All supported lifecycle hook names
 SUPPORTED_HOOKS = [
+    "on_optimizer_step",
+    "on_backward_end",
+    "on_backward_begin",
     # Training lifecycle
     "on_train_begin",
     "on_train_end",

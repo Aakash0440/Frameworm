@@ -1,0 +1,70 @@
+{
+  "results": [
+    {
+      "scenario_name": "grad_explosion_severe",
+      "baseline": "RULE_BASED",
+      "anomaly_type": "GRADIENT_EXPLOSION",
+      "severity": "severe",
+      "detected": false,
+      "detection_step": null,
+      "detection_latency_steps": null,
+      "resolved": false,
+      "resolution_step": null,
+      "time_to_recovery_steps": null,
+      "final_loss": 0.5319100473243256,
+      "compute_overhead_seconds": 0.07197910000013508,
+      "false_positive": false,
+      "error": null
+    },
+    {
+      "scenario_name": "grad_explosion_severe",
+      "baseline": "FULL_AGENT",
+      "anomaly_type": "GRADIENT_EXPLOSION",
+      "severity": "severe",
+      "detected": true,
+      "detection_step": 100,
+      "detection_latency_steps": 0,
+      "resolved": true,
+      "resolution_step": 200,
+      "time_to_recovery_steps": 100,
+      "final_loss": 0.6088706185416878,
+      "compute_overhead_seconds": 0.0011457999999038293,
+      "false_positive": false,
+      "error": null
+    },
+    {
+      "scenario_name": "loss_spike_moderate",
+      "baseline": "RULE_BASED",
+      "anomaly_type": "LOSS_SPIKE",
+      "severity": "moderate",
+      "detected": true,
+      "detection_step": 300,
+      "detection_latency_steps": 0,
+      "resolved": false,
+      "resolution_step": null,
+      "time_to_recovery_steps": null,
+      "final_loss": 2.551726905644161,
+      "compute_overhead_seconds": 0.05076669999971273,
+      "false_positive": false,
+      "error": null
+    },
+    {
+      "scenario_name": "loss_spike_moderate",
+      "baseline": "FULL_AGENT",
+      "anomaly_type": "LOSS_SPIKE",
+      "severity": "moderate",
+      "detected": true,
+      "detection_step": 100,
+      "detection_latency_steps": 0,
+      "resolved": false,
+      "resolution_step": null,
+      "time_to_recovery_steps": null,
+      "final_loss": 1.0658018714464985,
+      "compute_overhead_seconds": 0.0011966000001848442,
+      "false_positive": false,
+      "error": null
+    }
+  ],
+  "generated_at": 1772433160.667061,
+  "total_duration_seconds": 0.12612190000027113
+}

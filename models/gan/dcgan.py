@@ -2,6 +2,7 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from core import register_model
 from models.base import BaseModel
@@ -97,54 +98,49 @@ class DCGAN(BaseModel):
         self.generator = Generator(latent_dim, ngf, channels)
         self.discriminator = Discriminator(ndf, channels)
 
-        # Initialize weights
         self.init_weights()
 
     def forward(self, z=None, batch_size=None):
-        """
-        Generate images.
-
-        Args:
-            z: Latent vectors (B, latent_dim, 1, 1) or None
-            batch_size: If z is None, generate this many samples
-
-        Returns:
-            Generated images (B, C, H, W)
-        """
         if z is None:
             if batch_size is None:
                 raise ValueError("Must provide either z or batch_size")
             z = self.sample_z(batch_size)
-
         return self.generator(z)
 
     def discriminate(self, images):
-        """
-        Discriminate real vs fake images.
-
-        Args:
-            images: Images (B, C, H, W)
-
-        Returns:
-            Probabilities (B,)
-        """
         return self.discriminator(images)
 
     def sample_z(self, batch_size):
-        """
-        Sample latent vectors.
-
-        Args:
-            batch_size: Number of samples
-
-        Returns:
-            Latent vectors (B, latent_dim, 1, 1)
-        """
         device = self.get_device()
         return torch.randn(batch_size, self.latent_dim, 1, 1, device=device)
 
+    def compute_loss(self, batch):
+        """GAN loss for generator and discriminator."""
+        real_images = batch
+        batch_size = real_images.size(0)
+        device = real_images.device
+
+        real_labels = torch.ones(batch_size, device=device)
+        fake_labels = torch.zeros(batch_size, device=device)
+
+        # Discriminator loss
+        real_preds = self.discriminator(real_images)
+        d_loss_real = F.binary_cross_entropy(real_preds, real_labels)
+
+        z = torch.randn(batch_size, self.latent_dim, 1, 1, device=device)
+        fake_images = self.generator(z)
+        fake_preds = self.discriminator(fake_images.detach())
+        d_loss_fake = F.binary_cross_entropy(fake_preds, fake_labels)
+
+        d_loss = d_loss_real + d_loss_fake
+
+        # Generator loss
+        gen_preds = self.discriminator(fake_images)
+        g_loss = F.binary_cross_entropy(gen_preds, real_labels)
+
+        return {"loss": d_loss + g_loss, "d_loss": d_loss, "g_loss": g_loss}
+
     def _default_init(self, module):
-        """Custom weight initialization for DCGAN"""
         classname = module.__class__.__name__
         if classname.find("Conv") != -1:
             nn.init.normal_(module.weight.data, 0.0, 0.02)
@@ -153,6 +149,5 @@ class DCGAN(BaseModel):
             nn.init.constant_(module.bias.data, 0)
 
     def init_weights(self):
-        """Initialize generator and discriminator weights."""
         self.generator.apply(self._default_init)
         self.discriminator.apply(self._default_init)

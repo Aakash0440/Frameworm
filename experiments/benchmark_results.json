@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Gradient Explosion",
+    "loss": 847.3,
+    "detected": true,
+    "z_score": "5.48"
+  },
+  {
+    "name": "Vanishing Gradient",
+    "loss": 2.1,
+    "detected": true,
+    "z_score": "-0.18"
+  },
+  {
+    "name": "Mode Collapse",
+    "loss": 0.001,
+    "detected": true,
+    "z_score": "-0.19"
+  },
+  {
+    "name": "Loss Spike",
+    "loss": 500.0,
+    "detected": true,
+    "z_score": "2.80"
+  }
+]

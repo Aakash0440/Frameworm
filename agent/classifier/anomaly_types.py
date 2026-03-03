@@ -103,7 +103,15 @@ SUGGESTED_ACTIONS: Dict[AnomalyType, list] = {
     AnomalyType.PLATEAU: ["SWAP_SCHEDULER", "ADJUST_LR", "ALERT"],
     AnomalyType.HEALTHY: ["WATCH"],
 }
-
+# Ordered list of failure modes (excludes HEALTHY) — used for one-hot encoding
+FAILURE_TYPES = [
+    AnomalyType.GRADIENT_EXPLOSION,
+    AnomalyType.DIVERGENCE,
+    AnomalyType.LOSS_SPIKE,
+    AnomalyType.VANISHING_GRAD,
+    AnomalyType.OSCILLATING,
+    AnomalyType.PLATEAU,
+]
 
 @dataclass
 class AnomalyEvent:

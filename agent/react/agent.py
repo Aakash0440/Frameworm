@@ -10,12 +10,11 @@ Full loop per tick:
     3. RuleEngine.classify()        → List[AnomalyEvent]
     4. AnomalyPriorityQueue.push()  → prioritized queue
     5. Cooldown.is_blocked()?       → skip if too soon
-    6. PromptBuilder.build()        → LLM prompt string
-    7. LLM call                     → raw text response
-    8. ActionParser.parse()         → ParsedAction
-    9. AgentControlPlugin.execute() → action on training loop
-   10. Verifier.verify()            → was it resolved?
-   11. Log outcome                  → action_history + JSON log
+    6. Policy-first decision        → CQLPolicy or LLM fallback
+    7. AgentControlPlugin.execute() → action on training loop
+    8. Verifier.verify()            → was it resolved?
+    9. ExperienceBuffer.add()       → store transition
+   10. Log outcome                  → action_history + JSON log
 
 Usage:
     agent = FramewormAgent.from_config("configs/base.yaml", run_id="abc123")
@@ -41,6 +40,9 @@ from agent.classifier.rule_engine import RuleEngine, RuleEngineConfig
 from agent.observer.metric_stream import MetricStream
 from agent.observer.rolling_window import RollingWindow
 from agent.observer.signal_extractor import SignalExtractor
+from agent.policy.cql_policy import CQLPolicy
+from agent.policy.experience_buffer import ExperienceBuffer, encode_state, compute_reward
+from agent.pomdp.belief_updater import BeliefUpdater, BeliefState
 from agent.react.action_parser import ActionParser, ActionType, ParsedAction
 from agent.react.prompts import PromptBuilder, SYSTEM_PROMPT
 from agent.react.verifier import Verifier, VerificationResult
@@ -159,6 +161,9 @@ class FramewormAgent:
         log_dir:        Where to write decision JSON logs.
         max_consecutive_actions: Stop agent if this many actions
                                  fire without a HEALTHY period.
+        policy:         CQLPolicy for policy-first decisions.
+        buffer:         ExperienceBuffer for storing transitions.
+        belief_updater: BeliefUpdater for POMDP belief tracking.
     """
 
     def __init__(
@@ -171,7 +176,10 @@ class FramewormAgent:
         prompt_builder: PromptBuilder,
         log_dir: Path = Path("experiments/agent_logs"),
         max_consecutive_actions: int = 5,
-        predictor=None
+        predictor=None,
+        policy: Optional[CQLPolicy] = None,
+        buffer: Optional[ExperienceBuffer] = None,
+        belief_updater: Optional[BeliefUpdater] = None,
     ) -> None:
         self.stream = stream
         self.rule_engine = rule_engine
@@ -182,6 +190,14 @@ class FramewormAgent:
         self.log_dir = log_dir
         self.max_consecutive_actions = max_consecutive_actions
         self.predictor = predictor  # FailurePredictor — optional
+
+        # Policy + memory components
+        self.policy = policy or CQLPolicy.from_checkpoint()
+        self.buffer = buffer or ExperienceBuffer()
+        self.buffer.load_from_db()   # resume from past sessions
+        self.belief_updater = belief_updater or BeliefUpdater()
+        self._belief = self.belief_updater.initial_belief()
+
         # Internal state
         self.parser = ActionParser()
         self.queue = AnomalyPriorityQueue()
@@ -247,15 +263,16 @@ class FramewormAgent:
         if snapshot is None:
             time.sleep(1.0)
             return
+
         # Proactive forecaster tick
         if self.predictor is not None and self.predictor.is_ready:
             pred_result = self.predictor.tick(
                 window=self.stream.window,
                 current_step=snapshot.step,
                 control=self.control,
-        )
-        if pred_result and pred_result.is_alarming:
-            logger.info(f"[Forecaster] {pred_result.summary()}")
+            )
+            if pred_result and pred_result.is_alarming:
+                logger.info(f"[Forecaster] {pred_result.summary()}")
 
         # 2. Extract signals
         signals = self.stream.signals()
@@ -296,25 +313,48 @@ class FramewormAgent:
             )
             return
 
-        # 8. Build prompt + call LLM
-        logger.info(
-            f"[Step {event.step}] Escalating to LLM: "
-            f"{event.anomaly_type.name} ({event.severity.value})"
+        # 8. Update belief state
+        self._belief = self.belief_updater.update(
+            self._belief, signals, n_anomaly_events=len(events)
         )
 
-        prompt = self.prompt_builder.build(
-            event=event,
-            window=self.stream.window,
-            action_history=self.action_history,
-            last_checkpoint_step=self.control.last_checkpoint_step,
-            last_checkpoint_loss=self.control.last_checkpoint_loss,
+        # 9. Try policy first — skip LLM if confident
+        state_vec = encode_state(signals, event.anomaly_type)
+        policy_action, confidence = self.policy.select_action(
+            state_vec, event.anomaly_type
         )
 
-        raw_response = self.llm.call(system=SYSTEM_PROMPT, user=prompt)
-        logger.debug(f"LLM raw response:\n{raw_response}")
+        if policy_action is not None and confidence > 1.0:
+            # Policy is confident — use it, skip LLM
+            logger.info(
+                f"[Step {event.step}] Policy action: {policy_action} "
+                f"(conf={confidence:.2f}) — skipping LLM."
+            )
+            action = ParsedAction(
+                action_type=policy_action,
+                params=self._default_params(policy_action),
+                think=f"CQL policy (conf={confidence:.2f})",
+                reason=f"Policy trained on {len(self.buffer)} transitions",
+            )
+            used_llm = False
+        else:
+            # Fall back to LLM
+            logger.info(
+                f"[Step {event.step}] Escalating to LLM: "
+                f"{event.anomaly_type.name} ({event.severity.value})"
+            )
+            prompt = self.prompt_builder.build(
+                event=event,
+                window=self.stream.window,
+                action_history=self.action_history,
+                last_checkpoint_step=self.control.last_checkpoint_step,
+                last_checkpoint_loss=self.control.last_checkpoint_loss,
+            )
+            raw_response = self.llm.call(system=SYSTEM_PROMPT, user=prompt)
+            logger.debug(f"LLM raw response:\n{raw_response}")
+            action = self.parser.parse(raw_response)
+            used_llm = True
 
-        # 9. Parse action
-        action = self.parser.parse(raw_response)
         logger.info(f"[Step {event.step}] Action: {action}")
 
         # 10. Execute
@@ -345,7 +385,22 @@ class FramewormAgent:
                     "Manual check recommended."
                 )
 
-        # 13. Log decision
+        # 13. Add to experience buffer after verification
+        next_signals = self.stream.signals()
+        self.buffer.add_from_decision(
+            signals=signals,
+            anomaly_type=event.anomaly_type,
+            action_type=action.action_type,
+            next_signals=next_signals,
+            resolved=resolved,
+            loss_delta=verification.loss_delta if verification else 0.0,
+            fid_delta=None,  # filled in by delta_tracker later
+            is_fallback=action.is_fallback or used_llm,
+            step=event.step,
+            run_id=getattr(self, '_run_id', ''),
+        )
+
+        # 14. Log decision
         record = DecisionRecord(
             step=event.step,
             anomaly_type=event.anomaly_type.name,
@@ -370,6 +425,22 @@ class FramewormAgent:
         if resolved:
             self._consecutive_actions = 0
             self.rule_engine.reset_counters()
+
+    # ──────────────────────────────────────────────
+    # Helpers
+    # ──────────────────────────────────────────────
+
+    def _default_params(self, action_type: ActionType) -> dict:
+        """Default parameters for policy-driven actions (no LLM to fill them in)."""
+        defaults = {
+            ActionType.WATCH:            {"steps": 50},
+            ActionType.ADJUST_LR:        {"factor": 0.5},
+            ActionType.ROLLBACK:         {"step": None},
+            ActionType.SWAP_SCHEDULER:   {"name": "cosine"},
+            ActionType.PAUSE:            {},
+            ActionType.ALERT:            {"message": "Agent action."},
+        }
+        return defaults.get(action_type, {})
 
     # ──────────────────────────────────────────────
     # Logging
@@ -437,7 +508,6 @@ class FramewormAgent:
             early_training_lenience=bool(agent_cfg.get("early_training_lenience", True)),
         )
 
-        # Import control plugin (defined later in this part)
         from agent.control.control_plugin import AgentControlPlugin
         from agent.control.cooldown import CooldownManager
 
@@ -452,7 +522,7 @@ class FramewormAgent:
             run_every=int(agent_cfg.get("forecast_run_every", 25)),
         )
 
-        return cls(
+        agent = cls(
             stream=stream,
             rule_engine=RuleEngine(config=rule_config),
             llm=LLMClient(),
@@ -463,4 +533,7 @@ class FramewormAgent:
                 model_name=model_name,
                 config_name=Path(config_path).name,
             ),
+            predictor=predictor,
         )
+        agent._run_id = run_id or ""
+        return agent

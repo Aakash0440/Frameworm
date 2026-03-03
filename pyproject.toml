@@ -90,6 +90,8 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "--tb=short"
+pythonpath = ["."]
+norecursedirs = ["models", "core", "scripts", "configs"]
 
 [tool.black]
 line-length = 100

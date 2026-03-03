@@ -1,0 +1,26 @@
+{
+  "HUMAN": {
+    "detection_rate": 0.0,
+    "resolution_rate": 0.0,
+    "mean_detection_latency": Infinity,
+    "mean_time_to_recovery": Infinity
+  },
+  "RULE_BASED": {
+    "detection_rate": 0.5,
+    "resolution_rate": 0.0,
+    "mean_detection_latency": 0.0,
+    "mean_time_to_recovery": Infinity
+  },
+  "LLM_ONLY": {
+    "detection_rate": 0.0,
+    "resolution_rate": 0.0,
+    "mean_detection_latency": Infinity,
+    "mean_time_to_recovery": Infinity
+  },
+  "FULL_AGENT": {
+    "detection_rate": 1.0,
+    "resolution_rate": 0.5,
+    "mean_detection_latency": 0.0,
+    "mean_time_to_recovery": 100.0
+  }
+}
