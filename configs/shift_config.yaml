@@ -1,0 +1,18 @@
+shift:
+  # Drift test thresholds (p-value below which drift is flagged)
+  ks_threshold:   0.05
+  chi2_threshold: 0.05
+  mmd_threshold:  0.10
+
+  # Severity bands (p-value cutoffs)
+  severity_low:    0.10
+  severity_medium: 0.05
+  severity_high:   0.01
+
+  # Alert settings
+  alert_on: ["stdout"]          # options: slack, webhook, log, stdout
+  min_alert_severity: "MEDIUM"  # NONE | LOW | MEDIUM | HIGH
+  log_path: "experiments/shift_logs"
+
+  # Reference store
+  profile_dir: "experiments/shift_profiles"

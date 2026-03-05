@@ -70,6 +70,11 @@ search/hyperband.py
 search/random_search.py
 search/space.py
 search/space_objects.py
+tests/test_config_script.py
+tests/test_discover.py
+tests/test_env.py
+tests/test_final_verification.py
+tests/test_validation_script.py
 trainers/__init__.py
 trainers/base.py
 training/__init__.py

@@ -83,3 +83,10 @@ nav:
   - Developer Guide:
     - Creating Plugins: developer-guide/creating-plugins.md
   - FAQ: faq.md
+
+extra:
+  meta:
+    - name: google-site-verification
+      content: IksgMalfXDXZc6OVsw7g7_khT_VoLTzzg9I4KblI5YE
+
+custom_dir: overrides
