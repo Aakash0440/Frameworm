@@ -7,9 +7,7 @@ from pathlib import Path
 
 import click
 import click_completion
-
 click_completion.init()
-
 # ================= TOP-LEVEL IMPORTS FOR PRE-LAUNCH =================
 import core
 import training
@@ -39,7 +37,8 @@ def cli():
 def plugins():
     """Manage plugins"""
     pass
-
+from deploy.cli.commands import register_deploy_commands
+register_deploy_commands(cli)
 
 @plugins.command('list')
 @click.option('--verbose', '-v', is_flag=True, help='Show detailed info')

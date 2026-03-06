@@ -1,0 +1,31 @@
+
+deploy:
+  # Export settings
+  export_formats: ["torchscript", "onnx"]
+  quantize: false                   # set true for 4x smaller model
+  quantize_dtype: "qint8"
+
+  # Server settings
+  host: "0.0.0.0"
+  port: 8080
+  workers: 1
+  timeout_seconds: 30
+
+  # Latency thresholds (ms) — rollback triggers if p95 exceeds these
+  latency_p95_warn_ms:  200
+  latency_p95_crit_ms:  500
+  error_rate_crit_pct:  5.0         # rollback if error rate > 5%
+
+  # Rollback settings
+  rollback_window_requests: 100     # evaluate over last N requests
+  rollback_cooldown_minutes: 10     # don't rollback twice within N min
+  auto_rollback: true
+
+  # Registry
+  registry_path: "experiments/deploy_registry"
+  exports_path:  "experiments/deploy_exports"
+  logs_path:     "experiments/deploy_logs"
+
+  # Alerts — reuses FRAMEWORM Slack integration
+  alert_on: ["slack", "log"]
+  slack_webhook: null               # falls back to FRAMEWORM_SLACK_WEBHOOK env
