@@ -12,9 +12,13 @@
         <meta name="author" content="Aakash Ali">
       
       
-        <link rel="canonical" href="https://aakash0440.github.io/Frameworm/api-reference/">
+        <link rel="canonical" href="https://aakash0440.github.io/Frameworm/shift/">
       
       
+        <link rel="prev" href="../agent/">
+      
+      
+        <link rel="next" href="../deploy/">
       
       
         
@@ -25,7 +29,7 @@
     
     
       
-        <title>API Reference - FRAMEWORM</title>
+        <title>FRAMEWORM SHIFT - FRAMEWORM</title>
       
     
     
@@ -78,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference" class="md-skip">
+        <a href="#frameworm-shift" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Reference
+              FRAMEWORM SHIFT
             
           </span>
         </div>
@@ -300,9 +304,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../shift/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -382,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="core/" class="md-tabs__link">
+        <a href="../api-reference/core/" class="md-tabs__link">
           
   
   
@@ -672,10 +678,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../shift/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FRAMEWORM SHIFT
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -691,6 +724,186 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-save-reference-distribution-at-training-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Save reference distribution at training time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-check-for-drift-at-inference-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Check for drift at inference time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fastapi-middleware-zero-changes-to-your-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. FastAPI middleware — zero changes to your endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Methods
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#severity-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Severity Levels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-datapoint-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Datapoint Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-shift-reuses-frameworm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How SHIFT Reuses FRAMEWORM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-into-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wire Into CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1297,7 +1510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="core/" class="md-nav__link">
+      <a href="../api-reference/core/" class="md-nav__link">
         
   
   
@@ -1585,10 +1798,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-modules" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Modules
+        Installation
       
     </span>
   </a>
@@ -1596,10 +1809,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-modules" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Advanced Modules
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-save-reference-distribution-at-training-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Save reference distribution at training time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-check-for-drift-at-inference-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Check for drift at inference time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fastapi-middleware-zero-changes-to-your-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. FastAPI middleware — zero changes to your endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Methods
       
     </span>
   </a>
@@ -1607,10 +1881,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
+  <a href="#severity-levels" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Links
+        Severity Levels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-datapoint-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Datapoint Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-shift-reuses-frameworm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How SHIFT Reuses FRAMEWORM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wire-into-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wire Into CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
       
     </span>
   </a>
@@ -1637,34 +1977,224 @@
   
 
 
-<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<p>Complete API documentation for all FRAMEWORM modules.</p>
-<h2 id="core-modules">Core Modules<a class="headerlink" href="#core-modules" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>:maxdepth: 2
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>core/index
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>training/index
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>models/index
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>experiment/index
+<h1 id="frameworm-shift">FRAMEWORM SHIFT<a class="headerlink" href="#frameworm-shift" title="Permanent link">&para;</a></h1>
+<p>Drop-in distribution drift detection for any ML model in production. Detects when real-world data no longer matches your training distribution — before silent performance degradation becomes a real problem.</p>
+<hr />
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>SHIFT lives inside FRAMEWORM. No extra install needed.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.shift</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShiftMonitor</span>
 </code></pre></div>
-<h2 id="advanced-modules">Advanced Modules<a class="headerlink" href="#advanced-modules" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>:maxdepth: 2
+<hr />
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="1-save-reference-distribution-at-training-time">1. Save reference distribution at training time<a class="headerlink" href="#1-save-reference-distribution-at-training-time" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.shift</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShiftMonitor</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>search/index
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>metrics/index
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>deployment/index
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>integrations/index
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>monitoring/index
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>production/index
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>plugins/index
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>cli/index
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">monitor</span> <span class="o">=</span> <span class="n">ShiftMonitor</span><span class="p">(</span><span class="s2">&quot;fraud_classifier&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">monitor</span><span class="o">.</span><span class="n">profile_reference</span><span class="p">(</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">X_train</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;income&quot;</span><span class="p">,</span> <span class="s2">&quot;num_transactions&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">],</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_version&quot;</span><span class="p">:</span> <span class="s2">&quot;v2.1&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="s2">&quot;train_2024_q4.csv&quot;</span><span class="p">}</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># Saved to experiments/shift_profiles/fraud_classifier.shift</span>
 </code></pre></div>
-<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Getting Started:</strong> {doc}<code>../user-guide/quickstart</code></li>
-<li><strong>Tutorials:</strong> {doc}<code>../tutorials/index</code></li>
-<li><strong>Examples:</strong> <a href="https://github.com/yourusername/frameworm/tree/main/examples">GitHub Examples</a></li>
-</ul>
+<h3 id="2-check-for-drift-at-inference-time">2. Check for drift at inference time<a class="headerlink" href="#2-check-for-drift-at-inference-time" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">X_live_batch</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># result.overall_drifted  →  True / False</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># result.overall_severity →  NONE / LOW / MEDIUM / HIGH</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># result.drifted_features →  [&quot;income&quot;, &quot;num_transactions&quot;]</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">result</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="3-fastapi-middleware-zero-changes-to-your-endpoint">3. FastAPI middleware — zero changes to your endpoint<a class="headerlink" href="#3-fastapi-middleware-zero-changes-to-your-endpoint" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frameworm.shift.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShiftMiddleware</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">ShiftMiddleware</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">reference</span><span class="o">=</span><span class="s2">&quot;fraud_classifier&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;income&quot;</span><span class="p">,</span> <span class="s2">&quot;num_transactions&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">alert_channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">)</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/predict&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c1"># SHIFT runs in a background thread. Your endpoint response is never touched.</span>
+</code></pre></div>
+<h3 id="4-cli">4. CLI<a class="headerlink" href="#4-cli" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Save reference from CSV</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>frameworm<span class="w"> </span><span class="nb">shift</span><span class="w"> </span>profile<span class="w"> </span>--data<span class="w"> </span>train.csv<span class="w"> </span>--name<span class="w"> </span>fraud_classifier
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Check live data against reference</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>frameworm<span class="w"> </span><span class="nb">shift</span><span class="w"> </span>check<span class="w"> </span>--name<span class="w"> </span>fraud_classifier<span class="w"> </span>--current<span class="w"> </span>live.csv
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Generate HTML + JSON drift report</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>frameworm<span class="w"> </span><span class="nb">shift</span><span class="w"> </span>report<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>--name<span class="w"> </span>fraud_classifier<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span>--current<span class="w"> </span>live.csv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span>--output<span class="w"> </span>reports/drift_report.html
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="c1"># List all saved profiles</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>frameworm<span class="w"> </span><span class="nb">shift</span><span class="w"> </span>list
+</code></pre></div>
+<hr />
+<h2 id="detection-methods">Detection Methods<a class="headerlink" href="#detection-methods" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature Type</th>
+<th>Test</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Numerical</td>
+<td>Kolmogorov-Smirnov</td>
+<td>p-value + severity</td>
+</tr>
+<tr>
+<td>High-dimensional</td>
+<td>Maximum Mean Discrepancy</td>
+<td>drift score</td>
+</tr>
+<tr>
+<td>Categorical</td>
+<td>Chi-squared</td>
+<td>p-value + severity</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="severity-levels">Severity Levels<a class="headerlink" href="#severity-levels" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>p-value</th>
+<th>Meaning</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NONE</td>
+<td>≥ 0.10</td>
+<td>No meaningful drift</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>LOW</td>
+<td>0.05–0.10</td>
+<td>Worth watching</td>
+<td>Monitor</td>
+</tr>
+<tr>
+<td>MEDIUM</td>
+<td>0.01–0.05</td>
+<td>Real drift, investigate</td>
+<td>Investigate</td>
+</tr>
+<tr>
+<td>HIGH</td>
+<td>&lt; 0.01</td>
+<td>Significant drift, act now</td>
+<td>Retrain / alert</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="single-datapoint-mode">Single-Datapoint Mode<a class="headerlink" href="#single-datapoint-mode" title="Permanent link">&para;</a></h2>
+<p>For low-throughput APIs that receive one request at a time:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Accumulates datapoints into a window before checking</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">incoming_requests</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">check_datapoint</span><span class="p">(</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>        <span class="n">request</span><span class="o">.</span><span class="n">features</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;income&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="p">)</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>   <span class="c1"># fires once per complete window</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        <span class="n">result</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<p><code>configs/shift_config.yaml</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">shift</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">ks_threshold</span><span class="p">:</span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">chi2_threshold</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">severity_high</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">0.01</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nt">severity_medium</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="nt">severity_low</span><span class="p">:</span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">0.10</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="nt">alert_on</span><span class="p">:</span><span class="w">            </span><span class="p p-Indicator">[</span><span class="s">&quot;slack&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;log&quot;</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="nt">min_alert_severity</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;MEDIUM&quot;</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="nt">log_path</span><span class="p">:</span><span class="w">            </span><span class="s">&quot;experiments/shift_logs&quot;</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">  </span><span class="nt">profile_dir</span><span class="p">:</span><span class="w">         </span><span class="s">&quot;experiments/shift_profiles&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Your Model
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    │
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    ├── Training time
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    │       X_train ──&gt; FeatureProfiler ──&gt; .shift file
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    │
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    └── Inference time
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>            X_live  ──&gt; FeatureProfiler ──&gt; current profile
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>                                │
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>                        DriftEngine.compare(reference, current)
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>                                │
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>                        FeatureDriftReport × N features
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>                                │
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>                        AlertManager ──&gt; Slack / webhook / log
+</code></pre></div>
+<hr />
+<h2 id="how-shift-reuses-frameworm">How SHIFT Reuses FRAMEWORM<a class="headerlink" href="#how-shift-reuses-frameworm" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>FRAMEWORM component</th>
+<th>SHIFT usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>monitoring/drift_detector.py</code></td>
+<td>KS + Chi-squared core tests</td>
+</tr>
+<tr>
+<td><code>monitoring/ab_testing.py</code></td>
+<td>Welch's t-test for severity</td>
+</tr>
+<tr>
+<td>Slack webhook integration</td>
+<td>Alert delivery</td>
+</tr>
+<tr>
+<td><code>experiments/</code> folder</td>
+<td>Profiles + logs storage</td>
+</tr>
+<tr>
+<td>Plugin system</td>
+<td>ShiftMiddleware as ASGI plugin</td>
+</tr>
+<tr>
+<td>Config system</td>
+<td><code>shift_config.yaml</code> block</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="wire-into-cli">Wire Into CLI<a class="headerlink" href="#wire-into-cli" title="Permanent link">&para;</a></h2>
+<p>Add 2 lines to <code>cli/main.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">shift.cli.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_shift_commands</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">register_shift_commands</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>   <span class="c1"># replace &#39;main&#39; with your root Click group</span>
+</code></pre></div>
+<hr />
+<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>python<span class="w"> </span>test_shift_steps1_5.py<span class="w">   </span><span class="c1"># core foundation (steps 1-5)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>python<span class="w"> </span>test_shift_steps6_12.py<span class="w">  </span><span class="c1"># full suite — 25 tests (steps 6-12)</span>
+</code></pre></div>
 
 
 
