@@ -59,6 +59,9 @@ nav:
   - Installation: installation.md
   - Getting Started:
     - Quick Start: getting-started/quickstart.md
+  - FRAMEWORM AGENT: agent.md
+  - FRAMEWORM SHIFT: shift.md
+  - FRAMEWORM DEPLOY: deploy.md
   - User Guide:
     - Configuration: user_guide/configuration.md
     - Training: user_guide/training.md

@@ -1,16 +1,6 @@
 # FRAMEWORM SHIFT
 
-> Drop-in distribution drift detection for any ML model in production.
-
-## What it does
-
-SHIFT detects when the data your model receives in production no longer
-matches the data it was trained on — before silent performance degradation
-becomes a real problem.
-
-It runs three statistical tests (KS, Chi-squared, MMD) per feature,
-assigns severity levels (NONE / LOW / MEDIUM / HIGH), and alerts you
-through Slack, webhooks, or log files.
+Drop-in distribution drift detection for any ML model in production. Detects when real-world data no longer matches your training distribution — before silent performance degradation becomes a real problem.
 
 ---
 
@@ -26,7 +16,7 @@ from frameworm.shift import ShiftMonitor
 
 ## Quick Start
 
-### 1. Save reference distribution (training time)
+### 1. Save reference distribution at training time
 
 ```python
 from frameworm.shift import ShiftMonitor
@@ -40,10 +30,9 @@ monitor.profile_reference(
 # Saved to experiments/shift_profiles/fraud_classifier.shift
 ```
 
-### 2. Check for drift (inference time)
+### 2. Check for drift at inference time
 
 ```python
-# Check a batch of live data
 result = monitor.check(X_live_batch)
 
 # result.overall_drifted  →  True / False
@@ -52,7 +41,7 @@ result = monitor.check(X_live_batch)
 result.print_summary()
 ```
 
-### 3. FastAPI middleware (zero code change)
+### 3. FastAPI middleware — zero changes to your endpoint
 
 ```python
 from fastapi import FastAPI
@@ -70,7 +59,7 @@ app.add_middleware(
 @app.post("/predict")
 def predict(data: dict):
     return model.predict(data)
-# SHIFT runs in background. Your endpoint is unchanged.
+# SHIFT runs in a background thread. Your endpoint response is never touched.
 ```
 
 ### 4. CLI
@@ -79,17 +68,56 @@ def predict(data: dict):
 # Save reference from CSV
 frameworm shift profile --data train.csv --name fraud_classifier
 
-# Check live data
+# Check live data against reference
 frameworm shift check --name fraud_classifier --current live.csv
 
-# Generate HTML + JSON report
+# Generate HTML + JSON drift report
 frameworm shift report \
   --name fraud_classifier \
   --current live.csv \
-  --output reports/drift_2024_q1.html
+  --output reports/drift_report.html
 
 # List all saved profiles
 frameworm shift list
+```
+
+---
+
+## Detection Methods
+
+| Feature Type | Test | Output |
+|---|---|---|
+| Numerical | Kolmogorov-Smirnov | p-value + severity |
+| High-dimensional | Maximum Mean Discrepancy | drift score |
+| Categorical | Chi-squared | p-value + severity |
+
+---
+
+## Severity Levels
+
+| Severity | p-value | Meaning | Action |
+|---|---|---|---|
+| NONE | ≥ 0.10 | No meaningful drift | Nothing |
+| LOW | 0.05–0.10 | Worth watching | Monitor |
+| MEDIUM | 0.01–0.05 | Real drift, investigate | Investigate |
+| HIGH | < 0.01 | Significant drift, act now | Retrain / alert |
+
+---
+
+## Single-Datapoint Mode
+
+For low-throughput APIs that receive one request at a time:
+
+```python
+# Accumulates datapoints into a window before checking
+for request in incoming_requests:
+    result = monitor.check_datapoint(
+        request.features,
+        feature_names=["age", "income"],
+        window_size=100,
+    )
+    if result:   # fires once per complete window
+        result.print_summary()
 ```
 
 ---
@@ -100,11 +128,11 @@ frameworm shift list
 
 ```yaml
 shift:
-  ks_threshold:        0.05   # p-value cutoff for KS test
-  chi2_threshold:      0.05   # p-value cutoff for Chi-squared
-  severity_high:       0.01   # p < 0.01  → HIGH
-  severity_medium:     0.05   # p < 0.05  → MEDIUM
-  severity_low:        0.10   # p < 0.10  → LOW
+  ks_threshold:        0.05
+  chi2_threshold:      0.05
+  severity_high:       0.01
+  severity_medium:     0.05
+  severity_low:        0.10
   alert_on:            ["slack", "log"]
   min_alert_severity:  "MEDIUM"
   log_path:            "experiments/shift_logs"
@@ -119,56 +147,40 @@ shift:
 Your Model
     │
     ├── Training time
-    │       X_train ──→ FeatureProfiler ──→ .shift file
+    │       X_train ──> FeatureProfiler ──> .shift file
     │
     └── Inference time
-            X_live  ──→ FeatureProfiler ──→ current profile
+            X_live  ──> FeatureProfiler ──> current profile
                                 │
                         DriftEngine.compare(reference, current)
                                 │
                         FeatureDriftReport × N features
                                 │
-                        AlertManager ──→ Slack / webhook / log
+                        AlertManager ──> Slack / webhook / log
 ```
 
 ---
 
-## Severity Levels
+## How SHIFT Reuses FRAMEWORM
 
-| Severity | p-value     | Meaning                         | Action               |
-|----------|-------------|----------------------------------|----------------------|
-| NONE     | ≥ 0.10      | No meaningful drift              | Nothing              |
-| LOW      | 0.05–0.10   | Worth watching                   | Monitor              |
-| MEDIUM   | 0.01–0.05   | Real drift, investigate          | Investigate          |
-| HIGH     | < 0.01      | Significant drift, act now       | Retrain / alert      |
-
----
-
-## How SHIFT reuses FRAMEWORM
-
-| FRAMEWORM component              | SHIFT usage                          |
-|----------------------------------|--------------------------------------|
-| `monitoring/drift_detector.py`   | KS + Chi-squared core tests          |
-| `monitoring/ab_testing.py`       | Welch's t-test for severity          |
-| Slack webhook integration        | Alert delivery                       |
-| `experiments/` folder            | Profiles + logs storage              |
-| Plugin system                    | ShiftMiddleware as ASGI plugin       |
-| Config system (YAML inheritance) | `shift_config.yaml` block            |
+| FRAMEWORM component | SHIFT usage |
+|---|---|
+| `monitoring/drift_detector.py` | KS + Chi-squared core tests |
+| `monitoring/ab_testing.py` | Welch's t-test for severity |
+| Slack webhook integration | Alert delivery |
+| `experiments/` folder | Profiles + logs storage |
+| Plugin system | ShiftMiddleware as ASGI plugin |
+| Config system | `shift_config.yaml` block |
 
 ---
 
-## Single-datapoint mode (low-throughput APIs)
+## Wire Into CLI
+
+Add 2 lines to `cli/main.py`:
 
 ```python
-# Accumulates datapoints into a 100-point window before checking
-for request in incoming_requests:
-    result = monitor.check_datapoint(
-        request.features,
-        feature_names=["age", "income"],
-        window_size=100,
-    )
-    if result:   # fires once per window
-        result.print_summary()
+from shift.cli.commands import register_shift_commands
+register_shift_commands(main)   # replace 'main' with your root Click group
 ```
 
 ---
@@ -176,18 +188,6 @@ for request in incoming_requests:
 ## Tests
 
 ```bash
-python test_shift_steps1_5.py   # core foundation
-python test_shift_steps6_12.py  # full suite (25 tests)
+python test_shift_steps1_5.py   # core foundation (steps 1-5)
+python test_shift_steps6_12.py  # full suite — 25 tests (steps 6-12)
 ```
-
-
-================================================================================
-WIRE INTO EXISTING CLI (2 lines in cli/main.py)
-================================================================================
-
-Add to your existing cli/main.py:
-
-    from shift.cli.commands import register_shift_commands
-
-    # At the bottom, after your existing CLI group is defined:
-    register_shift_commands(main)   # replace 'main' with your root Click group name

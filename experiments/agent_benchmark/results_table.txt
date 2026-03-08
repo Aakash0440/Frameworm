@@ -1,0 +1,27 @@
+
+======================================================================================================
+  FRAMEWORM AGENT -- 10-Experiment Benchmark Results
+  2026-03-08 06:55 UTC
+======================================================================================================
+   #  Experiment             Condition          Agent Loss Shadow Loss   D Loss Detected Intervened Resolved
+  ------------------------------------------------------------------------------------------------------
+   1  Baseline-1             baseline              74.9666     70.3716  -4.5950        4          4      YES
+   2  Baseline-2             baseline              74.8596     70.3456  -4.5140        4          4      YES
+   3  Baseline-3             baseline              74.8688     70.3931  -4.4757        4          4      YES
+   4  HighLR-1               lr=8e-02              75.7129   9999.0000 +9923.2871        3          4      YES
+   5  HighLR-2               lr=5e-02              69.9983     70.3659  +0.3676        3          3      YES
+   6  GradExplosion-1        grad_explosion        75.9310     70.3501  -5.5809        4          5      YES
+   7  GradExplosion-2        grad_explosion        76.0737     70.3512  -5.7225        5          6      YES
+   8  LowLR-Plateau-1        lr=1e-06              94.6518    283.4723 +188.8205       16         16       NO
+   9  LowLR-Plateau-2        lr=5e-07              95.3104    285.5741 +190.2637       16         16       NO
+  10  AgentIntervenes        lr=1e-01              75.8423   9999.0000 +9923.1577        4          5      YES
+  ------------------------------------------------------------------------------------------------------
+
+  SUMMARY
+  Baseline avg loss:              74.8983
+  Runs with anomalies detected:   10 / 10
+  Anomalies resolved by agent:    8 / 10
+  Resolution rate:                80.0%
+  Mean loss delta (agent-shadow): +2020.1008
+  False positives on clean runs:  3 / 3
+======================================================================================================
