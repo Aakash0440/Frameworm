@@ -31,6 +31,8 @@ theme:
     - content.code.copy
     - content.tabs.link
 
+strict: false
+
 plugins:
   - search
   - mkdocstrings:
@@ -91,5 +93,3 @@ extra:
   meta:
     - name: google-site-verification
       content: IksgMalfXDXZc6OVsw7g7_khT_VoLTzzg9I4KblI5YE
-
-custom_dir: overrides
