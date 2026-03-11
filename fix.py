@@ -1,12 +1,11 @@
 import pathlib
 
-for fname in ["tests/test_env.py", "tests/test_final_verification.py"]:
-    f = pathlib.Path(fname)
-    c = f.read_text(encoding="utf-8")
-    if "pytest.skip" not in c:
-        c = (
-            'import pytest\n\npytest.skip("env/verification debug script", allow_module_level=True)\n\n'
-            + c
-        )
-        f.write_text(c, encoding="utf-8")
-        print(f"patched {fname}")
+f = pathlib.Path(".github/workflows/tests.yml")
+c = f.read_text(encoding="utf-8")
+c = c.replace(
+    "pytest tests/unit/ -v --tb=short --cov=frameworm",
+    "pytest tests/unit/ -v --tb=short --cov=. --cov-report=xml",
+)
+f.write_text(c, encoding="utf-8")
+print("patched")
+print(c[c.find("Run unit") : c.find("Run unit") + 100])
