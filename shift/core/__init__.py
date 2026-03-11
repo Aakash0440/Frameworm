@@ -1,5 +1,10 @@
 from shift.core.alert_manager import AlertManager
-from shift.core.drift_engine import DriftEngine, DriftResult, DriftSeverity, FeatureDriftReport
+from shift.core.drift_engine import (
+    DriftEngine,
+    DriftResult,
+    DriftSeverity,
+    FeatureDriftReport,
+)
 from shift.core.feature_profiles import (
     CategoricalProfile,
     DatasetProfile,
