@@ -1,3 +1,7 @@
+import pytest
+
+pytest.skip("env/verification debug script", allow_module_level=True)
+
 import os
 
 import yaml

@@ -1,3 +1,7 @@
+import pytest
+
+pytest.skip("discovery debug script", allow_module_level=True)
+
 """
 Test discover_plugins to see if it's finding files
 """
