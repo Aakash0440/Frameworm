@@ -84,7 +84,9 @@ class RandomSearch:
 
     def _apply_config(self, config_updates: Dict[str, Any]) -> Config:
         """Apply parameter updates to base config"""
-        config = Config.from_dict(self.base_config.to_dict())
+        config = Config.from_dict(
+            self.base_config.to_dict() if hasattr(self.base_config, "to_dict") else self.base_config
+        )
 
         for key, value in config_updates.items():
             parts = key.split(".")

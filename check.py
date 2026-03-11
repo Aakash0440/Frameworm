@@ -1,9 +1,6 @@
 import pathlib
-import re
 
-f = pathlib.Path("search/grid_search.py")
+f = pathlib.Path("tests/integration/test_complete_workflow.py")
 c = f.read_text(encoding="utf-8")
-
-# Show the _evaluate_configuration call to train_fn
-idx = c.find("def _evaluate_configuration")
-print(c[idx : idx + 800])
+idx = c.find("deployment.server")
+print(repr(c[idx - 10 : idx + 200]))
