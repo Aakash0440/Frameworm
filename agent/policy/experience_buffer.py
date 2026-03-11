@@ -38,9 +38,9 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from agent.classifier.anomaly_types import AnomalyType, FAILURE_TYPES
-from agent.react.action_parser import ActionType
+from agent.classifier.anomaly_types import FAILURE_TYPES, AnomalyType
 from agent.observer.signal_extractor import SignalSnapshot
+from agent.react.action_parser import ActionType
 
 logger = logging.getLogger(__name__)
 

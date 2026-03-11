@@ -18,9 +18,9 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from agent.policy.experience_buffer import STATE_DIM, N_ACTIONS
-from agent.react.action_parser import ActionType
 from agent.classifier.anomaly_types import AnomalyType
+from agent.policy.experience_buffer import N_ACTIONS, STATE_DIM
+from agent.react.action_parser import ActionType
 
 # ── State Space ───────────────────────────────────────────────────
 

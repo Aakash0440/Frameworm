@@ -1,8 +1,9 @@
 """Tests for model_exporter and server_builder."""
 
-import sys
 import os
+import sys
 import tempfile
+
 import numpy as np
 
 sys.path.insert(0, ".")
@@ -30,7 +31,7 @@ def test_server_builder_generates_file():
 
 
 def test_server_builder_all_model_types():
-    from deploy.core.server_builder import ServerBuilder, MODEL_SPECS
+    from deploy.core.server_builder import MODEL_SPECS, ServerBuilder
 
     builder = ServerBuilder()
     with tempfile.TemporaryDirectory() as d:

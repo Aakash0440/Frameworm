@@ -5,12 +5,13 @@ Type   : dcgan
 Version: v1.0
 """
 
-import torch
+import os
+import sys
 from typing import List, Optional
-from pydantic import BaseModel
-from fastapi import FastAPI
 
-import sys, os
+import torch
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 

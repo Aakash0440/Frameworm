@@ -13,8 +13,8 @@ Example:
     >>> manager = ExperimentManager(backend=db)
 """
 
-from typing import Optional, Dict, List, Any
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 
 
 class DatabaseBackend(ABC):

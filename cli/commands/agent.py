@@ -202,12 +202,11 @@ def _cmd_train(args) -> int:
     if args.forecaster:
         print("Training GradForecaster LSTM...")
         try:
-            from agent.forecaster.training_data import DataCollector, ForecasterDataset
-            from agent.forecaster.grad_forecaster import (
-                GradForecaster,
-                ForecasterConfig,
-                train_forecaster,
-            )
+            from agent.forecaster.grad_forecaster import (ForecasterConfig,
+                                                          GradForecaster,
+                                                          train_forecaster)
+            from agent.forecaster.training_data import (DataCollector,
+                                                        ForecasterDataset)
 
             collector = DataCollector()
             samples = collector.collect_all()
@@ -231,8 +230,9 @@ def _cmd_train(args) -> int:
     if args.policy:
         print("\nTraining CQL policy...")
         try:
+            from agent.policy.cql_policy import (CQLConfig, CQLPolicy,
+                                                 train_cql_policy)
             from agent.policy.experience_buffer import ExperienceBuffer
-            from agent.policy.cql_policy import CQLPolicy, CQLConfig, train_cql_policy
             from agent.policy.policy_eval import PolicyEvaluator
 
             buffer = ExperienceBuffer()
@@ -272,8 +272,8 @@ def _cmd_bench(args) -> int:
     print()
 
     try:
-        from agent.benchmark.run_suite import BenchmarkSuite
         from agent.benchmark.results_analyzer import ResultsAnalyzer
+        from agent.benchmark.run_suite import BenchmarkSuite
 
         suite = BenchmarkSuite(seed=args.seed)
         result = suite.run(

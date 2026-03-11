@@ -4,8 +4,8 @@ Run this instead of re-running all 30 experiments.
 """
 
 import json
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 RESULTS_DIR = Path("experiments/cifar_benchmark")
 LOG_FILE = RESULTS_DIR / "experiment_log.jsonl"

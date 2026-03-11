@@ -1,14 +1,15 @@
 """Tests for feature_profiles, reference_store, drift_engine."""
 
-import tempfile
-import numpy as np
 import sys
+import tempfile
+
+import numpy as np
 
 sys.path.insert(0, ".")
 
-from shift.core.feature_profiles import FeatureProfiler, DatasetProfile
-from shift.core.reference_store import ReferenceStore
 from shift.core.drift_engine import DriftEngine, DriftSeverity
+from shift.core.feature_profiles import DatasetProfile, FeatureProfiler
+from shift.core.reference_store import ReferenceStore
 
 rng = np.random.default_rng(99)
 

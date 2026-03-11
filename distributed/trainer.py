@@ -12,16 +12,9 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 
 from distributed.sampler import get_distributed_sampler
-from distributed.utils import (
-    all_reduce_dict,
-    barrier,
-    cleanup_distributed,
-    get_local_rank,
-    get_rank,
-    is_distributed,
-    is_master,
-    setup_distributed,
-)
+from distributed.utils import (all_reduce_dict, barrier, cleanup_distributed,
+                               get_local_rank, get_rank, is_distributed,
+                               is_master, setup_distributed)
 from training import Trainer
 
 

@@ -5,12 +5,14 @@ Takes two DatasetProfiles → returns a DriftResult with per-feature reports.
 Reuses: monitoring/drift_detector.py (your existing code)
 """
 
-import numpy as np
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 from enum import Enum
+from typing import Dict, List, Optional
 
-from shift.core.feature_profiles import DatasetProfile, NumericalProfile, CategoricalProfile
+import numpy as np
+
+from shift.core.feature_profiles import (CategoricalProfile, DatasetProfile,
+                                         NumericalProfile)
 
 # ─── severity ────────────────────────────────────────────────────────────────
 

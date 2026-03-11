@@ -11,8 +11,8 @@ Example:
     ...     process_request()
 """
 
-from typing import Any, Dict, Optional, Callable, List
 from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional
 
 
 @dataclass

@@ -14,14 +14,9 @@ except ImportError:
     setup_mlflow = None
 
 try:
-    from integrations.storage import (
-        S3Storage,
-        GCSStorage,
-        AzureStorage,
-        setup_s3_storage,
-        setup_gcs_storage,
-        setup_azure_storage,
-    )
+    from integrations.storage import (AzureStorage, GCSStorage, S3Storage,
+                                      setup_azure_storage, setup_gcs_storage,
+                                      setup_s3_storage)
 except ImportError:
     S3Storage = GCSStorage = AzureStorage = None
     setup_s3_storage = setup_gcs_storage = setup_azure_storage = None
@@ -32,7 +27,7 @@ except ImportError:
     PostgresBackend = None
 
 try:
-    from integrations.notifications import SlackNotifier, EmailNotifier
+    from integrations.notifications import EmailNotifier, SlackNotifier
 except ImportError:
     SlackNotifier = EmailNotifier = None
 

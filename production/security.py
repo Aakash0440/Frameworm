@@ -11,11 +11,11 @@ Example:
     ...     process_request()
 """
 
-import secrets
 import hashlib
 import hmac
-from typing import Dict, Optional, Set
+import secrets
 import time
+from typing import Dict, Optional, Set
 
 
 class APIKeyAuth:

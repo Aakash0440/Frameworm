@@ -9,8 +9,8 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from metrics.fid import FID
-from metrics.lpips import LPIPS
 from metrics.inception_score import InceptionScore
+from metrics.lpips import LPIPS
 
 
 class MetricEvaluator:

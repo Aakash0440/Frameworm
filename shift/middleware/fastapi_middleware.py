@@ -66,8 +66,8 @@ class ShiftMiddleware:
         self.app = app
 
         # Lazy import to avoid hard dependency when middleware isn't used
-        from shift.sdk.monitor import ShiftMonitor
         from shift.core.drift_engine import DriftSeverity
+        from shift.sdk.monitor import ShiftMonitor
 
         severity_map = {
             "NONE": DriftSeverity.NONE,

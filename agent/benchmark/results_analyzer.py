@@ -19,8 +19,8 @@ from typing import List
 
 import numpy as np
 
-from agent.benchmark.run_suite import ScenarioResult, SuiteResult
 from agent.benchmark.inject_failures import SCENARIO_REGISTRY
+from agent.benchmark.run_suite import ScenarioResult, SuiteResult
 
 logger = logging.getLogger(__name__)
 

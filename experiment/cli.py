@@ -8,7 +8,8 @@ import click
 from tabulate import tabulate
 
 from experiment.manager import ExperimentManager
-from experiment.visualization import plot_metric_comparison, plot_multiple_metrics
+from experiment.visualization import (plot_metric_comparison,
+                                      plot_multiple_metrics)
 
 
 @click.group()

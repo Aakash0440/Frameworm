@@ -1,13 +1,14 @@
 """End-to-end SDK tests: profile → save → load → check → alert."""
 
-import tempfile
-import numpy as np
 import sys
+import tempfile
+
+import numpy as np
 
 sys.path.insert(0, ".")
 
-from shift.sdk.monitor import ShiftMonitor
 from shift.core.drift_engine import DriftSeverity
+from shift.sdk.monitor import ShiftMonitor
 
 rng = np.random.default_rng(7)
 

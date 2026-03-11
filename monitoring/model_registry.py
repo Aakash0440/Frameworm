@@ -23,12 +23,12 @@ Example:
     >>> prod = registry.get_production('vae-mnist')
 """
 
+import hashlib
 import json
 import shutil
-import hashlib
-from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class ModelVersion:

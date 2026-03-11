@@ -42,15 +42,11 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from agent.policy.experience_buffer import (
-    ExperienceBuffer,
-    N_ACTIONS,
-    STATE_DIM,
-    ACTION_INDEX,
-    INDEX_ACTION,
-)
-from agent.react.action_parser import ActionType
 from agent.classifier.anomaly_types import AnomalyType
+from agent.policy.experience_buffer import (ACTION_INDEX, INDEX_ACTION,
+                                            N_ACTIONS, STATE_DIM,
+                                            ExperienceBuffer)
+from agent.react.action_parser import ActionType
 
 logger = logging.getLogger(__name__)
 

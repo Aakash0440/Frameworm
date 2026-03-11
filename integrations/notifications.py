@@ -10,8 +10,10 @@ Example:
 """
 
 from typing import Optional
-from training.callbacks import Callback
+
 import requests
+
+from training.callbacks import Callback
 
 
 class SlackNotifier(Callback):

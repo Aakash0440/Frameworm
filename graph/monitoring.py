@@ -6,7 +6,7 @@ Tracks execution time, memory usage, and bottlenecks.
 
 import time
 from dataclasses import dataclass, field
-from typing import Tuple, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import psutil
 

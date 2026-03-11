@@ -1,6 +1,9 @@
-from agent.react.agent import FramewormAgent
-import time, os, json
+import json
+import os
+import time
 from pathlib import Path
+
+from agent.react.agent import FramewormAgent
 
 agent = FramewormAgent.from_config("configs/base.yaml", run_id=None)
 agent.start()

@@ -6,13 +6,15 @@ Usage:
 """
 
 import argparse
+
+import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from core import Config, get_model, Trainer
-from training.callbacks import EarlyStopping, ModelCheckpoint
+
+from core import Config, Trainer, get_model
 from experiment import Experiment
-import matplotlib.pyplot as plt
+from training.callbacks import EarlyStopping, ModelCheckpoint
 
 
 def main():

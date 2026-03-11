@@ -6,16 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from core.registry import (
-    _MODEL_REGISTRY,
-    add_plugin_path,
-    discover_plugins,
-    get_model,
-    list_models,
-    remove_plugin_path,
-    reset_discovery,
-    set_auto_discover,
-)
+from core.registry import (_MODEL_REGISTRY, add_plugin_path, discover_plugins,
+                           get_model, list_models, remove_plugin_path,
+                           reset_discovery, set_auto_discover)
 
 # Plugin directory inside tests/unit
 TEST_PLUGIN_DIR = Path(__file__).parent / "test_plugin_models"

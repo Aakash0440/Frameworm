@@ -4,9 +4,15 @@ FRAMEWORM AGENT — 10-Experiment Benchmark
 Run from frameworm root: python run_10_experiments.py
 """
 
-import sys, json, time, math, random, sqlite3
-from pathlib import Path
+import json
+import math
+import random
+import sqlite3
+import sys
+import time
 from datetime import datetime, timezone
+from pathlib import Path
+
 import numpy as np
 import torch
 import torch.nn as nn

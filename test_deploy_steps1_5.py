@@ -4,10 +4,11 @@ Run with: python test_deploy_steps1_5.py
 No pytest required. No GPU required.
 """
 
-import sys
-import os
 import json
+import os
+import sys
 import tempfile
+
 import numpy as np
 
 sys.path.insert(0, ".")
@@ -36,7 +37,8 @@ print("════════════════════════�
 
 # ── Test 1: ModelExporter — signature lookup ──────────────────────────────
 print("1. ModelExporter — architecture signatures")
-from deploy.core.model_exporter import ModelExporter, FRAMEWORM_MODEL_SIGNATURES
+from deploy.core.model_exporter import (FRAMEWORM_MODEL_SIGNATURES,
+                                        ModelExporter)
 
 exporter = ModelExporter()
 check("VAE signature exists", "VAE" in FRAMEWORM_MODEL_SIGNATURES)
@@ -222,8 +224,9 @@ with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as d:
 
 # ── Test 6: LatencyTracker ────────────────────────────────────────────────
 print("\n6. LatencyTracker — p50/p95/p99")
-from deploy.core.latency_tracker import LatencyTracker, get_tracker
 import time
+
+from deploy.core.latency_tracker import LatencyTracker, get_tracker
 
 with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as d:
     tracker = LatencyTracker("test_model", logs_dir=d)

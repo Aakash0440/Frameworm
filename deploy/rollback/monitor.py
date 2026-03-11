@@ -4,10 +4,10 @@ Watches a running deployment for latency spikes and error rate degradation.
 Triggers rollback callback when thresholds are exceeded.
 """
 
-import time
 import logging
 import threading
-from typing import Optional, Callable
+import time
+from typing import Callable, Optional
 
 logger = logging.getLogger("frameworm.deploy.rollback")
 

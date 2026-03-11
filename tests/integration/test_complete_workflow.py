@@ -4,10 +4,11 @@ Complete end-to-end workflow test.
 Tests the entire FRAMEWORM pipeline from data to deployment.
 """
 
-import pytest
-import torch
 import tempfile
 from pathlib import Path
+
+import pytest
+import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 
@@ -17,11 +18,11 @@ class TestCompleteWorkflow:
     def test_full_pipeline(self):
         """Complete pipeline: train → track → search → export → serve"""
 
-        from core import Config, get_model, Trainer
-        from training.callbacks import EarlyStopping, ModelCheckpoint
+        from core import Config, Trainer, get_model
+        from deployment import ModelExporter
         from experiment import Experiment
         from search import RandomSearch
-        from deployment import ModelExporter
+        from training.callbacks import EarlyStopping, ModelCheckpoint
 
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
@@ -126,7 +127,7 @@ class TestCompleteWorkflow:
     def test_all_models(self):
         """Test that all registered models work"""
 
-        from core import get_model, Config
+        from core import Config, get_model
 
         models = ["vae", "dcgan", "ddpm", "vqvae2", "vitgan", "cfg_ddpm"]
 

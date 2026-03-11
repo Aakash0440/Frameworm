@@ -1,10 +1,13 @@
-import sys, os
+import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import glob
+import json
+
 from agent.policy.cql_policy import CQLPolicy
 from agent.policy.experience_buffer import ExperienceBuffer
-import glob, json
 
 buffer = ExperienceBuffer()
 log_files = glob.glob("experiments/agent_logs/**/*.json", recursive=True)

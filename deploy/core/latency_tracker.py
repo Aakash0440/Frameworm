@@ -8,15 +8,15 @@ Two recording APIs:
     tracker.end_request(start_time, success) ← used by FastAPI middleware
 """
 
-import sqlite3
 import logging
+import sqlite3
 import threading
 import time
 from collections import deque
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 

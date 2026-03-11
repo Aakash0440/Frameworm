@@ -5,11 +5,12 @@ Run with: pytest tests/agent/test_react.py -v
 
 import numpy as np
 import pytest
+
+from agent.classifier.anomaly_types import AnomalyEvent, AnomalyType, Severity
+from agent.control.cooldown import CooldownManager
+from agent.observer.rolling_window import MetricSnapshot, RollingWindow
 from agent.react.action_parser import ActionParser, ActionType, ParsedAction
 from agent.react.prompts import PromptBuilder
-from agent.control.cooldown import CooldownManager
-from agent.classifier.anomaly_types import AnomalyEvent, AnomalyType, Severity
-from agent.observer.rolling_window import RollingWindow, MetricSnapshot
 
 
 class TestActionParser:

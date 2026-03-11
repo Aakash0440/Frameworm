@@ -4,9 +4,10 @@ Runs on training data (reference) and production data (current).
 """
 
 import json
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, List, Optional
+
 import numpy as np
-from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional, Any
 
 
 @dataclass

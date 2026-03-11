@@ -14,10 +14,10 @@ Example:
     ...     return_429_error()
 """
 
-import time
-from typing import Dict, Optional
-from collections import defaultdict, deque
 import threading
+import time
+from collections import defaultdict, deque
+from typing import Dict, Optional
 
 
 class RateLimiter:

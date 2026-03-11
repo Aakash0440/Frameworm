@@ -3,9 +3,11 @@ Final performance benchmarks for v1.0.0 release.
 """
 
 import time
+
 import torch
-from core import Config, get_model, Trainer
 from torch.utils.data import DataLoader, TensorDataset
+
+from core import Config, Trainer, get_model
 
 
 def benchmark_training_speed():

@@ -1,7 +1,8 @@
 import pytest
 
 from core import Config, get_model, register_model
-from core.exceptions import ConfigNotFoundError, ModelNotFoundError, PluginValidationError
+from core.exceptions import (ConfigNotFoundError, ModelNotFoundError,
+                             PluginValidationError)
 from models import BaseModel
 
 

@@ -20,10 +20,11 @@ Example:
 
 import random
 import time
-from typing import Callable, Optional, Dict, Any
 from collections import defaultdict
-from scipy import stats as scipy_stats
 from dataclasses import dataclass
+from typing import Any, Callable, Dict, Optional
+
+from scipy import stats as scipy_stats
 
 
 @dataclass

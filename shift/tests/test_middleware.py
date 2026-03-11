@@ -4,11 +4,12 @@ Requires: pip install fastapi httpx
 Skips gracefully if not installed.
 """
 
-import sys
 import json
-import numpy as np
+import sys
 import tempfile
 import time
+
+import numpy as np
 
 sys.path.insert(0, ".")
 
@@ -19,6 +20,7 @@ def test_middleware_passes_request_through():
     try:
         from fastapi import FastAPI
         from fastapi.testclient import TestClient
+
         from shift.middleware.fastapi_middleware import ShiftMiddleware
         from shift.sdk.monitor import ShiftMonitor
     except ImportError:

@@ -1,4 +1,6 @@
-import subprocess, sys, time
+import subprocess
+import sys
+import time
 
 for i in range(10):
     print(f"\n=== Experiment {i+1}/10 ===")

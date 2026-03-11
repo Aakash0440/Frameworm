@@ -13,8 +13,8 @@ Wire into cli/main.py with:
     register_shift_commands(main_cli_group)
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 
@@ -56,8 +56,9 @@ def _register_click(cli):
     @click.option("--store-dir", default=None, help="Where to save .shift file")
     def profile(data, name, features, store_dir):
         """Save a reference distribution profile from training data."""
-        from shift.core.reference_store import ReferenceStore
         import numpy as np
+
+        from shift.core.reference_store import ReferenceStore
 
         feature_names = features.split(",") if features else None
         X = _load_data(data)
@@ -96,8 +97,8 @@ def _register_click(cli):
     @click.option("--features", default=None, help="Comma-separated feature names")
     def report(name, current, output, features):
         """Generate an HTML drift report."""
-        from shift.sdk.monitor import ShiftMonitor
         from shift.report.report_generator import ReportGenerator
+        from shift.sdk.monitor import ShiftMonitor
 
         feature_names = features.split(",") if features else None
         X = _load_data(current)

@@ -37,9 +37,9 @@ def test_health_checker_error_rate():
 
 
 def test_degradation_monitor_triggers():
-    from deploy.serving.health import HealthChecker
     from deploy.core.latency_tracker import LatencyTracker
     from deploy.rollback.monitor import DegradationMonitor
+    from deploy.serving.health import HealthChecker
 
     tracker = LatencyTracker("test")
     health = HealthChecker("test", "v1")
@@ -66,9 +66,9 @@ def test_degradation_monitor_triggers():
 
 
 def test_degradation_monitor_no_trigger_on_healthy():
-    from deploy.serving.health import HealthChecker
     from deploy.core.latency_tracker import LatencyTracker
     from deploy.rollback.monitor import DegradationMonitor
+    from deploy.serving.health import HealthChecker
 
     tracker = LatencyTracker("healthy")
     health = HealthChecker("healthy", "v1")

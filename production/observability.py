@@ -31,9 +31,10 @@ def setup_tracing(service_name: str, endpoint: Optional[str] = None):
     """
     try:
         from opentelemetry import trace
-        from opentelemetry.sdk.trace import TracerProvider
+        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
+            OTLPSpanExporter
         from opentelemetry.sdk.resources import Resource
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+        from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor
     except ImportError:
         print("⚠️  opentelemetry not installed")

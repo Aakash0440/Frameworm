@@ -13,10 +13,10 @@ Example:
 """
 
 import signal
-import time
-import threading
-from typing import Callable, List, Optional
 import sys
+import threading
+import time
+from typing import Callable, List, Optional
 
 
 class GracefulShutdown:

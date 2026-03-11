@@ -6,6 +6,7 @@ Shows how to register a custom model architecture.
 
 import torch
 import torch.nn as nn
+
 from core import register_model
 
 

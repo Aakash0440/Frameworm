@@ -1,6 +1,7 @@
 import torch
+
 from core import Config
-from models.vitgan import ViTGAN, ViTDiscriminator
+from models.vitgan import ViTDiscriminator, ViTGAN
 
 print("Testing ViT-GAN:")
 print("=" * 60)

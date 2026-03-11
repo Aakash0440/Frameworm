@@ -5,10 +5,11 @@ Run with: pytest tests/agent/test_classifier.py -v
 
 import numpy as np
 import pytest
-from agent.classifier.anomaly_types import AnomalyType, AnomalyEvent, Severity
-from agent.classifier.rule_engine import RuleEngine, RuleEngineConfig
+
+from agent.classifier.anomaly_types import AnomalyEvent, AnomalyType, Severity
 from agent.classifier.priority_queue import AnomalyPriorityQueue
-from agent.observer.rolling_window import RollingWindow, MetricSnapshot
+from agent.classifier.rule_engine import RuleEngine, RuleEngineConfig
+from agent.observer.rolling_window import MetricSnapshot, RollingWindow
 from agent.observer.signal_extractor import SignalExtractor
 
 

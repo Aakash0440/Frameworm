@@ -13,10 +13,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import numpy as np
 import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-import numpy as np
 
 logger = logging.getLogger("frameworm.deploy.server")
 
@@ -73,8 +73,8 @@ class FramewormModelServer:
                 # Fall back to state dict checkpoint
                 ckpt = torch.load(self.model_path, map_location=self.device, weights_only=False)
                 # Build model from registry
-                from core.registry import get_model
                 from core.config import Config
+                from core.registry import get_model
 
                 cfg = ckpt.get("config", None)
                 if cfg is None:

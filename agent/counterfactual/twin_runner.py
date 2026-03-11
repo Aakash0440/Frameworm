@@ -269,8 +269,9 @@ class TwinRunner:
     def _save_current_state(self, trainer) -> dict:
         """Save trainer state before shadow run."""
         try:
-            import torch
             import copy
+
+            import torch
 
             state = {}
             if hasattr(trainer, "model"):

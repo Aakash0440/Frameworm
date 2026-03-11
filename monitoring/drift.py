@@ -20,10 +20,11 @@ Example:
     ...     alert("Data drift detected!")
 """
 
-import numpy as np
-from typing import Optional, Dict, List
-from scipy import stats
 from dataclasses import dataclass
+from typing import Dict, List, Optional
+
+import numpy as np
+from scipy import stats
 
 
 @dataclass

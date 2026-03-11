@@ -5,10 +5,11 @@ Reference: "Generating Diverse High-Fidelity Images with VQ-VAE-2"
            Razavi et al., 2019 (https://arxiv.org/abs/1906.00446)
 """
 
+from typing import Dict, Optional, Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Tuple, Dict, Optional
 
 
 class VectorQuantizer(nn.Module):

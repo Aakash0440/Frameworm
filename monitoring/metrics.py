@@ -13,22 +13,15 @@ Example:
     >>> # Metrics now available at http://localhost:9090/metrics
 """
 
-from typing import Dict, Optional, List
-import time
-import threading
-from collections import defaultdict, deque
 import json
+import threading
+import time
+from collections import defaultdict, deque
+from typing import Dict, List, Optional
 
 try:
-    from prometheus_client import (
-        Counter,
-        Gauge,
-        Histogram,
-        Summary,
-        CollectorRegistry,
-        start_http_server,
-        REGISTRY,
-    )
+    from prometheus_client import (REGISTRY, CollectorRegistry, Counter, Gauge,
+                                   Histogram, Summary, start_http_server)
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:

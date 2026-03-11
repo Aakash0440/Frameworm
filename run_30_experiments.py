@@ -3,17 +3,22 @@ FRAMEWORM AGENT — 30-Experiment Benchmark
 CIFAR-10 | VAE + DCGAN | Shadow runs | Agent intervention
 """
 
-import os, json, math, time, sqlite3, random
+import json
+import math
+import os
+import random
+import sqlite3
+import time
+from collections import deque
+from datetime import datetime, timezone
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, Subset
-from pathlib import Path
-from datetime import datetime, timezone
-from collections import deque
-
 import torchvision
 import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, Subset
 
 # ── paths ──────────────────────────────────────────────────────────────────────
 RESULTS_DIR = Path("experiments/cifar_benchmark")

@@ -3,12 +3,14 @@ Tests for agent/counterfactual/ — delta tracker + eval report.
 Run with: pytest tests/agent/test_counterfactual.py -v
 """
 
-import pytest
 from pathlib import Path
-from agent.counterfactual.twin_runner import ShadowRun
+
+import pytest
+
+from agent.classifier.anomaly_types import AnomalyType
 from agent.counterfactual.delta_tracker import DeltaTracker
 from agent.counterfactual.eval_report import EvalReportGenerator
-from agent.classifier.anomaly_types import AnomalyType
+from agent.counterfactual.twin_runner import ShadowRun
 
 TMP = Path("/tmp/fw_test_cf")
 

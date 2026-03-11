@@ -4,8 +4,8 @@ Feeds p50/p95/p99 data to the rollback monitor.
 Reuses deploy/core/latency_tracker.py.
 """
 
-import time
 import logging
+import time
 from typing import Callable
 
 logger = logging.getLogger("frameworm.deploy")

@@ -4,6 +4,7 @@ Main Trainer class for training models.
 
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+
 from plugins.hooks import get_default_registry
 
 HookRegistry = get_default_registry()
@@ -273,7 +274,9 @@ class Trainer:
             # Hook: optimizer step
 
             # Write metrics for agent monitoring
-            import json, pathlib, os
+            import json
+            import os
+            import pathlib
 
             _agent_path = (
                 pathlib.Path(os.environ.get("TEMP", "/tmp")) / "frameworm_agent_metrics.json"

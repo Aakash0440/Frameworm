@@ -31,10 +31,10 @@ import threading
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from agent.classifier.anomaly_types import AnomalyEvent
 from agent.control.actions import ActionExecutor, ActionResult
 from agent.control.cooldown import CooldownManager
 from agent.react.action_parser import ActionType, ParsedAction
-from agent.classifier.anomaly_types import AnomalyEvent
 
 logger = logging.getLogger(__name__)
 

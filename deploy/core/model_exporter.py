@@ -4,14 +4,14 @@ Applies quantization for size/speed optimisation.
 Model-aware: knows FRAMEWORM's 6 architectures and picks correct export strategy.
 """
 
-import os
+import hashlib
 import json
 import logging
-import hashlib
-from dataclasses import dataclass, asdict
+import os
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger("frameworm.deploy")
 

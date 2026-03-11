@@ -1,10 +1,13 @@
-import sys, os, json
+import json
+import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from pathlib import Path
+
 from agent.observer.metric_stream import MetricStream
 from agent.observer.rolling_window import MetricSnapshot
-from pathlib import Path
 
 metrics_path = Path(os.environ.get("TEMP", "/tmp")) / "frameworm_agent_metrics.json"
 stream = MetricStream(local_path=metrics_path, poll_every=0.01)

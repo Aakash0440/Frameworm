@@ -20,10 +20,10 @@ from typing import List, Optional, Union
 
 import numpy as np
 
-from shift.core.reference_store import ReferenceStore
-from shift.core.feature_profiles import FeatureProfiler
-from shift.core.drift_engine import DriftEngine, DriftResult, DriftSeverity
 from shift.core.alert_manager import AlertManager
+from shift.core.drift_engine import DriftEngine, DriftResult, DriftSeverity
+from shift.core.feature_profiles import FeatureProfiler
+from shift.core.reference_store import ReferenceStore
 
 logger = logging.getLogger("frameworm.shift")
 

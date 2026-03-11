@@ -3,24 +3,21 @@ Tests for agent/policy/ + agent/pomdp/
 Run with: pytest tests/agent/test_policy.py -v
 """
 
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
-from agent.policy.experience_buffer import (
-    ExperienceBuffer,
-    Transition,
-    encode_state,
-    compute_reward,
-    STATE_DIM,
-    N_ACTIONS,
-)
-from agent.policy.cql_policy import CQLPolicy, CQLConfig
-from agent.pomdp.state_space import POMDPSpec
-from agent.pomdp.belief_updater import BeliefUpdater
+
 from agent.classifier.anomaly_types import AnomalyType
-from agent.react.action_parser import ActionType
-from agent.observer.rolling_window import RollingWindow, MetricSnapshot
+from agent.observer.rolling_window import MetricSnapshot, RollingWindow
 from agent.observer.signal_extractor import SignalExtractor, SignalSnapshot
+from agent.policy.cql_policy import CQLConfig, CQLPolicy
+from agent.policy.experience_buffer import (N_ACTIONS, STATE_DIM,
+                                            ExperienceBuffer, Transition,
+                                            compute_reward, encode_state)
+from agent.pomdp.belief_updater import BeliefUpdater
+from agent.pomdp.state_space import POMDPSpec
+from agent.react.action_parser import ActionType
 
 TMP = Path("/tmp/fw_test_policy")
 

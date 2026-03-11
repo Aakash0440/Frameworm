@@ -16,7 +16,8 @@ Example:
     >>> trainer.train(...)  # Auto-logs to W&B
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from training.callbacks import Callback
 
 try:

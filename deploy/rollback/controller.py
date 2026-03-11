@@ -5,8 +5,8 @@ Swaps to the previous known-good version and alerts via Slack.
 
 import json
 import logging
-import subprocess
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -134,7 +134,8 @@ class RollbackController:
         latency_summary: Optional[dict] = None,
     ):
         """Fire Slack alert. Reuses FRAMEWORM Slack integration."""
-        import os, urllib.request
+        import os
+        import urllib.request
 
         webhook = os.getenv("FRAMEWORM_SLACK_WEBHOOK")
         if not webhook:

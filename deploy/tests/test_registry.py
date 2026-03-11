@@ -1,8 +1,8 @@
 """Tests for ModelRegistry lifecycle management."""
 
+import os
 import sys
 import tempfile
-import os
 
 sys.path.insert(0, ".")
 

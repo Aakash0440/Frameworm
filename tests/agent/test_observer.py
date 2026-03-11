@@ -5,7 +5,8 @@ Run with: pytest tests/agent/test_observer.py -v
 
 import numpy as np
 import pytest
-from agent.observer.rolling_window import RollingWindow, MetricSnapshot
+
+from agent.observer.rolling_window import MetricSnapshot, RollingWindow
 from agent.observer.signal_extractor import SignalExtractor, SignalSnapshot
 
 

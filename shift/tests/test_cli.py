@@ -3,10 +3,11 @@ CLI integration tests.
 Tests the core functions directly (no subprocess needed).
 """
 
+import os
 import sys
 import tempfile
+
 import numpy as np
-import os
 
 sys.path.insert(0, ".")
 
@@ -39,8 +40,8 @@ def test_load_data_csv():
 
 
 def test_report_generator_html():
-    from shift.core.feature_profiles import FeatureProfiler
     from shift.core.drift_engine import DriftEngine
+    from shift.core.feature_profiles import FeatureProfiler
     from shift.report.report_generator import ReportGenerator
 
     profiler = FeatureProfiler()
@@ -62,10 +63,11 @@ def test_report_generator_html():
 
 
 def test_report_generator_json():
-    from shift.core.feature_profiles import FeatureProfiler
-    from shift.core.drift_engine import DriftEngine
-    from shift.report.report_generator import ReportGenerator
     import json
+
+    from shift.core.drift_engine import DriftEngine
+    from shift.core.feature_profiles import FeatureProfiler
+    from shift.report.report_generator import ReportGenerator
 
     profiler = FeatureProfiler()
     X = rng.normal(0, 1, (200, 2))

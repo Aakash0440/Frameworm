@@ -1,5 +1,6 @@
 import pytest
 import torch
+
 from core import Config, get_model
 
 
@@ -50,8 +51,9 @@ class TestVQVAE2:
         assert x.grad is not None, "Gradients must flow through VQ layer"
 
     def test_trainer_compatible(self, config):
-        from training import Trainer
         from torch.utils.data import DataLoader, TensorDataset
+
+        from training import Trainer
 
         model = get_model("vqvae2")(config)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)

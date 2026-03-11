@@ -30,14 +30,10 @@ from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 
-from agent.policy.cql_policy import CQLPolicy
-from agent.policy.experience_buffer import (
-    ExperienceBuffer,
-    Transition,
-    INDEX_ACTION,
-    N_ACTIONS,
-)
 from agent.classifier.anomaly_types import AnomalyType
+from agent.policy.cql_policy import CQLPolicy
+from agent.policy.experience_buffer import (INDEX_ACTION, N_ACTIONS,
+                                            ExperienceBuffer, Transition)
 from agent.react.action_parser import ActionType
 
 logger = logging.getLogger(__name__)

@@ -14,11 +14,11 @@ Example:
     >>> status = health.check_all()  # Returns health status
 """
 
-from typing import Callable, Dict, List, Optional, Any
+import threading
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
-import time
-import threading
+from typing import Any, Callable, Dict, List, Optional
 
 
 @dataclass

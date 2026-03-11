@@ -2,9 +2,10 @@
 Hyperparameter search command.
 """
 
-import yaml
 import torch
+import yaml
 from click import echo
+
 from core import Config
 from search import GridSearch, RandomSearch
 
@@ -16,8 +17,8 @@ def make_train_fn(config_path):
         # trial_config is a Config object passed by random_search.py
         cfg = trial_config
 
-        from core.registry import get_model
         import models.gan.dcgan
+        from core.registry import get_model
 
         try:
             model = get_model(cfg.get("model.type", "dcgan"))(cfg)
@@ -28,8 +29,9 @@ def make_train_fn(config_path):
             dummy = TensorDataset(torch.randn(64, 3, 64, 64))
             loader = DataLoader(dummy, batch_size=32)
 
-            from training.trainer import Trainer
             import tempfile
+
+            from training.trainer import Trainer
 
             checkpoint_dir = tempfile.mkdtemp()
             trainer = Trainer(

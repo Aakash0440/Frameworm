@@ -13,8 +13,9 @@ Example:
     >>> trainer.add_callback(storage)
 """
 
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
 from training.callbacks import Callback
 
 

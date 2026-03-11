@@ -21,15 +21,10 @@ from typing import Dict, List, Optional
 import numpy as np
 
 from agent.classifier.anomaly_types import AnomalyType
-from agent.forecaster.grad_forecaster import GradForecaster, ForecasterConfig
-from agent.forecaster.training_data import (
-    FAILURE_MODES,
-    HORIZONS,
-    N_FAILURE_MODES,
-    N_FEATURES,
-    SEQ_LEN,
-    DataCollector,
-)
+from agent.forecaster.grad_forecaster import ForecasterConfig, GradForecaster
+from agent.forecaster.training_data import (FAILURE_MODES, HORIZONS,
+                                            N_FAILURE_MODES, N_FEATURES,
+                                            SEQ_LEN, DataCollector)
 from agent.observer.rolling_window import RollingWindow
 from agent.observer.signal_extractor import SignalExtractor
 
@@ -239,8 +234,8 @@ class FailurePredictor:
             f"to prevent predicted {mode.upper()} in {top['horizon']} steps (p={top['prob']:.3f})"
         )
         try:
-            from agent.react.action_parser import ParsedAction, ActionType
             from agent.classifier.anomaly_types import AnomalyEvent, Severity
+            from agent.react.action_parser import ActionType, ParsedAction
 
             fake_action = ParsedAction(
                 action_type=ActionType[action_name.upper()],

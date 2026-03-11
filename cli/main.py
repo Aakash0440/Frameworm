@@ -119,6 +119,7 @@ def plugin_info(plugin_name):
 def create_plugin(name, dir):
     """Create a new plugin template."""
     from pathlib import Path
+
     import yaml
 
     plugin_dir = Path(dir) / name
@@ -221,8 +222,8 @@ def pipeline(pipeline_file, dry_run):
 @click.option("--path", type=str, default=".")
 def init(project_name, template, path):
     """Initialize a new FRAMEWORM project."""
-    from pathlib import Path
     import os
+    from pathlib import Path
 
     project_path = Path(path) / project_name
     project_path.mkdir(parents=True, exist_ok=True)
@@ -271,11 +272,12 @@ def monitor(experiment_dir, refresh):
 @click.option("--gpus", default="0", help="GPU IDs to use")
 def train(config, resume, gpus):
     """Train a model using a config file"""
+    import torch
     from rich.console import Console
+
     from core.config import Config
     from core.registry import ModelRegistry
     from training.trainer import Trainer
-    import torch
 
     console = Console()
 
@@ -284,8 +286,8 @@ def train(config, resume, gpus):
 
     model_name = cfg.get("model.type", "dcgan")
     console.print(f"[green]Building model: {model_name}[/green]")
-    from core.registry import get_model
     import models.gan.dcgan
+    from core.registry import get_model
 
     model = get_model(model_name)(cfg)
 
@@ -302,8 +304,8 @@ def train(config, resume, gpus):
         checkpoint_dir="checkpoints",
         gradient_accumulation_steps=cfg.get("training.gradient_accumulation_steps", 1),
     )
-    from torch.utils.data import DataLoader, TensorDataset
     import torch
+    from torch.utils.data import DataLoader, TensorDataset
 
     # Placeholder dataloader — replace with real dataset later
     dummy = TensorDataset(torch.randn(64, 3, 64, 64))
@@ -327,10 +329,11 @@ def serve(checkpoint, port, host):
     console.print(f"[green]Serving on {host}:{port}[/green]")
 
     try:
+        import torch
         import uvicorn
         from fastapi import FastAPI
         from fastapi.responses import JSONResponse
-        import torch
+
         from core.config import Config
         from core.registry import get_model
 

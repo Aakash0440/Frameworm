@@ -27,8 +27,8 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from agent.observer.signal_extractor import SignalSnapshot
 from agent.classifier.anomaly_types import AnomalyType
+from agent.observer.signal_extractor import SignalSnapshot
 
 logger = logging.getLogger(__name__)
 

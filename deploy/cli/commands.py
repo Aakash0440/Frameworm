@@ -13,11 +13,11 @@ Wire into cli/main.py with:
     register_deploy_commands(main_cli_group)
 """
 
-import sys
 import json
-import time
-import subprocess
 import shutil
+import subprocess
+import sys
+import time
 from pathlib import Path
 
 

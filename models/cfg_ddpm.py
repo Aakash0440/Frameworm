@@ -14,11 +14,12 @@ Higher guidance_scale → images more faithful to condition, less diverse.
 Typical values: 3.0–10.0
 """
 
+import math
+from typing import Dict, Optional, Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import math
-from typing import Optional, Dict, Tuple
 
 
 class SinusoidalPositionEmbedding(nn.Module):

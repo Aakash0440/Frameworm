@@ -7,15 +7,15 @@ Supports both:
 Windows-safe: journal_mode=DELETE + explicit conn.close() in a real contextmanager.
 """
 
-import sqlite3
 import logging
+import sqlite3
 import uuid
 from contextlib import contextmanager
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 logger = logging.getLogger("frameworm.deploy")
 
