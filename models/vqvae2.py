@@ -271,19 +271,25 @@ class VQVAE2(nn.Module):
 
         return z_q_top, z_q_bottom, loss_top + loss_bottom
 
-    def decode(self, z_q_top: torch.Tensor, z_q_bottom: torch.Tensor) -> torch.Tensor:
+    def decode(self, z_q_top: torch.Tensor, z_q_bottom: torch.Tensor, target_size=None) -> torch.Tensor:
         """Decode quantized codes to image"""
         # Upsample top-level codes to bottom resolution
         top_upsampled = self.top_to_bottom(z_q_top)
-
-        # Concatenate along channel dimension
+        if top_upsampled.shape[2:] != z_q_bottom.shape[2:]:
+            top_upsampled = F.interpolate(top_upsampled, size=z_q_bottom.shape[2:], mode='nearest')
         dec_input = torch.cat([z_q_bottom, top_upsampled], dim=1)
+        out = torch.tanh(self.dec_bottom(dec_input))
+        if target_size is not None:
+            out = F.interpolate(out, size=tuple(target_size), mode='bilinear', align_corners=False)
+        return out
 
-        return torch.tanh(self.dec_bottom(dec_input))
+
+    def compute_loss(self, x):
+        return self.forward(x)
 
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         z_q_top, z_q_bottom, vq_loss = self.encode(x)
-        recon = self.decode(z_q_top, z_q_bottom)
+        recon = self.decode(z_q_top, z_q_bottom, target_size=x.shape[2:])
 
         recon_loss = F.mse_loss(recon, x)
 
@@ -304,3 +310,4 @@ class VQVAE2(nn.Module):
     def reconstruct(self, x: torch.Tensor) -> torch.Tensor:
         """Reconstruct images without computing gradients"""
         return self(x)["recon"]
+

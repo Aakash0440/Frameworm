@@ -32,6 +32,8 @@ class MetricsTracker:
         for name, value in metrics.items():
             # Handle tensors
             if hasattr(value, "item"):
+                if value.numel() != 1:
+                    continue
                 value = value.item()
             self.batch_metrics[name].append(value)
 
@@ -99,7 +101,7 @@ class ProgressLogger:
         if batch_idx % self.log_every_n_steps != 0 and batch_idx != total_batches - 1:
             return
 
-        metrics_str = " | ".join([f"{k}: {v:.4f}" for k, v in metrics.items()])
+        metrics_str = " | ".join([f"{k}: {float(v):.4f}" for k, v in metrics.items() if hasattr(v, "__float__") and (not hasattr(v, "numel") or v.numel() == 1)])
         print(f"  [{batch_idx+1}/{total_batches}] {metrics_str}")
 
     def log_epoch_end(

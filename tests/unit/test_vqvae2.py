@@ -25,14 +25,14 @@ class TestVQVAE2:
 
     def test_forward(self, config):
         model = get_model("vqvae2")(config)
-        x = torch.randn(2, 3, 64, 64)
+        x = torch.randn(2, 3, 256, 256)
         out = model(x)
         assert out["recon"].shape == x.shape
         assert "loss" in out and "vq_loss" in out
 
     def test_reconstruction_range(self, config):
         model = get_model("vqvae2")(config)
-        x = torch.randn(2, 3, 64, 64)
+        x = torch.randn(2, 3, 256, 256)
         out = model(x)
         # tanh output should be in [-1, 1]
         assert out["recon"].min() >= -1.0 - 1e-5
@@ -46,7 +46,7 @@ class TestVQVAE2:
 
     def test_straight_through_gradient(self, config):
         model = get_model("vqvae2")(config)
-        x = torch.randn(2, 3, 64, 64, requires_grad=True)
+        x = torch.randn(2, 3, 256, 256, requires_grad=True)
         out = model(x)
         out["loss"].backward()
         assert x.grad is not None, "Gradients must flow through VQ layer"
