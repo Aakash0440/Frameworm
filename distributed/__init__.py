@@ -2,10 +2,21 @@
 
 from .sampler import DistributedSampler, get_distributed_sampler
 from .trainer import DistributedTrainer
-from .utils import (DistributedContext, all_gather, all_reduce, barrier,
-                    broadcast, cleanup_distributed, get_local_rank, get_rank,
-                    get_world_size, is_distributed, is_master,
-                    setup_distributed, synchronize)
+from .utils import (
+    DistributedContext,
+    all_gather,
+    all_reduce,
+    barrier,
+    broadcast,
+    cleanup_distributed,
+    get_local_rank,
+    get_rank,
+    get_world_size,
+    is_distributed,
+    is_master,
+    setup_distributed,
+    synchronize,
+)
 
 __all__ = [
     "is_distributed",

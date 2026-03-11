@@ -2,9 +2,11 @@
 
 from experiment.experiment import Experiment
 from experiment.manager import ExperimentManager
-from experiment.visualization import (plot_experiment_comparison_grid,
-                                      plot_metric_comparison,
-                                      plot_multiple_metrics)
+from experiment.visualization import (
+    plot_experiment_comparison_grid,
+    plot_metric_comparison,
+    plot_multiple_metrics,
+)
 
 __all__ = [
     "Experiment",

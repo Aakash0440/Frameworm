@@ -1,6 +1,6 @@
 import pytest
 
-pytest.skip('CFG-DDPM skip_ch bug - tracked in issue', allow_module_level=True)
+pytest.skip("CFG-DDPM skip_ch bug - tracked in issue", allow_module_level=True)
 import torch
 
 from core import Config
@@ -50,4 +50,3 @@ print(f"✓ Unconditional sampling: {samples_uncond.shape}")
 
 print("=" * 60)
 print("✅ CFG-DDPM complete!")
-

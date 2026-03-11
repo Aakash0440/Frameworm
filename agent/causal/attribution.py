@@ -24,8 +24,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from agent.causal.causal_graph import CausalGraph, CausalNode, NodeStatus
-from agent.causal.do_intervention import (DoIntervention, FreezeVariable,
-                                          ReplayResult)
+from agent.causal.do_intervention import DoIntervention, FreezeVariable, ReplayResult
 from agent.classifier.anomaly_types import AnomalyEvent, AnomalyType, Severity
 from agent.observer.rolling_window import RollingWindow
 from agent.observer.signal_extractor import SignalSnapshot

@@ -21,8 +21,7 @@ except ImportError:
 
 from core import Config
 from experiment import Experiment
-from search.space import (Categorical, Integer, Real, SearchSpace,
-                          expand_search_space)
+from search.space import Categorical, Integer, Real, SearchSpace, expand_search_space
 
 
 class BayesianSearch:

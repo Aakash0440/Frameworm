@@ -22,9 +22,14 @@ import numpy as np
 
 from agent.classifier.anomaly_types import AnomalyType
 from agent.forecaster.grad_forecaster import ForecasterConfig, GradForecaster
-from agent.forecaster.training_data import (FAILURE_MODES, HORIZONS,
-                                            N_FAILURE_MODES, N_FEATURES,
-                                            SEQ_LEN, DataCollector)
+from agent.forecaster.training_data import (
+    FAILURE_MODES,
+    HORIZONS,
+    N_FAILURE_MODES,
+    N_FEATURES,
+    SEQ_LEN,
+    DataCollector,
+)
 from agent.observer.rolling_window import RollingWindow
 from agent.observer.signal_extractor import SignalExtractor
 

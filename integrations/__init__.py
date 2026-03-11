@@ -14,9 +14,14 @@ except ImportError:
     setup_mlflow = None
 
 try:
-    from integrations.storage import (AzureStorage, GCSStorage, S3Storage,
-                                      setup_azure_storage, setup_gcs_storage,
-                                      setup_s3_storage)
+    from integrations.storage import (
+        AzureStorage,
+        GCSStorage,
+        S3Storage,
+        setup_azure_storage,
+        setup_gcs_storage,
+        setup_s3_storage,
+    )
 except ImportError:
     S3Storage = GCSStorage = AzureStorage = None
     setup_s3_storage = setup_gcs_storage = setup_azure_storage = None

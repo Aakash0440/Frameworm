@@ -24,9 +24,13 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
-from agent.forecaster.training_data import (N_FAILURE_MODES, N_FEATURES,
-                                            N_HORIZONS, SEQ_LEN,
-                                            ForecasterDataset)
+from agent.forecaster.training_data import (
+    N_FAILURE_MODES,
+    N_FEATURES,
+    N_HORIZONS,
+    SEQ_LEN,
+    ForecasterDataset,
+)
 
 logger = logging.getLogger(__name__)
 

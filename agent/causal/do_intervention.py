@@ -206,8 +206,7 @@ class DoIntervention:
 
         try:
             from agent.classifier.rule_engine import RuleEngine
-            from agent.observer.rolling_window import (MetricSnapshot,
-                                                       RollingWindow)
+            from agent.observer.rolling_window import MetricSnapshot, RollingWindow
             from agent.observer.signal_extractor import SignalExtractor
 
             replay_window = RollingWindow(size=self.replay_steps + 10)
