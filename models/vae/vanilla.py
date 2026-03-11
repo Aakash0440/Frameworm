@@ -127,7 +127,9 @@ class VAE(BaseModel):
             recon, _, _ = self.forward(x)
         return recon
 
-    def compute_loss(self, x, recon, mu, logvar):
+    def compute_loss(self, x, recon=None, mu=None, logvar=None):
+        if recon is None:
+            recon, mu, logvar = self.forward(x)
         recon_loss = F.mse_loss(recon, x, reduction="sum") / x.size(0)
         kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / x.size(0)
         total_loss = recon_loss + self.beta * kl_loss

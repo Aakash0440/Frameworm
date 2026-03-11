@@ -42,6 +42,7 @@ from core.registry import (  # Registries; Decorators; Getters; Listers; Checker
     register_trainer,
 )
 from core.types import *
+from training.trainer import Trainer
 
 __all__ = [
     # Config
@@ -67,6 +68,7 @@ __all__ = [
     "list_datasets",
     "has_model",
     "has_trainer",
+    "Trainer",
     "has_pipeline",
     "has_dataset",
     "discover_plugins",
