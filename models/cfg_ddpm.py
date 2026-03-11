@@ -189,7 +189,12 @@ class CFGUNet(nn.Module):
 
         for i, out_ch in enumerate(reversed(channels)):
             for j in range(num_res_blocks + 1):
-                skip_ch = channels[-(i + 1)]
+                if j < num_res_blocks:
+                    skip_ch = channels[-(i + 1)]
+                elif i < len(channels) - 1:
+                    skip_ch = channels[-(i + 2)]
+                else:
+                    skip_ch = channels[0]
                 self.decoder.append(
                     ResBlock(in_ch + skip_ch, out_ch, time_emb_dim, dropout=dropout)
                 )
@@ -233,7 +238,7 @@ class CFGUNet(nn.Module):
 
         # Encoder - mirrors __init__ structure exactly
         h = self.conv_in(x)
-        skips = []
+        skips = [h]  # conv_in output is the 9th skip
         enc_idx = 0
         block_idx = 0
         num_levels = len(self.downsample) + 1

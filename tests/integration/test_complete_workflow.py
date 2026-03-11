@@ -51,7 +51,7 @@ class TestCompleteWorkflow:
             trainer.add_callback(EarlyStopping(patience=2))
 
             # Train with experiment tracking
-            with Experiment(name="test-exp", base_dir=str(tmpdir)) as exp:
+            with Experiment(name="test-exp", root_dir=str(tmpdir)) as exp:
                 trainer.set_experiment(exp)
                 trainer.train(train_loader, val_loader, epochs=5)
 
