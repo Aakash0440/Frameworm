@@ -37,4 +37,5 @@ mkdocstrings[python]>=0.24.0
 pymdown-extensions>=10.0
 memory-profiler>=0.61.0
 line-profiler>=4.1.0
-py-spy>=0.3.14matplotlib>=3.7.0
+py-spy>=0.3.14
+matplotlib>=3.7.0
