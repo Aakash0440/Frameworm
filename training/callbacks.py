@@ -163,7 +163,7 @@ class EarlyStopping(Callback):
         self.best = float("inf") if mode == "min" else float("-inf")
         self.counter = 0
 
-    def on_epoch_end(self, epoch, trainer):
+    def on_epoch_end(self, epoch, logs=None, trainer=None):
         metrics = getattr(trainer.state, "val_metrics", {})
         val = metrics.get(self.monitor) or metrics.get("loss")
         if val is None:
