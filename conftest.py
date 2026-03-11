@@ -1,9 +1,6 @@
 import sys
 from unittest.mock import MagicMock
 
-# Register real models before mocking training infrastructure
-import models  # noqa: F401 - triggers @register_model decorators
-
 # Block the root __init__.py from loading the training framework during tests.
 for mod in [
     "training",

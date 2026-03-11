@@ -1,8 +1,9 @@
 import pytest
 import torch
 
-import models  # noqa: F401 - triggers model registration
 from core import Config, get_model
+from core.registry import register_model
+from models.vqvae2 import VQVAE2 as _VQVAE2  # noqa: F401 - triggers @register_model
 
 
 class TestVQVAE2:
