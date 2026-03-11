@@ -6,7 +6,7 @@ Tracks execution time, memory usage, and bottlenecks.
 
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Tuple, Any, Dict, List, Optional
 
 import psutil
 
@@ -112,7 +112,7 @@ class MonitoredExecutionEngine:
         self._start_memory = 0
         self._peak_memory = 0
 
-    def execute(self, **kwargs) -> tuple[Dict[str, Any], GraphMetrics]:
+    def execute(self, **kwargs) -> Tuple[Dict[str, Any], GraphMetrics]:
         """
         Execute with monitoring.
 
