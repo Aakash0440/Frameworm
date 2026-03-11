@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     
     steps:
     - uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
         pip install black flake8 mypy isort
         black --check . --exclude "/(\.git|\.venv|__pycache__|\.egg-info|dist|build)/"
         flake8 . --max-line-length=100 --exclude ".git,__pycache__,.venv,.egg-info,dist,build" --ignore=F401,F811,E402,F841,F821,F541,E401,W503,E226,F403,F405,W391,E501,E203,E741,E722,E231,W605,F824
-        isort --check-only . --skip-glob=".*" --skip ".venv,.git,__pycache__,.egg-info,dist,build"
+        isort --check-only . --profile black --skip-glob=".*" --skip ".venv,.git,__pycache__,.egg-info,dist,build"
 
   docs:
     runs-on: ubuntu-latest
