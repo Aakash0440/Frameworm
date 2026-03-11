@@ -27,26 +27,19 @@ print("\n═══════════════════════�
 print("  FRAMEWORM DEPLOY — Steps 6–10 test suite")
 print("══════════════════════════════════════════════════\n")
 
-from deploy.tests.test_export import (
-    test_docker_compose_generated,
-    test_dockerfile_generated,
-    test_server_builder_all_model_types,
-    test_server_builder_generates_file,
-    test_server_builder_shift_injection,
-)
-from deploy.tests.test_registry import (
-    test_full_lifecycle,
-    test_list_all_doesnt_crash,
-    test_promote_to_production,
-    test_register_and_retrieve,
-)
+from deploy.tests.test_export import (test_docker_compose_generated,
+                                      test_dockerfile_generated,
+                                      test_server_builder_all_model_types,
+                                      test_server_builder_generates_file,
+                                      test_server_builder_shift_injection)
+from deploy.tests.test_registry import (test_full_lifecycle,
+                                        test_list_all_doesnt_crash,
+                                        test_promote_to_production,
+                                        test_register_and_retrieve)
 from deploy.tests.test_serving import (
     test_degradation_monitor_no_trigger_on_healthy,
-    test_degradation_monitor_triggers,
-    test_health_checker_error_rate,
-    test_health_checker_initial_state,
-    test_health_checker_mark_ready,
-)
+    test_degradation_monitor_triggers, test_health_checker_error_rate,
+    test_health_checker_initial_state, test_health_checker_mark_ready)
 
 print("── Serving Layer (Step 6) ────────────────────────")
 run("health checker initial state", test_health_checker_initial_state)

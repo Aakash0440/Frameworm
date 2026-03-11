@@ -7,7 +7,8 @@ from pathlib import Path
 import pytest
 
 from core.config import Config
-from core.registry import discover_plugins, get_model, register_model, reset_discovery
+from core.registry import (discover_plugins, get_model, register_model,
+                           reset_discovery)
 from models.base import BaseModel
 
 

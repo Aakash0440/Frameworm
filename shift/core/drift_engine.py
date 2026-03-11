@@ -11,7 +11,8 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from shift.core.feature_profiles import CategoricalProfile, DatasetProfile, NumericalProfile
+from shift.core.feature_profiles import (CategoricalProfile, DatasetProfile,
+                                         NumericalProfile)
 
 # ─── severity ────────────────────────────────────────────────────────────────
 

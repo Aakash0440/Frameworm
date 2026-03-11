@@ -20,16 +20,9 @@ Quick start:
     # frameworm deploy start --model my_model
 """
 
-from deploy.core import (
-    DeploymentRecord,
-    ExportManifest,
-    LatencySnapshot,
-    LatencyTracker,
-    ModelExporter,
-    ModelRegistry,
-    ModelStage,
-    get_tracker,
-)
+from deploy.core import (DeploymentRecord, ExportManifest, LatencySnapshot,
+                         LatencyTracker, ModelExporter, ModelRegistry,
+                         ModelStage, get_tracker)
 
 __version__ = "0.1.0"
 

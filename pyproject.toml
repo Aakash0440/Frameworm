@@ -96,11 +96,12 @@ norecursedirs = ["models", "core", "scripts", "configs"]
 line-length = 100
 target-version = ["py39", "py310", "py311", "py312"]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-
 [tool.mypy]
 python_version = "3.12"
 ignore_missing_imports = true
 exclude = ["distributed/", "deployment/"]
+
+[tool.isort]
+profile = "black"
+skip_glob = ["*.egg-info/*", "dist/*", "build/*", "site/*", ".venv/*", "venv/*"]
+

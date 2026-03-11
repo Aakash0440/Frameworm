@@ -27,7 +27,8 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from agent.benchmark.inject_failures import SCENARIO_REGISTRY, FailureInjector, FailureScenario
+from agent.benchmark.inject_failures import (SCENARIO_REGISTRY,
+                                             FailureInjector, FailureScenario)
 from agent.classifier.rule_engine import RuleEngine
 from agent.observer.rolling_window import MetricSnapshot, RollingWindow
 from agent.observer.signal_extractor import SignalExtractor

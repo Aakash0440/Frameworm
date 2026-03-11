@@ -11,23 +11,16 @@ Quick start:
 """
 
 import models  # triggers all @register_model decorators
-
 # Distributed
-from distributed import (
-    DistributedTrainer,
-    cleanup_distributed,
-    get_rank,
-    get_world_size,
-    is_distributed,
-    setup_distributed,
-)
+from distributed import (DistributedTrainer, cleanup_distributed, get_rank,
+                         get_world_size, is_distributed, setup_distributed)
 from distributed.data_loader import OptimizedDataLoader
 from distributed.profiler import PerformanceProfiler
 from experiment.experiment import Experiment
 from experiment.manager import ExperimentManager
-
 # Search
-from search import Categorical, GridSearch, Integer, RandomSearch, Real, SearchAnalyzer
+from search import (Categorical, GridSearch, Integer, RandomSearch, Real,
+                    SearchAnalyzer)
 
 try:
     from __version__ import __author__, __email__, __version__

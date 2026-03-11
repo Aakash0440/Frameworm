@@ -37,7 +37,8 @@ print("════════════════════════�
 
 # ── Test 1: ModelExporter — signature lookup ──────────────────────────────
 print("1. ModelExporter — architecture signatures")
-from deploy.core.model_exporter import FRAMEWORM_MODEL_SIGNATURES, ModelExporter
+from deploy.core.model_exporter import (FRAMEWORM_MODEL_SIGNATURES,
+                                        ModelExporter)
 
 exporter = ModelExporter()
 check("VAE signature exists", "VAE" in FRAMEWORM_MODEL_SIGNATURES)

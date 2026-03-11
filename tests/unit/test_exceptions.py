@@ -2,18 +2,11 @@
 
 import pytest
 
-from core.exceptions import (
-    ConfigInheritanceError,
-    ConfigNotFoundError,
-    ConfigValidationError,
-    ConvergenceError,
-    DimensionMismatchError,
-    ErrorContext,
-    ErrorFormatter,
-    FramewormError,
-    ModelNotFoundError,
-    PluginValidationError,
-)
+from core.exceptions import (ConfigInheritanceError, ConfigNotFoundError,
+                             ConfigValidationError, ConvergenceError,
+                             DimensionMismatchError, ErrorContext,
+                             ErrorFormatter, FramewormError,
+                             ModelNotFoundError, PluginValidationError)
 
 
 class TestErrorContext:

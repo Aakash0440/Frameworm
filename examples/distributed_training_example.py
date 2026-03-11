@@ -16,7 +16,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 from core import Config, get_model
-from distributed import cleanup_distributed, get_rank, get_world_size, is_master, setup_distributed
+from distributed import (cleanup_distributed, get_rank, get_world_size,
+                         is_master, setup_distributed)
 from distributed.data_parallel import DataParallelTrainer
 from distributed.trainer import DistributedTrainer
 

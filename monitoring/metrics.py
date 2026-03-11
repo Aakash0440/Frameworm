@@ -20,15 +20,8 @@ from collections import defaultdict, deque
 from typing import Dict, List, Optional
 
 try:
-    from prometheus_client import (
-        REGISTRY,
-        CollectorRegistry,
-        Counter,
-        Gauge,
-        Histogram,
-        Summary,
-        start_http_server,
-    )
+    from prometheus_client import (REGISTRY, CollectorRegistry, Counter, Gauge,
+                                   Histogram, Summary, start_http_server)
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:
