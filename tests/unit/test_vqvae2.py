@@ -1,6 +1,7 @@
 import pytest
 import torch
 
+import models  # noqa: F401 - triggers model registration
 from core import Config, get_model
 
 
