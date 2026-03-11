@@ -2,11 +2,15 @@ import pytest
 import torch
 
 from core import Config, get_model
-from core.registry import register_model
-from models.vqvae2 import VQVAE2 as _VQVAE2  # noqa: F401 - triggers @register_model  # isort: skip
+from core.registry import _MODEL_REGISTRY
+from models.vqvae2 import VQVAE2
 
 
 class TestVQVAE2:
+    def setup_method(self, method=None):
+        if not _MODEL_REGISTRY.has("vqvae2"):
+            _MODEL_REGISTRY.register("vqvae2", VQVAE2)
+
     @pytest.fixture
     def config(self):
         return Config.from_dict(
