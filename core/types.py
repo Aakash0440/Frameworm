@@ -9,8 +9,20 @@ This module provides:
 """
 
 from pathlib import Path
-from typing import (Any, Callable, Dict, Generic, List, Mapping, Optional,
-                    Protocol, Sequence, TypeVar, Union, runtime_checkable)
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Mapping,
+    Optional,
+    Protocol,
+    Sequence,
+    TypeVar,
+    Union,
+    runtime_checkable,
+)
 
 import numpy as np
 import torch

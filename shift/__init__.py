@@ -15,9 +15,17 @@ Quick start:
     # Alerts fire automatically if drift is detected
 """
 
-from shift.core import (AlertManager, DatasetProfile, DriftEngine, DriftResult,
-                        DriftSeverity, FeatureProfiler, ReferenceStore,
-                        load_reference, save_reference)
+from shift.core import (
+    AlertManager,
+    DatasetProfile,
+    DriftEngine,
+    DriftResult,
+    DriftSeverity,
+    FeatureProfiler,
+    ReferenceStore,
+    load_reference,
+    save_reference,
+)
 from shift.sdk.monitor import ShiftMonitor
 
 __version__ = "0.1.0"
