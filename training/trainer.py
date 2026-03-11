@@ -302,6 +302,20 @@ class Trainer:
                 self.ema.update()
 
             self.train_tracker.update(loss_dict)
+            if self.experiment:
+                for k, v in loss_dict.items():
+                    if hasattr(v, "numel") and v.numel() != 1:
+                        continue
+                    self.experiment.log_metric(
+                        k, float(v), step=self.state.global_step, metric_type="train"
+                    )
+            if self.experiment:
+                for k, v in loss_dict.items():
+                    if hasattr(v, "numel") and v.numel() != 1:
+                        continue
+                    self.experiment.log_metric(
+                        k, float(v), step=self.state.global_step, metric_type="train"
+                    )
 
             # Hook: batch end
             if self.enable_hooks:

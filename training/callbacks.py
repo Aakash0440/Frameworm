@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 # Import your EarlyStopper correctly
-from search.early_stopping import EarlyStopper
 from training.schedulers import LearningRateScheduler
 
 
@@ -153,3 +152,32 @@ class GradientMonitor(Callback):
                 total_norm += p.grad.data.norm(2).item() ** 2
         total_norm = total_norm**0.5
         print(f"    Gradient norm: {total_norm:.4f}")
+
+
+class EarlyStopping(Callback):
+    def __init__(self, patience=5, min_delta=0.0, monitor="val_loss", mode="min"):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.monitor = monitor
+        self.mode = mode
+        self.best = float("inf") if mode == "min" else float("-inf")
+        self.counter = 0
+
+    def on_epoch_end(self, epoch, trainer):
+        metrics = getattr(trainer.state, "val_metrics", {})
+        val = metrics.get(self.monitor) or metrics.get("loss")
+        if val is None:
+            return
+        val = val[-1] if isinstance(val, list) else val
+        improved = (
+            val < self.best - self.min_delta
+            if self.mode == "min"
+            else val > self.best + self.min_delta
+        )
+        if improved:
+            self.best = val
+            self.counter = 0
+        else:
+            self.counter += 1
+            if self.counter >= self.patience:
+                trainer._stop_training = True

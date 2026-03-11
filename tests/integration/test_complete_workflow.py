@@ -1,3 +1,5 @@
+from training.trainer import Trainer
+
 """
 Complete end-to-end workflow test.
 
@@ -18,7 +20,7 @@ class TestCompleteWorkflow:
     def test_full_pipeline(self):
         """Complete pipeline: train → track → search → export → serve"""
 
-        from core import Config, Trainer, get_model
+        from core import Config, get_model
         from deployment import ModelExporter
         from experiment import Experiment
         from search import RandomSearch

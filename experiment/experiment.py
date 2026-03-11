@@ -401,6 +401,7 @@ class Experiment:
                 json.dump(metadata, f, indent=2)
 
     def get_metrics(self, metric_name: Optional[str] = None) -> List[Dict]:
+        self._flush_metrics()  # ensure buffer is written before reading
         """
         Get logged metrics.
 

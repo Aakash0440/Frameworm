@@ -44,30 +44,21 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
     """DCGAN Discriminator"""
 
-    def __init__(self, ndf, channels):
+    def __init__(self, ndf, channels, image_size=64):
         super().__init__()
-
-        self.main = nn.Sequential(
-            # Input: channels x 64 x 64
-            nn.Conv2d(channels, ndf, 4, 2, 1, bias=False),
-            nn.LeakyReLU(0.2, inplace=True),
-            # State: ndf x 32 x 32
-            nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 2),
-            nn.LeakyReLU(0.2, inplace=True),
-            # State: (ndf*2) x 16 x 16
-            nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 4),
-            nn.LeakyReLU(0.2, inplace=True),
-            # State: (ndf*4) x 8 x 8
-            nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 8),
-            nn.LeakyReLU(0.2, inplace=True),
-            # State: (ndf*8) x 4 x 4
-            nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
-            nn.Sigmoid(),
-            # Output: 1 x 1 x 1
-        )
+        layers = [nn.Conv2d(channels, ndf, 4, 2, 1, bias=False), nn.LeakyReLU(0.2, inplace=True)]
+        size = image_size // 2
+        ch = ndf
+        while size > 4:
+            layers += [
+                nn.Conv2d(ch, ch * 2, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(ch * 2),
+                nn.LeakyReLU(0.2, inplace=True),
+            ]
+            ch *= 2
+            size //= 2
+        layers += [nn.Conv2d(ch, 1, 4, 1, 0, bias=False), nn.Sigmoid()]
+        self.main = nn.Sequential(*layers)
 
     def forward(self, img):
         return self.main(img).view(-1, 1).squeeze(1)
@@ -96,7 +87,9 @@ class DCGAN(BaseModel):
 
         self.latent_dim = latent_dim
         self.generator = Generator(latent_dim, ngf, channels)
-        self.discriminator = Discriminator(ndf, channels)
+        self.discriminator = Discriminator(
+            ndf, channels, image_size=getattr(config.model, "image_size", 64)
+        )
 
         self.init_weights()
 
@@ -120,22 +113,28 @@ class DCGAN(BaseModel):
         batch_size = real_images.size(0)
         device = real_images.device
 
-        real_labels = torch.ones(batch_size, device=device)
-        fake_labels = torch.zeros(batch_size, device=device)
+        real_preds = self.discriminator(real_images).view(-1)
+        real_labels = torch.ones(real_preds.shape[0], device=device)
+        fake_labels = torch.zeros(real_preds.shape[0], device=device)
 
         # Discriminator loss
-        real_preds = self.discriminator(real_images)
         d_loss_real = F.binary_cross_entropy(real_preds, real_labels)
 
         z = torch.randn(batch_size, self.latent_dim, 1, 1, device=device)
         fake_images = self.generator(z)
-        fake_preds = self.discriminator(fake_images.detach())
+        if fake_images.shape[2:] != real_images.shape[2:]:
+            fake_images = F.interpolate(
+                fake_images, size=real_images.shape[2:], mode="bilinear", align_corners=False
+            )
+        fake_preds = self.discriminator(fake_images.detach()).view(-1)
+        fake_labels = torch.zeros(fake_preds.shape[0], device=device)
         d_loss_fake = F.binary_cross_entropy(fake_preds, fake_labels)
 
         d_loss = d_loss_real + d_loss_fake
 
         # Generator loss
-        gen_preds = self.discriminator(fake_images)
+        gen_preds = self.discriminator(fake_images).view(-1)
+        real_labels = torch.ones(gen_preds.shape[0], device=device)
         g_loss = F.binary_cross_entropy(gen_preds, real_labels)
 
         return {"loss": d_loss + g_loss, "d_loss": d_loss, "g_loss": g_loss}

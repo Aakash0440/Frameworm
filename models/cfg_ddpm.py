@@ -22,6 +22,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+def _safe_groups(num_groups: int, channels: int) -> int:
+    """Return largest divisor of channels that is <= num_groups."""
+    for g in range(min(num_groups, channels), 0, -1):
+        if channels % g == 0:
+            return g
+    return 1
+
+
 class SinusoidalPositionEmbedding(nn.Module):
     """
     Sinusoidal embedding for timestep t.
@@ -68,13 +76,13 @@ class ResBlock(nn.Module):
     ):
         super().__init__()
 
-        self.norm1 = nn.GroupNorm(num_groups, in_channels)
+        self.norm1 = nn.GroupNorm(_safe_groups(num_groups, in_channels), in_channels)
         self.conv1 = nn.Conv2d(in_channels, out_channels, 3, padding=1)
 
         # Time embedding projection → AdaGN scale + shift
         self.time_proj = nn.Sequential(nn.SiLU(), nn.Linear(time_emb_dim, out_channels * 2))
 
-        self.norm2 = nn.GroupNorm(num_groups, out_channels)
+        self.norm2 = nn.GroupNorm(_safe_groups(num_groups, out_channels), out_channels)
         self.dropout = nn.Dropout(dropout)
         self.conv2 = nn.Conv2d(out_channels, out_channels, 3, padding=1)
 
@@ -106,7 +114,7 @@ class SelfAttentionBlock(nn.Module):
 
     def __init__(self, channels: int, num_heads: int = 4, num_groups: int = 8):
         super().__init__()
-        self.norm = nn.GroupNorm(num_groups, channels)
+        self.norm = nn.GroupNorm(_safe_groups(num_groups, channels), channels)
         self.attn = nn.MultiheadAttention(channels, num_heads, batch_first=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -139,6 +147,8 @@ class CFGUNet(nn.Module):
         super().__init__()
 
         self.num_classes = num_classes
+        self.num_res_blocks = num_res_blocks
+        self.num_res_blocks = num_res_blocks
         time_emb_dim = model_channels * 4
 
         # Time embedding MLP
@@ -194,7 +204,9 @@ class CFGUNet(nn.Module):
 
         # Output
         self.conv_out = nn.Sequential(
-            nn.GroupNorm(8, in_ch), nn.SiLU(), nn.Conv2d(in_ch, in_channels, 3, padding=1)
+            nn.GroupNorm(_safe_groups(8, in_ch), in_ch),
+            nn.SiLU(),
+            nn.Conv2d(in_ch, in_channels, 3, padding=1),
         )
 
     def forward(
@@ -219,34 +231,37 @@ class CFGUNet(nn.Module):
             null_label = torch.full((x.shape[0],), self.num_classes, device=x.device)
             t_emb = t_emb + self.class_emb(null_label)
 
-        # Encoder
+        # Encoder - mirrors __init__ structure exactly
         h = self.conv_in(x)
-        skips = [h]
-
+        skips = []
         enc_idx = 0
-        for i, block in enumerate(self.encoder):
-            h = block(h, t_emb)
-            skips.append(h)
-            if enc_idx < len(self.downsample) and (i + 1) % 2 == 0:
-                h = self.downsample[enc_idx](h)
+        block_idx = 0
+        num_levels = len(self.downsample) + 1
+        for level in range(num_levels):
+            for _ in range(self.num_res_blocks):
+                h = self.encoder[block_idx](h, t_emb)
+                block_idx += 1
                 skips.append(h)
+            if enc_idx < len(self.downsample):
+                h = self.downsample[enc_idx](h)
                 enc_idx += 1
-
+                skips.append(h)
         # Bottleneck
         h = self.mid_block1(h, t_emb)
         h = self.mid_attn(h)
         h = self.mid_block2(h, t_emb)
-
-        # Decoder
+        # Decoder - mirrors __init__ structure exactly
         dec_idx = 0
-        for i, block in enumerate(self.decoder):
-            skip = skips.pop()
-            h = torch.cat([h, skip], dim=1)
-            h = block(h, t_emb)
-            if dec_idx < len(self.upsample) and (i + 1) % (2 + 1) == 0:
+        block_idx = 0
+        for level in range(num_levels):
+            for _ in range(self.num_res_blocks + 1):
+                skip = skips.pop()
+                h = torch.cat([h, skip], dim=1)
+                h = self.decoder[block_idx](h, t_emb)
+                block_idx += 1
+            if dec_idx < len(self.upsample):
                 h = self.upsample[dec_idx](h)
                 dec_idx += 1
-
         return self.conv_out(h)
 
 
