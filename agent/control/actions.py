@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ActionResult:
     """Outcome of executing one action."""
+
     success: bool
     action_name: str
     params: Dict[str, Any]
@@ -58,8 +59,12 @@ class ActionExecutor:
         Hooks into training/schedulers.py via trainer.optimizer.
         """
         if self.trainer_ref is None:
-            return ActionResult(False, "adjust_lr", {"factor": factor},
-                                "No trainer reference — training may not have started yet.")
+            return ActionResult(
+                False,
+                "adjust_lr",
+                {"factor": factor},
+                "No trainer reference — training may not have started yet.",
+            )
         try:
             optimizer = self.trainer_ref.optimizer
             old_lrs = []
@@ -81,8 +86,7 @@ class ActionExecutor:
 
         except Exception as exc:
             logger.error(f"adjust_lr failed: {exc}")
-            return ActionResult(False, "adjust_lr", {"factor": factor},
-                                exception=str(exc))
+            return ActionResult(False, "adjust_lr", {"factor": factor}, exception=str(exc))
 
     def rollback_checkpoint(self, step: Optional[int] = None) -> ActionResult:
         """
@@ -92,8 +96,7 @@ class ActionExecutor:
         If step=None, loads the most recent checkpoint.
         """
         if self.trainer_ref is None:
-            return ActionResult(False, "rollback", {"step": step},
-                                "No trainer reference.")
+            return ActionResult(False, "rollback", {"step": step}, "No trainer reference.")
         try:
             # Try your existing trainer's checkpoint loading
             # FRAMEWORM trainer uses load_checkpoint(path) or resume_from
@@ -115,6 +118,7 @@ class ActionExecutor:
             else:
                 # Manual fallback — load state dict directly
                 import torch
+
                 state = torch.load(ckpt_path, map_location="cpu")
                 if hasattr(self.trainer_ref, "model"):
                     self.trainer_ref.model.load_state_dict(state.get("model", state))
@@ -137,8 +141,7 @@ class ActionExecutor:
         Hooks into training/schedulers.py — your existing scheduler factory.
         """
         if self.trainer_ref is None:
-            return ActionResult(False, "swap_scheduler", {"name": name},
-                                "No trainer reference.")
+            return ActionResult(False, "swap_scheduler", {"name": name}, "No trainer reference.")
         try:
             from training.schedulers import build_scheduler
 
@@ -160,6 +163,7 @@ class ActionExecutor:
             # Fallback: try torch schedulers directly
             try:
                 import torch.optim.lr_scheduler as torch_sched
+
                 scheduler_map = {
                     "cosine": torch_sched.CosineAnnealingLR,
                     "step": torch_sched.StepLR,
@@ -174,12 +178,12 @@ class ActionExecutor:
                     return ActionResult(True, "swap_scheduler", {"name": name}, msg)
             except Exception as exc2:
                 pass
-            return ActionResult(False, "swap_scheduler", {"name": name},
-                                "training.schedulers not importable.")
+            return ActionResult(
+                False, "swap_scheduler", {"name": name}, "training.schedulers not importable."
+            )
         except Exception as exc:
             logger.error(f"swap_scheduler failed: {exc}")
-            return ActionResult(False, "swap_scheduler", {"name": name},
-                                exception=str(exc))
+            return ActionResult(False, "swap_scheduler", {"name": name}, exception=str(exc))
 
     def pause_training(self) -> ActionResult:
         """
@@ -202,6 +206,7 @@ class ActionExecutor:
         """
         try:
             from integrations.notifications import NotificationManager
+
             notifier = NotificationManager()
             notifier.send(
                 title="🤖 FRAMEWORM-AGENT Alert",
@@ -209,19 +214,17 @@ class ActionExecutor:
                 level="warning",
             )
             logger.info(f"[AgentAction] Alert sent: {message}")
-            return ActionResult(True, "alert", {"message": message},
-                                "Slack alert sent.")
+            return ActionResult(True, "alert", {"message": message}, "Slack alert sent.")
         except ImportError:
             logger.warning(
-                f"integrations.notifications not available. "
-                f"Alert message: {message}"
+                f"integrations.notifications not available. " f"Alert message: {message}"
             )
-            return ActionResult(False, "alert", {"message": message},
-                                "notifications module not available.")
+            return ActionResult(
+                False, "alert", {"message": message}, "notifications module not available."
+            )
         except Exception as exc:
             logger.error(f"send_alert failed: {exc}")
-            return ActionResult(False, "alert", {"message": message},
-                                exception=str(exc))
+            return ActionResult(False, "alert", {"message": message}, exception=str(exc))
 
     def watch(self, steps: int = 50) -> ActionResult:
         """No-op — just monitor for N more steps."""

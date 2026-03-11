@@ -1,4 +1,3 @@
-
 """
 Exports FRAMEWORM model checkpoints to TorchScript and ONNX.
 Applies quantization for size/speed optimisation.
@@ -23,16 +22,14 @@ FRAMEWORM_MODEL_SIGNATURES: Dict[str, dict] = {
         "input_shape": (1, 3, 64, 64),
         "input_names": ["image"],
         "output_names": ["reconstruction", "mu", "logvar"],
-        "dynamic_axes": {"image": {0: "batch_size"},
-                         "reconstruction": {0: "batch_size"}},
+        "dynamic_axes": {"image": {0: "batch_size"}, "reconstruction": {0: "batch_size"}},
         "export_notes": "Exports encoder+decoder as single graph",
     },
     "DCGAN": {
         "input_shape": (1, 100, 1, 1),
         "input_names": ["noise"],
         "output_names": ["generated_image"],
-        "dynamic_axes": {"noise": {0: "batch_size"},
-                         "generated_image": {0: "batch_size"}},
+        "dynamic_axes": {"noise": {0: "batch_size"}, "generated_image": {0: "batch_size"}},
         "export_notes": "Generator only — discriminator not exported",
     },
     "DDPM": {
@@ -69,22 +66,23 @@ FRAMEWORM_MODEL_SIGNATURES: Dict[str, dict] = {
 @dataclass
 class ExportManifest:
     """Records everything about an exported model."""
-    model_name:       str
-    model_class:      str
-    checkpoint_path:  str
-    checkpoint_hash:  str
-    export_dir:       str
+
+    model_name: str
+    model_class: str
+    checkpoint_path: str
+    checkpoint_hash: str
+    export_dir: str
     torchscript_path: Optional[str]
-    onnx_path:        Optional[str]
-    quantized_path:   Optional[str]
-    input_shape:      list
-    input_names:      list
-    output_names:     list
-    export_formats:   list
-    quantized:        bool
-    exported_at:      str
+    onnx_path: Optional[str]
+    quantized_path: Optional[str]
+    input_shape: list
+    input_names: list
+    output_names: list
+    export_formats: list
+    quantized: bool
+    exported_at: str
     frameworm_version: str = "1.0.0"
-    metadata:         dict = None
+    metadata: dict = None
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -164,8 +162,8 @@ class ModelExporter:
         export_dir = self.exports_dir / model_name
         export_dir.mkdir(parents=True, exist_ok=True)
 
-        ts_path    = None
-        onnx_path  = None
+        ts_path = None
+        onnx_path = None
         quant_path = None
 
         # ── TorchScript export ──
@@ -206,9 +204,12 @@ class ModelExporter:
         manifest.save(manifest_path)
 
         print(f"[DEPLOY] Export complete → {export_dir}")
-        if ts_path:    print(f"         TorchScript: {ts_path}")
-        if onnx_path:  print(f"         ONNX:        {onnx_path}")
-        if quant_path: print(f"         Quantized:   {quant_path}")
+        if ts_path:
+            print(f"         TorchScript: {ts_path}")
+        if onnx_path:
+            print(f"         ONNX:        {onnx_path}")
+        if quant_path:
+            print(f"         Quantized:   {quant_path}")
 
         return manifest
 
@@ -216,6 +217,7 @@ class ModelExporter:
 
     def _export_torchscript(self, model, dummy_inputs, out_path, model_class):
         import torch
+
         print(f"[DEPLOY] Tracing TorchScript...")
         try:
             with torch.no_grad():
@@ -237,6 +239,7 @@ class ModelExporter:
 
     def _export_onnx(self, model, dummy_inputs, out_path, sig, model_class):
         import torch
+
         print(f"[DEPLOY] Exporting ONNX...")
         try:
             with torch.no_grad():
@@ -258,6 +261,7 @@ class ModelExporter:
 
     def _quantize(self, ts_path: str, quant_path: str):
         import torch
+
         print(f"[DEPLOY] Applying int8 quantization...")
         try:
             model = torch.jit.load(ts_path)
@@ -268,8 +272,10 @@ class ModelExporter:
             orig_mb = os.path.getsize(ts_path) / 1024 / 1024
             quant_mb = os.path.getsize(quant_path) / 1024 / 1024
             ratio = orig_mb / quant_mb if quant_mb > 0 else 1
-            print(f"[DEPLOY] Quantized: {orig_mb:.1f}MB → {quant_mb:.1f}MB "
-                  f"({ratio:.1f}x reduction)")
+            print(
+                f"[DEPLOY] Quantized: {orig_mb:.1f}MB → {quant_mb:.1f}MB "
+                f"({ratio:.1f}x reduction)"
+            )
         except Exception as e:
             logger.warning(f"[DEPLOY] Quantization failed (non-fatal): {e}")
 
@@ -277,6 +283,7 @@ class ModelExporter:
 
     def _load_checkpoint(self, path: str) -> dict:
         import torch
+
         if not os.path.exists(path):
             raise FileNotFoundError(f"[DEPLOY] Checkpoint not found: {path}")
         checkpoint = torch.load(path, map_location="cpu")
@@ -293,12 +300,13 @@ class ModelExporter:
         # ── try FRAMEWORM plugin registry ──
         model_class = "unknown"
         if isinstance(checkpoint, dict):
-            model_class = checkpoint.get("model_class",
-                          checkpoint.get("arch",
-                          checkpoint.get("model_type", "unknown")))
+            model_class = checkpoint.get(
+                "model_class", checkpoint.get("arch", checkpoint.get("model_type", "unknown"))
+            )
 
         try:
             from models import get_model
+
             model = get_model(model_class)
             if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
                 model.load_state_dict(checkpoint["model_state_dict"])
@@ -306,8 +314,9 @@ class ModelExporter:
                 model.load_state_dict(checkpoint["state_dict"])
             return model, model_class
         except (ImportError, KeyError, Exception) as e:
-            logger.warning(f"[DEPLOY] Could not load via registry ({e}), "
-                           f"loading raw state dict")
+            logger.warning(
+                f"[DEPLOY] Could not load via registry ({e}), " f"loading raw state dict"
+            )
 
         # ── fallback: return checkpoint model directly ──
         if hasattr(checkpoint, "eval"):
@@ -337,6 +346,7 @@ class ModelExporter:
 
     def _make_dummy_inputs(self, sig: dict, model_class: str):
         import torch
+
         shape = sig["input_shape"]
         # Multi-input models (DDPM needs noise + timestep, CFG_DDPM needs class_label)
         if model_class in ("DDPM", "CFG_DDPM"):
@@ -354,4 +364,3 @@ class ModelExporter:
             for chunk in iter(lambda: f.read(8192), b""):
                 h.update(chunk)
         return h.hexdigest()
-

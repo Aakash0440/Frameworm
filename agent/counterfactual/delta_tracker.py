@@ -36,10 +36,11 @@ class InterventionDelta:
     Positive FID delta = agent run had LOWER FID = agent helped.
     Negative loss delta = agent run had LOWER loss = agent helped.
     """
+
     intervention_id: str
     intervention_step: int
     anomaly_type: AnomalyType
-    action_taken: str               # e.g. "ADJUST_LR(factor=0.5)"
+    action_taken: str  # e.g. "ADJUST_LR(factor=0.5)"
 
     # Run A (with agent) metrics
     run_a_final_loss: float
@@ -52,9 +53,9 @@ class InterventionDelta:
     run_b_fid: Optional[float] = None
 
     # Deltas (A - B, so negative loss delta = agent improved)
-    loss_delta: float = 0.0         # run_a_loss - run_b_loss
-    fid_delta: float = 0.0          # run_a_fid - run_b_fid
-    grad_norm_delta: float = 0.0    # run_a_grad - run_b_grad
+    loss_delta: float = 0.0  # run_a_loss - run_b_loss
+    fid_delta: float = 0.0  # run_a_fid - run_b_fid
+    grad_norm_delta: float = 0.0  # run_a_grad - run_b_grad
 
     # Compute overhead (extra GPU time due to agent)
     compute_overhead_seconds: float = 0.0

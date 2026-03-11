@@ -26,7 +26,6 @@ import numpy as np
 from agent.classifier.anomaly_types import AnomalyEvent
 from agent.observer.rolling_window import RollingWindow
 
-
 # ──────────────────────────────────────────────────────────────────
 # System prompt — sent once per session
 # ──────────────────────────────────────────────────────────────────
@@ -60,6 +59,7 @@ REASON: <one sentence justifying this specific action>"""
 # ──────────────────────────────────────────────────────────────────
 # PromptBuilder
 # ──────────────────────────────────────────────────────────────────
+
 
 class PromptBuilder:
     """
@@ -115,9 +115,7 @@ class PromptBuilder:
         history_str = self._format_history(action_history[-3:])
 
         # Rollback options (last checkpoint + 2 steps before that)
-        rollback_options = self._format_rollback_options(
-            last_checkpoint_step, event.step
-        )
+        rollback_options = self._format_rollback_options(last_checkpoint_step, event.step)
 
         prompt = f"""═══════════════════════════════════════
 TRAINING ANOMALY REPORT
@@ -171,9 +169,7 @@ Respond with THINK / ACT / REASON only."""
         lines = []
         for h in history:
             resolved = "✓ resolved" if h.get("resolved") else "✗ unresolved"
-            lines.append(
-                f"  Step {h['step']:,}: {h['action']} → {resolved}"
-            )
+            lines.append(f"  Step {h['step']:,}: {h['action']} → {resolved}")
         return "\n".join(lines)
 
     def _format_rollback_options(self, last_ckpt: int, current_step: int) -> str:

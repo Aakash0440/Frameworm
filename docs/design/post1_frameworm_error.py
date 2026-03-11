@@ -5,5 +5,5 @@ raise DimensionMismatchError(
     received_shape=(4, 100),
     location="models/dcgan.py",
     line=142,
-    fix="x.unsqueeze(-1).unsqueeze(-1)"
+    fix="x.unsqueeze(-1).unsqueeze(-1)",
 )

@@ -463,5 +463,6 @@ def create_model_from_config(cfg: "Config"):
     # IMPORTANT: pass full config object to model
     return model_cls(model_cfg)
 
+
 def load_config(path):
     return Config(path)

@@ -43,6 +43,7 @@ class RuleEngineConfig:
         agent_cfg = cfg.get("agent", {})
         rule_config = RuleEngineConfig(**agent_cfg)
     """
+
     # Gradient explosion: grad_norm > this → GRADIENT_EXPLOSION
     grad_explosion_threshold: float = 10.0
 
@@ -104,9 +105,11 @@ class RuleEngine:
         Empty list means HEALTHY.
         """
         cfg = self.config
-        lenience = cfg.early_lenience_factor if (
-            signals.is_early_training and cfg.early_training_lenience
-        ) else 1.0
+        lenience = (
+            cfg.early_lenience_factor
+            if (signals.is_early_training and cfg.early_training_lenience)
+            else 1.0
+        )
 
         events: List[AnomalyEvent] = []
 
@@ -114,19 +117,21 @@ class RuleEngine:
         threshold = cfg.grad_explosion_threshold
         if signals.grad_norm_current > threshold:
             sev = self._grad_explosion_severity(signals.grad_norm_current, threshold)
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.GRADIENT_EXPLOSION,
-                severity=sev,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                loss_z_score=signals.loss_z_score,
-                grad_norm_z_score=signals.grad_norm_z_score,
-                triggered_rule="grad_norm > grad_explosion_threshold",
-                triggered_value=signals.grad_norm_current,
-                threshold_value=threshold,
-            ))
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.GRADIENT_EXPLOSION,
+                    severity=sev,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    loss_z_score=signals.loss_z_score,
+                    grad_norm_z_score=signals.grad_norm_z_score,
+                    triggered_rule="grad_norm > grad_explosion_threshold",
+                    triggered_value=signals.grad_norm_current,
+                    threshold_value=threshold,
+                )
+            )
             logger.warning(
                 f"[Step {signals.step}] GRADIENT_EXPLOSION detected: "
                 f"grad_norm={signals.grad_norm_current:.3f} > {threshold}"
@@ -135,17 +140,19 @@ class RuleEngine:
         # ── Rule 2: Vanishing Gradients ────────────────────────────
         vanish_threshold = cfg.vanishing_grad_threshold * lenience
         if signals.grad_norm_current < vanish_threshold and not signals.is_early_training:
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.VANISHING_GRAD,
-                severity=Severity.HIGH,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                triggered_rule="grad_norm < vanishing_grad_threshold",
-                triggered_value=signals.grad_norm_current,
-                threshold_value=vanish_threshold,
-            ))
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.VANISHING_GRAD,
+                    severity=Severity.HIGH,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    triggered_rule="grad_norm < vanishing_grad_threshold",
+                    triggered_value=signals.grad_norm_current,
+                    threshold_value=vanish_threshold,
+                )
+            )
             logger.warning(
                 f"[Step {signals.step}] VANISHING_GRAD detected: "
                 f"grad_norm={signals.grad_norm_current:.6f} < {vanish_threshold}"
@@ -155,18 +162,20 @@ class RuleEngine:
         spike_z = cfg.loss_spike_z_score * lenience
         if signals.loss_z_score > spike_z:
             sev = self._spike_severity(signals.loss_z_score, spike_z)
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.LOSS_SPIKE,
-                severity=sev,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                loss_z_score=signals.loss_z_score,
-                triggered_rule="loss_z_score > loss_spike_z_score",
-                triggered_value=signals.loss_z_score,
-                threshold_value=spike_z,
-            ))
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.LOSS_SPIKE,
+                    severity=sev,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    loss_z_score=signals.loss_z_score,
+                    triggered_rule="loss_z_score > loss_spike_z_score",
+                    triggered_value=signals.loss_z_score,
+                    threshold_value=spike_z,
+                )
+            )
             logger.warning(
                 f"[Step {signals.step}] LOSS_SPIKE detected: "
                 f"z={signals.loss_z_score:.2f} > {spike_z}"
@@ -180,18 +189,20 @@ class RuleEngine:
             self._divergence_counter = 0
 
         if self._divergence_counter >= cfg.divergence_min_steps:
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.DIVERGENCE,
-                severity=Severity.HIGH,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                divergence_score=signals.divergence_score,
-                triggered_rule="divergence_score > threshold for min_steps",
-                triggered_value=signals.divergence_score,
-                threshold_value=div_threshold,
-            ))
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.DIVERGENCE,
+                    severity=Severity.HIGH,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    divergence_score=signals.divergence_score,
+                    triggered_rule="divergence_score > threshold for min_steps",
+                    triggered_value=signals.divergence_score,
+                    threshold_value=div_threshold,
+                )
+            )
             logger.warning(
                 f"[Step {signals.step}] DIVERGENCE detected: "
                 f"score={signals.divergence_score:.2f} for "
@@ -200,19 +211,23 @@ class RuleEngine:
 
         # ── Rule 5: Oscillation ────────────────────────────────────
         osc_threshold = cfg.oscillation_score_threshold * lenience
-        if (signals.oscillation_score > osc_threshold
-                and abs(signals.loss_delta) < signals.loss_rolling_std * 0.5):
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.OSCILLATING,
-                severity=Severity.MEDIUM,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                triggered_rule="oscillation_score > threshold",
-                triggered_value=signals.oscillation_score,
-                threshold_value=osc_threshold,
-            ))
+        if (
+            signals.oscillation_score > osc_threshold
+            and abs(signals.loss_delta) < signals.loss_rolling_std * 0.5
+        ):
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.OSCILLATING,
+                    severity=Severity.MEDIUM,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    triggered_rule="oscillation_score > threshold",
+                    triggered_value=signals.oscillation_score,
+                    threshold_value=osc_threshold,
+                )
+            )
 
         # ── Rule 6: Plateau (no progress) ─────────────────────────
         plateau_threshold = cfg.plateau_score_threshold * lenience
@@ -222,18 +237,20 @@ class RuleEngine:
             self._plateau_counter = 0
 
         if self._plateau_counter >= cfg.plateau_min_steps:
-            events.append(AnomalyEvent(
-                anomaly_type=AnomalyType.PLATEAU,
-                severity=Severity.MEDIUM,
-                step=signals.step,
-                loss=signals.loss_raw,
-                grad_norm=signals.grad_norm_current,
-                lr=signals.lr_current,
-                plateau_score=signals.plateau_score,
-                triggered_rule="plateau_score < threshold for min_steps",
-                triggered_value=signals.plateau_score,
-                threshold_value=plateau_threshold,
-            ))
+            events.append(
+                AnomalyEvent(
+                    anomaly_type=AnomalyType.PLATEAU,
+                    severity=Severity.MEDIUM,
+                    step=signals.step,
+                    loss=signals.loss_raw,
+                    grad_norm=signals.grad_norm_current,
+                    lr=signals.lr_current,
+                    plateau_score=signals.plateau_score,
+                    triggered_rule="plateau_score < threshold for min_steps",
+                    triggered_value=signals.plateau_score,
+                    threshold_value=plateau_threshold,
+                )
+            )
             logger.info(
                 f"[Step {signals.step}] PLATEAU detected: "
                 f"no progress for {self._plateau_counter} steps"

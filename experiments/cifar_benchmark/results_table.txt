@@ -1,0 +1,51 @@
+========================================================================================================================
+  FRAMEWORM AGENT -- 30-Experiment Benchmark Results (CIFAR-10)
+  2026-03-10 12:53 UTC
+========================================================================================================================
+  #  Experiment           Arch   Condition      Agent Loss Shadow Loss      Delta   Det   Int  Res
+------------------------------------------------------------------------------------------------------------------------
+  1  VAE-Baseline-1       VAE    vae                0.1430      0.0585   -0.0845     6     6   NO
+  2  VAE-Baseline-2       VAE    vae                0.1350      0.0537   -0.0813     6     6   NO
+  3  VAE-Baseline-3       VAE    vae                0.1287      0.0545   -0.0742     6     6   NO
+  4  VAE-HighLR-1         VAE    vae                0.2424      0.2532 +   0.0107     7     8  YES
+  5  VAE-HighLR-2         VAE    vae                0.2449      0.2533 +   0.0084     8     8   NO
+  6  VAE-HighLR-3         VAE    vae                0.2396      0.2538 +   0.0143     7     8  YES
+  7  VAE-GradExp-1        VAE    vae                0.1316      0.0530   -0.0786     6     6   NO
+  8  VAE-GradExp-2        VAE    vae                0.1315      0.0567   -0.0748     6     6   NO
+  9  VAE-GradExp-3        VAE    vae                0.1338      0.0544   -0.0794     6     6   NO
+ 10  VAE-Plateau-1        VAE    vae                0.2384      0.2615 +   0.0231    10    10   NO
+ 11  VAE-Plateau-2        VAE    vae                0.2455      0.2554 +   0.0100    10    10   NO
+ 12  VAE-Plateau-3        VAE    vae                0.2397      0.2681 +   0.0284    10    10   NO
+ 13  VAE-Intervene-1      VAE    vae                0.2442      0.2537 +   0.0095     7     8  YES
+ 14  VAE-Intervene-2      VAE    vae                0.2439   9999.0000 +9998.7561     7     8  YES
+ 15  VAE-Intervene-3      VAE    vae                0.2423      0.2533 +   0.0110     8     8   NO
+ 16  GAN-Baseline-1       DCGAN  gan                2.1428      3.5714 +   1.4285     3     3  YES
+ 17  GAN-Baseline-2       DCGAN  gan                3.2277      3.5786 +   0.3509     0     0   NO
+ 18  GAN-Baseline-3       DCGAN  gan                2.2701      2.8566 +   0.5865     2     2  YES
+ 19  GAN-HighLR-1         DCGAN  gan                2.7544     87.7432 +  84.9888     6     6  YES
+ 20  GAN-HighLR-2         DCGAN  gan                2.0487      1.5447   -0.5040     3     3   NO
+ 21  GAN-HighLR-3         DCGAN  gan                3.2056    100.0000 +  96.7944     6     6  YES
+ 22  GAN-GradExp-1        DCGAN  gan                3.1670      3.4948 +   0.3279     0     0   NO
+ 23  GAN-GradExp-2        DCGAN  gan                3.1752      3.2359 +   0.0607     3     3   NO
+ 24  GAN-GradExp-3        DCGAN  gan                3.4509      3.9565 +   0.5056     3     3  YES
+ 25  GAN-Plateau-1        DCGAN  gan                3.9772      0.5601   -3.4171     7     7   NO
+ 26  GAN-Plateau-2        DCGAN  gan                2.4736      0.7619   -1.7117     8     8   NO
+ 27  GAN-Plateau-3        DCGAN  gan                2.6913      0.9258   -1.7656     5     5   NO
+ 28  GAN-Intervene-1      DCGAN  gan                2.1235     21.4233 +  19.2999     8     8  YES
+ 29  GAN-Intervene-2      DCGAN  gan                1.7869      1.6327   -0.1541     0     0   NO
+ 30  GAN-Intervene-3      DCGAN  gan                3.2921      0.0000   -3.2921     6     6   NO
+------------------------------------------------------------------------------------------------------------------------
+  SUMMARY
+  VAE:
+    Baseline avg loss:          0.1356
+    Anomalies detected:         15 / 15
+    Runs resolved by agent:     4 / 15
+    False positives (baseline): 3 / 3
+  DCGAN:
+    Baseline avg loss:          2.5469
+    Anomalies detected:         12 / 15
+    Runs resolved by agent:     6 / 15
+    False positives (baseline): 2 / 3
+  OVERALL resolution rate:      10 / 30  (33.3%)
+  Runs where agent helped:      15 / 24
+========================================================================================================================

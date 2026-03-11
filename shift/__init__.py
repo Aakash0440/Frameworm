@@ -14,6 +14,7 @@ Quick start:
     result = monitor.check(X_batch)
     # Alerts fire automatically if drift is detected
 """
+
 from shift.sdk.monitor import ShiftMonitor
 
 from shift.core import (
@@ -30,7 +31,7 @@ from shift.core import (
 
 __version__ = "0.1.0"
 __all__ = [
-    "ShiftMonitor", 
+    "ShiftMonitor",
     "FeatureProfiler",
     "DatasetProfile",
     "ReferenceStore",

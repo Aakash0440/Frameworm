@@ -1,4 +1,3 @@
-
 """
 Derives diagnostic signals from the rolling window.
 
@@ -33,34 +32,35 @@ class SignalSnapshot:
     All derived signals for a single tick.
     This is what the classifier operates on.
     """
+
     step: int
 
     # Loss signals
     loss_raw: float
     loss_ema: float
-    loss_delta: float           # positive = increasing, negative = improving
-    loss_z_score: float         # how many σ from rolling mean
+    loss_delta: float  # positive = increasing, negative = improving
+    loss_z_score: float  # how many σ from rolling mean
     loss_rolling_mean: float
     loss_rolling_std: float
 
     # Gradient signals
     grad_norm_current: float
-    grad_norm_mean: float       # rolling mean
-    grad_norm_var: float        # rolling variance
-    grad_norm_z_score: float    # how many σ from rolling mean
+    grad_norm_mean: float  # rolling mean
+    grad_norm_var: float  # rolling variance
+    grad_norm_z_score: float  # how many σ from rolling mean
 
     # Composite scores (used directly by rule engine)
-    plateau_score: float        # near 0 = stuck, high = moving
-    divergence_score: float     # 0–1, fraction of steps getting worse
-    oscillation_score: float    # high = bouncing loss
+    plateau_score: float  # near 0 = stuck, high = moving
+    divergence_score: float  # 0–1, fraction of steps getting worse
+    oscillation_score: float  # high = bouncing loss
 
     # LR info
     lr_current: float
-    lr_changed: bool            # did LR change in last 10 steps?
+    lr_changed: bool  # did LR change in last 10 steps?
 
     # Context
-    window_size: int            # how many steps we have
-    is_early_training: bool     # first 10% of training (noisy, be lenient)
+    window_size: int  # how many steps we have
+    is_early_training: bool  # first 10% of training (noisy, be lenient)
 
     def __repr__(self) -> str:
         return (
@@ -116,7 +116,7 @@ class SignalExtractor:
 
         # ── Loss signals ──────────────────────────
         loss_ema = self._compute_ema(losses)
-        short_losses = losses[-self.short_window:] if len(losses) >= self.short_window else losses
+        short_losses = losses[-self.short_window :] if len(losses) >= self.short_window else losses
         loss_rolling_mean = float(np.mean(short_losses))
         loss_rolling_std = float(np.std(short_losses)) + 1e-8
 
@@ -124,7 +124,9 @@ class SignalExtractor:
         loss_delta = self._compute_delta(losses, n=10)
 
         # ── Gradient signals ──────────────────────
-        short_grads = grad_norms[-self.short_window:] if len(grad_norms) >= self.short_window else grad_norms
+        short_grads = (
+            grad_norms[-self.short_window :] if len(grad_norms) >= self.short_window else grad_norms
+        )
         grad_norm_mean = float(np.mean(short_grads))
         grad_norm_var = float(np.var(short_grads))
         grad_norm_std = float(np.std(short_grads)) + 1e-8
@@ -185,7 +187,7 @@ class SignalExtractor:
         if len(values) < n * 2:
             return 0.0
         recent = float(np.mean(values[-n:]))
-        prior = float(np.mean(values[-n * 2:-n]))
+        prior = float(np.mean(values[-n * 2 : -n]))
         return recent - prior
 
     def _compute_divergence_score(self, losses: np.ndarray, n: int) -> float:

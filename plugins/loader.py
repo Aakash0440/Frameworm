@@ -58,17 +58,19 @@ logger = logging.getLogger(__name__)
 # Plugin metadata
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class PluginMeta:
     """Parsed metadata from plugin.yaml."""
+
     name: str
     version: str
-    entry_point: str                       # "module:function"
+    entry_point: str  # "module:function"
     description: str = ""
     author: str = ""
     dependencies: List[str] = field(default_factory=list)
     frameworm_min_version: Optional[str] = None
-    source_path: Optional[Path] = None    # directory containing plugin.yaml
+    source_path: Optional[Path] = None  # directory containing plugin.yaml
 
     def __str__(self):
         return f"{self.name} v{self.version}"
@@ -77,6 +79,7 @@ class PluginMeta:
 @dataclass
 class LoadResult:
     """Result of a single plugin load attempt."""
+
     meta: PluginMeta
     success: bool
     error: Optional[str] = None
@@ -89,6 +92,7 @@ class LoadResult:
 # ---------------------------------------------------------------------------
 # PluginLoader
 # ---------------------------------------------------------------------------
+
 
 class PluginLoader:
     """
@@ -136,7 +140,7 @@ class PluginLoader:
 
         # Track what we've loaded to prevent double-loading
         self._loaded: Dict[str, PluginMeta] = {}  # name → meta
-        self._failed: Dict[str, str] = {}          # name → error message
+        self._failed: Dict[str, str] = {}  # name → error message
 
     # ------------------------------------------------------------------
     # Path management
@@ -215,7 +219,9 @@ class PluginLoader:
             return LoadResult(meta=dummy, success=False, error="plugin.yaml not found or invalid")
 
         if meta.name in self._loaded and not force:
-            return LoadResult(meta=meta, success=True, error="already loaded (use force=True to reload)")
+            return LoadResult(
+                meta=meta, success=True, error="already loaded (use force=True to reload)"
+            )
 
         result = self._load_one(meta)
         if result.success:
@@ -380,6 +386,7 @@ loader.discover()
         candidates = []
         try:
             import importlib.metadata as importlib_metadata
+
             eps = importlib_metadata.entry_points(group="frameworm_plugin")
             for ep in eps:
                 meta = PluginMeta(
@@ -459,7 +466,9 @@ loader.discover()
             return None
 
         return PluginMeta(
-            name=name, version=version, entry_point=entry_point,
+            name=name,
+            version=version,
+            entry_point=entry_point,
             description=data.get("description", ""),
             author=data.get("author", ""),
             source_path=directory,
@@ -520,9 +529,7 @@ loader.discover()
             module = importlib.import_module(module_path)
             fn = getattr(module, fn_name, None)
             if fn is None:
-                logger.warning(
-                    "Module %r has no attribute %r", module_path, fn_name
-                )
+                logger.warning("Module %r has no attribute %r", module_path, fn_name)
                 return None
             return fn
         except ImportError as exc:

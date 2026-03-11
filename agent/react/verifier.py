@@ -32,12 +32,13 @@ class VerificationResult:
     Outcome of a post-intervention verification watch.
     Logged to experience buffer for offline RL training.
     """
+
     resolved: bool
     pre_loss_mean: float
     post_loss_mean: float
-    loss_delta: float           # negative = improved
-    ks_statistic: float         # 0–1, higher = more different distributions
-    ks_pvalue: float            # < 0.05 = statistically significant change
+    loss_delta: float  # negative = improved
+    ks_statistic: float  # 0–1, higher = more different distributions
+    ks_pvalue: float  # < 0.05 = statistically significant change
     steps_watched: int
     watch_duration_seconds: float
 
@@ -121,10 +122,7 @@ class Verifier:
         while len(window) < target_len:
             elapsed = time.monotonic() - start_time
             if elapsed > timeout_seconds:
-                logger.warning(
-                    f"Verifier: timeout after {elapsed:.0f}s — "
-                    "marking as unresolved"
-                )
+                logger.warning(f"Verifier: timeout after {elapsed:.0f}s — " "marking as unresolved")
                 return VerificationResult(
                     resolved=False,
                     pre_loss_mean=pre_mean,
@@ -148,10 +146,7 @@ class Verifier:
         elapsed = time.monotonic() - start_time
 
         # Resolved = loss improved AND statistically significant
-        resolved = (
-            loss_delta < self.improvement_threshold
-            and ks_pvalue < self.ks_alpha
-        )
+        resolved = loss_delta < self.improvement_threshold and ks_pvalue < self.ks_alpha
 
         result = VerificationResult(
             resolved=resolved,
@@ -167,9 +162,7 @@ class Verifier:
         logger.info(f"Verifier: {result}")
         return result
 
-    def _run_ks_test(
-        self, pre: np.ndarray, post: np.ndarray
-    ) -> tuple:
+    def _run_ks_test(self, pre: np.ndarray, post: np.ndarray) -> tuple:
         """
         Run KS test. Uses your existing monitoring/drift.py if available,
         falls back to scipy.
@@ -177,6 +170,7 @@ class Verifier:
         # Try your existing drift detection first
         try:
             from monitoring.drift import DriftDetector
+
             detector = DriftDetector()
             result = detector.ks_test(pre, post)
             # Your drift.py returns a dict with statistic and pvalue
@@ -188,10 +182,13 @@ class Verifier:
         # Fallback: scipy
         try:
             from scipy import stats
+
             stat, pvalue = stats.ks_2samp(pre, post)
             return float(stat), float(pvalue)
         except ImportError:
-            logger.warning("scipy not installed — KS test unavailable, using simple mean comparison")
+            logger.warning(
+                "scipy not installed — KS test unavailable, using simple mean comparison"
+            )
             # Last resort: just compare means
             stat = abs(float(np.mean(post)) - float(np.mean(pre)))
             pvalue = 0.01 if stat > 0.01 else 0.5

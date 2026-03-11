@@ -34,19 +34,18 @@ class DockerBuilder:
 
     def generate_dockerfile(
         self,
-        server_dir:    str,
-        model_name:    str,
+        server_dir: str,
+        model_name: str,
         model_version: str,
-        model_path:    str,
-        port:          int = 8000,
-        use_gpu:       bool = False,
+        model_path: str,
+        port: int = 8000,
+        use_gpu: bool = False,
     ) -> str:
         """Write Dockerfile to server_dir. Returns path as string."""
         os.makedirs(server_dir, exist_ok=True)
 
         model_filename = Path(model_path).name
-        base = "pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime" if use_gpu \
-               else self.BASE_IMAGE
+        base = "pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime" if use_gpu else self.BASE_IMAGE
 
         content = f"""\
 # FRAMEWORM DEPLOY - Auto-generated Dockerfile
@@ -90,10 +89,10 @@ CMD ["python", "server.py"]
 
     def generate_compose(
         self,
-        model_name:    str,
+        model_name: str,
         model_version: str,
-        port:          int,
-        output_path:   Optional[str] = None,
+        port: int,
+        output_path: Optional[str] = None,
     ) -> str:
         """Write docker-compose.yml. Returns path as string."""
         if output_path is None:
@@ -137,8 +136,9 @@ services:
         print(f"[DEPLOY] docker-compose.yml generated -> {output_path}")
         return output_path
 
-    def build_image(self, server_dir: str, model_name: str,
-                    model_version: str, no_cache: bool = False) -> str:
+    def build_image(
+        self, server_dir: str, model_name: str, model_version: str, no_cache: bool = False
+    ) -> str:
         """Build Docker image. Returns image tag."""
         if not shutil.which("docker"):
             raise RuntimeError("[DEPLOY] Docker not found.")

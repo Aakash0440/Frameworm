@@ -3,15 +3,20 @@ from core import Config
 from models.cfg_ddpm import CFGDDPM
 
 print("Testing CFG-DDPM:")
-print("="*60)
+print("=" * 60)
 
-config = Config.from_dict({
-    'model': {
-        'image_size': 16, 'image_channels': 1,
-        'num_classes': 5, 'model_channels': 32,
-        'timesteps': 50, 'p_uncond': 0.15
+config = Config.from_dict(
+    {
+        "model": {
+            "image_size": 16,
+            "image_channels": 1,
+            "num_classes": 5,
+            "model_channels": 32,
+            "timesteps": 50,
+            "p_uncond": 0.15,
+        }
     }
-})
+)
 
 model = CFGDDPM(config)
 params = sum(p.numel() for p in model.parameters())
@@ -21,7 +26,7 @@ print(f"✓ CFG-DDPM: {params:,} params")
 x = torch.randn(2, 1, 16, 16)
 y = torch.randint(0, 5, (2,))
 losses = model.compute_loss((x, y))
-assert 'loss' in losses
+assert "loss" in losses
 print(f"✓ Training loss: {losses['loss'].item():.4f}")
 
 # Unconditional
@@ -39,5 +44,5 @@ samples_uncond = model.sample(num_samples=2, guidance_scale=1.0)
 assert samples_uncond.shape == (2, 1, 16, 16)
 print(f"✓ Unconditional sampling: {samples_uncond.shape}")
 
-print("="*60)
+print("=" * 60)
 print("✅ CFG-DDPM complete!")

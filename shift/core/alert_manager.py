@@ -13,7 +13,6 @@ from typing import List, Optional
 
 from shift.core.drift_engine import DriftResult, DriftSeverity
 
-
 logger = logging.getLogger("frameworm.shift")
 
 
@@ -94,15 +93,16 @@ class AlertManager:
 
         webhook = self.slack_webhook
         if not webhook:
-            logger.warning("[SHIFT] Slack webhook not configured. "
-                           "Set FRAMEWORM_SLACK_WEBHOOK env var.")
+            logger.warning(
+                "[SHIFT] Slack webhook not configured. " "Set FRAMEWORM_SLACK_WEBHOOK env var."
+            )
             return
 
         severity_emoji = {
-            "NONE":   ":white_check_mark:",
-            "LOW":    ":warning:",
+            "NONE": ":white_check_mark:",
+            "LOW": ":warning:",
             "MEDIUM": ":orange_circle:",
-            "HIGH":   ":red_circle:",
+            "HIGH": ":red_circle:",
         }
         sev = payload["overall_severity"]
         emoji = severity_emoji.get(sev, ":warning:")
@@ -128,21 +128,27 @@ class AlertManager:
                             f"Severity: *{sev}*  |  "
                             f"{len(drifted)}/{payload['n_features_checked']} features drifted\n"
                             f"{payload['summary']}"
-                        )
-                    }
+                        ),
+                    },
                 },
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*Drifted features:*\n{feature_lines}" if drifted else "_No features drifted._"
-                    }
+                        "text": (
+                            f"*Drifted features:*\n{feature_lines}"
+                            if drifted
+                            else "_No features drifted._"
+                        ),
+                    },
                 },
                 {
                     "type": "context",
-                    "elements": [{"type": "mrkdwn", "text": f"Detected at {payload['detected_at']}"}]
-                }
-            ]
+                    "elements": [
+                        {"type": "mrkdwn", "text": f"Detected at {payload['detected_at']}"}
+                    ],
+                },
+            ],
         }
 
         data = json.dumps(message).encode("utf-8")
@@ -157,6 +163,7 @@ class AlertManager:
 
     def _send_webhook(self, payload: dict):
         import urllib.request
+
         if not self.webhook_url:
             logger.warning("[SHIFT] Webhook URL not configured.")
             return
@@ -190,10 +197,10 @@ class AlertManager:
             config_path = Path("configs/shift_config.yaml")
             if config_path.exists():
                 import yaml
+
                 with open(config_path) as f:
                     cfg = yaml.safe_load(f)
                 return cfg.get("shift", {}).get("alert_on", ["stdout"])
         except Exception:
             pass
         return ["stdout"]
-

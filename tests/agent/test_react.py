@@ -62,9 +62,7 @@ class TestActionParser:
         assert a.params["name"] == "cosine"
 
     def test_think_reason_extracted(self):
-        a = self.parser.parse(
-            "THINK: grad exploded\nACT: ADJUST_LR(factor=0.5)\nREASON: reduce lr"
-        )
+        a = self.parser.parse("THINK: grad exploded\nACT: ADJUST_LR(factor=0.5)\nREASON: reduce lr")
         assert "grad" in a.think.lower()
         assert "reduce" in a.reason.lower()
 
@@ -75,8 +73,12 @@ class TestPromptBuilder:
         for i in range(50):
             w.push(MetricSnapshot(step=i, loss=1.0, grad_norm=2.0, lr=0.0002))
         event = AnomalyEvent(
-            AnomalyType.LOSS_SPIKE, Severity.HIGH, step=50,
-            loss=3.0, grad_norm=5.0, lr=0.0002,
+            AnomalyType.LOSS_SPIKE,
+            Severity.HIGH,
+            step=50,
+            loss=3.0,
+            grad_norm=5.0,
+            lr=0.0002,
         )
         builder = PromptBuilder(model_name="DCGAN")
         prompt = builder.build(event, w, [], 100, 0.5)

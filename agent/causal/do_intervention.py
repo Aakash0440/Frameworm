@@ -39,11 +39,12 @@ logger = logging.getLogger(__name__)
 
 class FreezeVariable(Enum):
     """Which variable to hold fixed during do-intervention replay."""
-    BATCH_SEQUENCE = auto()     # reshuffle batches to replace suspicious batch
-    GRADIENT_CLIP = auto()      # add aggressive gradient clipping
-    LR_FREEZE = auto()          # hold LR constant at its value before anomaly
-    LAYER_FREEZE = auto()       # freeze weights of a specific layer
-    NONE = auto()               # baseline replay (no freeze) for comparison
+
+    BATCH_SEQUENCE = auto()  # reshuffle batches to replace suspicious batch
+    GRADIENT_CLIP = auto()  # add aggressive gradient clipping
+    LR_FREEZE = auto()  # hold LR constant at its value before anomaly
+    LAYER_FREEZE = auto()  # freeze weights of a specific layer
+    NONE = auto()  # baseline replay (no freeze) for comparison
 
 
 @dataclass
@@ -54,13 +55,14 @@ class ReplayResult:
     anomaly_present:  Did the anomaly still appear in the replay?
     If False with freeze X → X is confirmed root cause.
     """
-    freeze_variable: FreezeVariable
-    freeze_value: Any                   # what value was held fixed
 
-    anomaly_present: bool               # did anomaly reoccur in replay?
-    replay_loss_mean: float             # mean loss during replay
-    replay_grad_norm_mean: float        # mean grad norm during replay
-    replay_steps: int                   # how many steps were replayed
+    freeze_variable: FreezeVariable
+    freeze_value: Any  # what value was held fixed
+
+    anomaly_present: bool  # did anomaly reoccur in replay?
+    replay_loss_mean: float  # mean loss during replay
+    replay_grad_norm_mean: float  # mean grad norm during replay
+    replay_steps: int  # how many steps were replayed
     replay_duration_seconds: float
 
     # Comparison to baseline replay (no freeze)
@@ -154,21 +156,14 @@ class DoIntervention:
 
             # Confirmed root cause = anomaly disappears when variable frozen
             result.baseline_loss_mean = baseline.replay_loss_mean
-            result.loss_delta_from_baseline = (
-                result.replay_loss_mean - baseline.replay_loss_mean
-            )
-            result.confirmed_root_cause = (
-                not result.anomaly_present and baseline.anomaly_present
-            )
+            result.loss_delta_from_baseline = result.replay_loss_mean - baseline.replay_loss_mean
+            result.confirmed_root_cause = not result.anomaly_present and baseline.anomaly_present
 
             results.append(result)
             logger.info(f"DoIntervention: {result}")
 
             if result.confirmed_root_cause:
-                logger.info(
-                    f"ROOT CAUSE CONFIRMED: {variable.name} "
-                    f"at step {anomaly_step}"
-                )
+                logger.info(f"ROOT CAUSE CONFIRMED: {variable.name} " f"at step {anomaly_step}")
                 # Stop after first confirmed root cause (efficiency)
                 break
 
@@ -236,12 +231,14 @@ class DoIntervention:
                 losses.append(loss)
                 grad_norms.append(grad_norm)
 
-                replay_window.push(MetricSnapshot(
-                    step=checkpoint_step + step_offset,
-                    loss=loss,
-                    grad_norm=grad_norm,
-                    lr=lr,
-                ))
+                replay_window.push(
+                    MetricSnapshot(
+                        step=checkpoint_step + step_offset,
+                        loss=loss,
+                        grad_norm=grad_norm,
+                        lr=lr,
+                    )
+                )
 
                 if replay_window.is_ready:
                     signals = replay_extractor.extract(replay_window)
@@ -299,8 +296,11 @@ class DoIntervention:
             return {
                 "loss": getattr(trainer, "_last_loss", 0.0),
                 "grad_norm": getattr(trainer, "_last_grad_norm", 0.0),
-                "lr": trainer.optimizer.param_groups[0]["lr"]
-                      if hasattr(trainer, "optimizer") else 0.0,
+                "lr": (
+                    trainer.optimizer.param_groups[0]["lr"]
+                    if hasattr(trainer, "optimizer")
+                    else 0.0
+                ),
             }
         except Exception as exc:
             logger.debug(f"_run_single_step failed: {exc}")
@@ -313,14 +313,12 @@ class DoIntervention:
             if hasattr(trainer, "optimizer"):
                 return trainer.optimizer.param_groups[0]["lr"]
         elif variable == FreezeVariable.GRADIENT_CLIP:
-            return 1.0   # aggressive clip value
+            return 1.0  # aggressive clip value
         elif variable == FreezeVariable.BATCH_SEQUENCE:
             return "reshuffled"
         return None
 
-    def _apply_freeze(
-        self, variable: FreezeVariable, value: Any
-    ) -> Optional[Callable]:
+    def _apply_freeze(self, variable: FreezeVariable, value: Any) -> Optional[Callable]:
         """
         Apply freeze to the variable. Returns a restore function.
         The restore function is called after replay completes.
@@ -351,6 +349,7 @@ class DoIntervention:
                 # Reseed the dataloader for different batches
                 if hasattr(trainer, "train_dataloader"):
                     import torch
+
                     torch.manual_seed(42)  # deterministic reseed
 
                 def restore_fn():
@@ -364,6 +363,7 @@ class DoIntervention:
     def _load_checkpoint(self, step: int) -> bool:
         """Load checkpoint from the given step."""
         import os
+
         trainer = self.trainer_ref
 
         # Try step-specific checkpoint first
@@ -380,6 +380,7 @@ class DoIntervention:
                         trainer.load_checkpoint(path)
                     else:
                         import torch
+
                         state = torch.load(path, map_location="cpu")
                         if hasattr(trainer, "model") and "model" in state:
                             trainer.model.load_state_dict(state["model"])

@@ -13,7 +13,6 @@ from metrics.lpips import LPIPS
 from metrics.inception_score import InceptionScore
 
 
-
 class MetricEvaluator:
     """
     Evaluate generative models with multiple metrics.

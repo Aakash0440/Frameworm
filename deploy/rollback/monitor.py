@@ -30,42 +30,43 @@ class DegradationMonitor:
         monitor._check()         # or trigger manually in tests
     """
 
-    DEFAULT_P95_THRESHOLD_MS  = 2000.0
-    DEFAULT_ERROR_RATE        = 0.10
-    DEFAULT_CHECK_INTERVAL_S  = 30
-    DEFAULT_CONSECUTIVE       = 3
+    DEFAULT_P95_THRESHOLD_MS = 2000.0
+    DEFAULT_ERROR_RATE = 0.10
+    DEFAULT_CHECK_INTERVAL_S = 30
+    DEFAULT_CONSECUTIVE = 3
 
     def __init__(
         self,
         latency_tracker,
         health_checker,
-        on_degradation:       Callable[[str], None],
-        p95_threshold_ms:     float = DEFAULT_P95_THRESHOLD_MS,
+        on_degradation: Callable[[str], None],
+        p95_threshold_ms: float = DEFAULT_P95_THRESHOLD_MS,
         error_rate_threshold: float = DEFAULT_ERROR_RATE,
-        check_interval_s:     float = DEFAULT_CHECK_INTERVAL_S,
-        consecutive_failures: int   = DEFAULT_CONSECUTIVE,
+        check_interval_s: float = DEFAULT_CHECK_INTERVAL_S,
+        consecutive_failures: int = DEFAULT_CONSECUTIVE,
     ):
-        self._latency              = latency_tracker
-        self._health               = health_checker
-        self._on_degradation       = on_degradation
-        self._p95_threshold        = p95_threshold_ms
+        self._latency = latency_tracker
+        self._health = health_checker
+        self._on_degradation = on_degradation
+        self._p95_threshold = p95_threshold_ms
         self._error_rate_threshold = error_rate_threshold
-        self._check_interval       = check_interval_s
+        self._check_interval = check_interval_s
         self._consecutive_required = consecutive_failures
 
-        self._failures  = 0
+        self._failures = 0
         self._triggered = False
-        self._running   = False
+        self._running = False
         self._thread: Optional[threading.Thread] = None
-        self._stop_evt  = threading.Event()
+        self._stop_evt = threading.Event()
 
     # ─── lifecycle ────────────────────────────────────────────────────────────
 
     def start(self):
         self._running = True
         self._stop_evt.clear()
-        self._thread = threading.Thread(target=self._loop, daemon=True,
-                                        name="frameworm-deploy-monitor")
+        self._thread = threading.Thread(
+            target=self._loop, daemon=True, name="frameworm-deploy-monitor"
+        )
         self._thread.start()
         logger.info(
             f"[DEPLOY] DegradationMonitor started — "
@@ -126,7 +127,7 @@ class DegradationMonitor:
             )
             if self._failures >= self._consecutive_required:
                 self._triggered = True
-                self._running   = False
+                self._running = False
                 logger.error(f"[DEPLOY] DEGRADATION DETECTED — {reason_str}")
                 try:
                     self._on_degradation(reason_str)
@@ -136,5 +137,5 @@ class DegradationMonitor:
         else:
             if self._failures > 0:
                 logger.info("[DEPLOY] Check passed — resetting failure count")
-            self._failures  = 0
+            self._failures = 0
             self._triggered = False

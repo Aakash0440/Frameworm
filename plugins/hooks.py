@@ -132,9 +132,11 @@ class HookRegistry:
             ... def setup(config, **kwargs):
             ...     print("Training starting!")
         """
+
         def decorator(fn: Callable) -> Callable:
             self._add(hook_name, fn, priority, name=fn.__qualname__)
             return fn
+
         return decorator
 
     def register_fn(
@@ -318,6 +320,7 @@ class HookRegistry:
 # CallbackHook base class
 # ---------------------------------------------------------------------------
 
+
 class CallbackHook:
     """
     Base class for object-oriented plugins.
@@ -348,22 +351,53 @@ class CallbackHook:
         self.priority = priority
 
     # Training lifecycle stubs (override as needed)
-    def on_train_begin(self, **kwargs): pass
-    def on_train_end(self, **kwargs): pass
-    def on_epoch_begin(self, **kwargs): pass
-    def on_epoch_end(self, **kwargs): pass
-    def on_batch_begin(self, **kwargs): pass
-    def on_batch_end(self, **kwargs): pass
-    def on_validation_begin(self, **kwargs): pass
-    def on_validation_end(self, **kwargs): pass
-    def on_checkpoint_save(self, **kwargs): pass
-    def on_checkpoint_load(self, **kwargs): pass
-    def on_model_export(self, **kwargs): pass
-    def on_model_register(self, **kwargs): pass
-    def on_trial_begin(self, **kwargs): pass
-    def on_trial_end(self, **kwargs): pass
-    def on_search_complete(self, **kwargs): pass
-    def on_error(self, **kwargs): pass
+    def on_train_begin(self, **kwargs):
+        pass
+
+    def on_train_end(self, **kwargs):
+        pass
+
+    def on_epoch_begin(self, **kwargs):
+        pass
+
+    def on_epoch_end(self, **kwargs):
+        pass
+
+    def on_batch_begin(self, **kwargs):
+        pass
+
+    def on_batch_end(self, **kwargs):
+        pass
+
+    def on_validation_begin(self, **kwargs):
+        pass
+
+    def on_validation_end(self, **kwargs):
+        pass
+
+    def on_checkpoint_save(self, **kwargs):
+        pass
+
+    def on_checkpoint_load(self, **kwargs):
+        pass
+
+    def on_model_export(self, **kwargs):
+        pass
+
+    def on_model_register(self, **kwargs):
+        pass
+
+    def on_trial_begin(self, **kwargs):
+        pass
+
+    def on_trial_end(self, **kwargs):
+        pass
+
+    def on_search_complete(self, **kwargs):
+        pass
+
+    def on_error(self, **kwargs):
+        pass
 
     def __repr__(self):
         return f"{type(self).__name__}(priority={self.priority})"

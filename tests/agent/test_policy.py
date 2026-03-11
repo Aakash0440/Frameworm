@@ -1,4 +1,3 @@
-
 """
 Tests for agent/policy/ + agent/pomdp/
 Run with: pytest tests/agent/test_policy.py -v
@@ -8,8 +7,12 @@ import numpy as np
 import pytest
 from pathlib import Path
 from agent.policy.experience_buffer import (
-    ExperienceBuffer, Transition, encode_state,
-    compute_reward, STATE_DIM, N_ACTIONS
+    ExperienceBuffer,
+    Transition,
+    encode_state,
+    compute_reward,
+    STATE_DIM,
+    N_ACTIONS,
 )
 from agent.policy.cql_policy import CQLPolicy, CQLConfig
 from agent.pomdp.state_space import POMDPSpec
@@ -26,44 +29,54 @@ class TestExperienceBuffer:
     def test_add_and_len(self):
         buf = ExperienceBuffer(db_path=TMP / "exp.db")
         for _ in range(10):
-            buf.add(Transition(
-                state=np.zeros(STATE_DIM, dtype=np.float32),
-                action=0, reward=1.0,
-                next_state=np.zeros(STATE_DIM, dtype=np.float32),
-                done=False
-            ))
+            buf.add(
+                Transition(
+                    state=np.zeros(STATE_DIM, dtype=np.float32),
+                    action=0,
+                    reward=1.0,
+                    next_state=np.zeros(STATE_DIM, dtype=np.float32),
+                    done=False,
+                )
+            )
         assert len(buf) == 10
 
     def test_is_ready_threshold(self):
         buf = ExperienceBuffer(db_path=TMP / "exp2.db")
         assert not buf.is_ready
         for _ in range(100):
-            buf.add(Transition(
-                state=np.zeros(STATE_DIM, dtype=np.float32),
-                action=1, reward=0.5,
-                next_state=np.zeros(STATE_DIM, dtype=np.float32),
-                done=False
-            ))
+            buf.add(
+                Transition(
+                    state=np.zeros(STATE_DIM, dtype=np.float32),
+                    action=1,
+                    reward=0.5,
+                    next_state=np.zeros(STATE_DIM, dtype=np.float32),
+                    done=False,
+                )
+            )
         assert buf.is_ready
 
     def test_state_dim_enforced(self):
         with pytest.raises(AssertionError):
             Transition(
                 state=np.zeros(5, dtype=np.float32),  # wrong dim
-                action=0, reward=1.0,
+                action=0,
+                reward=1.0,
                 next_state=np.zeros(STATE_DIM, dtype=np.float32),
-                done=False
+                done=False,
             )
 
     def test_sample_returns_batch(self):
         buf = ExperienceBuffer(db_path=TMP / "exp3.db")
         for _ in range(50):
-            buf.add(Transition(
-                state=np.random.randn(STATE_DIM).astype(np.float32),
-                action=np.random.randint(N_ACTIONS), reward=1.0,
-                next_state=np.random.randn(STATE_DIM).astype(np.float32),
-                done=False
-            ))
+            buf.add(
+                Transition(
+                    state=np.random.randn(STATE_DIM).astype(np.float32),
+                    action=np.random.randint(N_ACTIONS),
+                    reward=1.0,
+                    next_state=np.random.randn(STATE_DIM).astype(np.float32),
+                    done=False,
+                )
+            )
         batch = buf.sample(16)
         assert batch is not None
         assert len(batch) == 16
@@ -71,12 +84,15 @@ class TestExperienceBuffer:
     def test_to_arrays(self):
         buf = ExperienceBuffer(db_path=TMP / "exp4.db")
         for _ in range(20):
-            buf.add(Transition(
-                state=np.random.randn(STATE_DIM).astype(np.float32),
-                action=0, reward=1.0,
-                next_state=np.random.randn(STATE_DIM).astype(np.float32),
-                done=False
-            ))
+            buf.add(
+                Transition(
+                    state=np.random.randn(STATE_DIM).astype(np.float32),
+                    action=0,
+                    reward=1.0,
+                    next_state=np.random.randn(STATE_DIM).astype(np.float32),
+                    done=False,
+                )
+            )
         arrays = buf.to_arrays()
         assert arrays is not None
         states, actions, rewards, next_states, dones = arrays
@@ -132,6 +148,7 @@ class TestPOMDPSpec:
 
     def test_json_serializable(self):
         import json
+
         spec = POMDPSpec()
         j = spec.to_json()
         parsed = json.loads(j)
@@ -143,13 +160,24 @@ class TestPOMDPSpec:
 class TestBeliefUpdater:
     def _make_signals(self, z=0.0, divergence=0.0):
         return SignalSnapshot(
-            step=100, loss_raw=0.5, loss_ema=0.5, loss_delta=0.0,
-            loss_z_score=z, loss_rolling_mean=0.5, loss_rolling_std=0.1,
-            grad_norm_current=2.0, grad_norm_mean=2.0, grad_norm_var=0.1,
-            grad_norm_z_score=0.0, plateau_score=0.5,
-            divergence_score=divergence, oscillation_score=0.01,
-            lr_current=0.0002, lr_changed=False,
-            window_size=100, is_early_training=False,
+            step=100,
+            loss_raw=0.5,
+            loss_ema=0.5,
+            loss_delta=0.0,
+            loss_z_score=z,
+            loss_rolling_mean=0.5,
+            loss_rolling_std=0.1,
+            grad_norm_current=2.0,
+            grad_norm_mean=2.0,
+            grad_norm_var=0.1,
+            grad_norm_z_score=0.0,
+            plateau_score=0.5,
+            divergence_score=divergence,
+            oscillation_score=0.01,
+            lr_current=0.0002,
+            lr_changed=False,
+            window_size=100,
+            is_early_training=False,
         )
 
     def test_initial_belief_healthy(self):

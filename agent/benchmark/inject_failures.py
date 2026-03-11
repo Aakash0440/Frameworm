@@ -51,11 +51,12 @@ class FailureScenario:
                               the classifier detect it (used to measure
                               detection latency)
     """
+
     name: str
     anomaly_type: str
     severity: AnomalySeverity
     inject_at_step: int
-    inject_fn: Callable          # inject_fn(trainer, metrics_dict) -> None
+    inject_fn: Callable  # inject_fn(trainer, metrics_dict) -> None
     expected_detection_steps: int = 10
     description: str = ""
 
@@ -82,26 +83,20 @@ class FailureInjector:
     def register_all(self, scenarios: List[FailureScenario]) -> None:
         self._scheduled.extend(scenarios)
 
-    def check_and_inject(
-        self, step: int, metrics: dict
-    ) -> Optional[FailureScenario]:
+    def check_and_inject(self, step: int, metrics: dict) -> Optional[FailureScenario]:
         """
         Check if any scenario should fire at this step.
         Returns the fired scenario or None.
         """
         for scenario in self._scheduled:
             if step == scenario.inject_at_step and scenario.name not in self._injected:
-                logger.info(
-                    f"[Benchmark] Injecting {scenario.name} at step {step}"
-                )
+                logger.info(f"[Benchmark] Injecting {scenario.name} at step {step}")
                 try:
                     scenario.inject_fn(self.trainer_ref, metrics)
                     self._injected.append(scenario.name)
                     return scenario
                 except Exception as exc:
-                    logger.warning(
-                        f"[Benchmark] Injection failed for {scenario.name}: {exc}"
-                    )
+                    logger.warning(f"[Benchmark] Injection failed for {scenario.name}: {exc}")
         return None
 
     @property
@@ -113,33 +108,40 @@ class FailureInjector:
 # Each returns a function(trainer, metrics) -> None
 # that modifies the training state to create the failure.
 
+
 def _inject_grad_explosion(multiplier: float):
     """Multiply gradient norms by multiplier to simulate explosion."""
+
     def fn(trainer, metrics):
         metrics["grad_norm"] = metrics.get("grad_norm", 2.0) * multiplier
         if trainer is not None and hasattr(trainer, "model"):
             try:
                 import torch
+
                 for param in trainer.model.parameters():
                     if param.grad is not None:
                         param.grad.data *= multiplier
             except Exception:
                 pass
+
     return fn
 
 
 def _inject_loss_spike(spike_magnitude: float):
     """Add a large positive value to loss."""
+
     def fn(trainer, metrics):
         metrics["loss"] = metrics.get("loss", 1.0) + spike_magnitude
         if trainer is not None:
             trainer._last_loss = metrics["loss"]
+
     return fn
 
 
 def _inject_plateau(flatness: float):
     """Freeze loss at current value (simulate stuck training)."""
     cached = {}
+
     def fn(trainer, metrics):
         if "loss" not in cached:
             cached["loss"] = metrics.get("loss", 0.5)
@@ -148,11 +150,13 @@ def _inject_plateau(flatness: float):
         if trainer is not None:
             trainer._last_loss = metrics["loss"]
             trainer._last_grad_norm = metrics["grad_norm"]
+
     return fn
 
 
 def _inject_divergence(lr_multiplier: float):
     """Spike LR to cause sustained divergence."""
+
     def fn(trainer, metrics):
         if trainer is not None and hasattr(trainer, "optimizer"):
             try:
@@ -163,6 +167,7 @@ def _inject_divergence(lr_multiplier: float):
                 pass
         # Simulate rising loss
         metrics["loss"] = metrics.get("loss", 0.5) * (1.0 + 0.1 * lr_multiplier)
+
     return fn
 
 
@@ -170,7 +175,6 @@ def _inject_divergence(lr_multiplier: float):
 # 12 scenarios: 4 types × 3 severities
 
 SCENARIO_REGISTRY: Dict[str, FailureScenario] = {
-
     # Gradient explosion
     "grad_explosion_mild": FailureScenario(
         name="grad_explosion_mild",
@@ -199,7 +203,6 @@ SCENARIO_REGISTRY: Dict[str, FailureScenario] = {
         expected_detection_steps=1,
         description="Gradient norm ×50 — catastrophic explosion",
     ),
-
     # Loss spike
     "loss_spike_mild": FailureScenario(
         name="loss_spike_mild",
@@ -228,7 +231,6 @@ SCENARIO_REGISTRY: Dict[str, FailureScenario] = {
         expected_detection_steps=1,
         description="Loss +8.0 — catastrophic spike",
     ),
-
     # Plateau
     "plateau_mild": FailureScenario(
         name="plateau_mild",
@@ -257,7 +259,6 @@ SCENARIO_REGISTRY: Dict[str, FailureScenario] = {
         expected_detection_steps=100,
         description="Severe plateau — completely frozen loss",
     ),
-
     # Divergence
     "divergence_mild": FailureScenario(
         name="divergence_mild",
@@ -287,4 +288,3 @@ SCENARIO_REGISTRY: Dict[str, FailureScenario] = {
         description="LR ×20 causing immediate divergence",
     ),
 }
-

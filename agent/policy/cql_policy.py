@@ -58,19 +58,20 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CQLConfig:
     """Hyperparameters for CQL training."""
+
     # Network
     hidden_size_1: int = 128
     hidden_size_2: int = 64
     # Training
     batch_size: int = 64
     learning_rate: float = 1e-3
-    gamma: float = 0.99             # discount factor
+    gamma: float = 0.99  # discount factor
     max_epochs: int = 100
     patience: int = 10
-    target_update_freq: int = 50    # steps between target network updates
+    target_update_freq: int = 50  # steps between target network updates
     # CQL-specific
-    cql_alpha: float = 1.0          # conservative penalty weight
-                                    # higher = more conservative
+    cql_alpha: float = 1.0  # conservative penalty weight
+    # higher = more conservative
     # Checkpointing
     save_dir: str = "experiments/policy"
     # Evaluation
@@ -137,10 +138,9 @@ class CQLPolicy:
 
         try:
             import torch
+
             self._q_network.eval()
-            state_t = torch.tensor(
-                state, dtype=torch.float32
-            ).unsqueeze(0).to(self._device)
+            state_t = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(self._device)
 
             with torch.no_grad():
                 q_values = self._q_network(state_t).squeeze(0)
@@ -211,14 +211,16 @@ class CQLPolicy:
         save_dir.mkdir(parents=True, exist_ok=True)
         path = path or (save_dir / "best_cql_policy.pt")
 
-        torch.save({
-            "q_network": self._q_network.state_dict()
-                         if self._q_network else {},
-            "config": asdict(self.config),
-            "is_trained": self._is_trained,
-            "n_updates": self._n_updates,
-            "samples_per_type": self._samples_per_type,
-        }, path)
+        torch.save(
+            {
+                "q_network": self._q_network.state_dict() if self._q_network else {},
+                "config": asdict(self.config),
+                "is_trained": self._is_trained,
+                "n_updates": self._n_updates,
+                "samples_per_type": self._samples_per_type,
+            },
+            path,
+        )
         logger.info(f"CQLPolicy saved to {path}")
         return path
 
@@ -247,6 +249,7 @@ class CQLPolicy:
     def _get_device(self):
         try:
             import torch
+
             return torch.device("cuda" if torch.cuda.is_available() else "cpu")
         except ImportError:
             return None
@@ -263,13 +266,13 @@ class CQLPolicy:
         if path.exists():
             return cls.load(path)
         logger.warning(
-            f"No CQL policy at {path}. "
-            "Policy will always defer to LLM until trained."
+            f"No CQL policy at {path}. " "Policy will always defer to LLM until trained."
         )
         return cls()
 
 
 # ── Training function ─────────────────────────────────────────────
+
 
 def train_cql_policy(
     policy: CQLPolicy,
@@ -386,7 +389,7 @@ def train_cql_policy(
         epoch_td, epoch_cql, epoch_total = [], [], []
 
         for start in range(0, train_size, cfg.batch_size):
-            batch_idx = perm[start:start + cfg.batch_size]
+            batch_idx = perm[start : start + cfg.batch_size]
             if len(batch_idx) == 0:
                 continue
 
@@ -397,7 +400,7 @@ def train_cql_policy(
             d_b = d_train[batch_idx]
 
             # ── TD Loss ──────────────────────────────────────────
-            q_values = policy._q_network(s_b)           # (batch, N_ACTIONS)
+            q_values = policy._q_network(s_b)  # (batch, N_ACTIONS)
             q_taken = q_values.gather(1, a_b.unsqueeze(1)).squeeze(1)
 
             with torch.no_grad():
@@ -419,16 +422,12 @@ def train_cql_policy(
 
             policy._optimizer.zero_grad()
             total_loss.backward()
-            torch.nn.utils.clip_grad_norm_(
-                policy._q_network.parameters(), 1.0
-            )
+            torch.nn.utils.clip_grad_norm_(policy._q_network.parameters(), 1.0)
             policy._optimizer.step()
 
             policy._n_updates += 1
             if policy._n_updates % cfg.target_update_freq == 0:
-                policy._target_network.load_state_dict(
-                    policy._q_network.state_dict()
-                )
+                policy._target_network.load_state_dict(policy._q_network.state_dict())
 
             epoch_td.append(td_loss.item())
             epoch_cql.append(cql_loss.item())
@@ -469,9 +468,7 @@ def train_cql_policy(
         else:
             patience_counter += 1
             if patience_counter >= cfg.patience:
-                logger.info(
-                    f"CQL early stopping at epoch {epoch+1}"
-                )
+                logger.info(f"CQL early stopping at epoch {epoch+1}")
                 break
 
     # Load best
@@ -483,7 +480,6 @@ def train_cql_policy(
     policy.update_sample_counts(buffer)
 
     logger.info(
-        f"CQL training complete. Best val_loss={best_val_loss:.4f}, "
-        f"updates={policy._n_updates}"
+        f"CQL training complete. Best val_loss={best_val_loss:.4f}, " f"updates={policy._n_updates}"
     )
     return history

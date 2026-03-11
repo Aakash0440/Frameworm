@@ -38,11 +38,12 @@ class ShadowRun:
     """
     Metadata and results from one shadow (counterfactual) training run.
     """
+
     run_id: str
-    spawn_step: int                 # checkpoint step used as start
-    seed: int                       # random seed for deterministic batches
-    n_steps: int                    # how many steps were run
-    agent_enabled: bool = False     # always False for shadow runs
+    spawn_step: int  # checkpoint step used as start
+    seed: int  # random seed for deterministic batches
+    n_steps: int  # how many steps were run
+    agent_enabled: bool = False  # always False for shadow runs
 
     # Metrics collected during shadow run
     loss_history: list = field(default_factory=list)
@@ -243,9 +244,7 @@ class TwinRunner:
             shadow.error = str(exc)
             shadow.completed = True
 
-    def _run_shadow_step(
-        self, trainer, step_i: int
-    ) -> Optional[Dict[str, float]]:
+    def _run_shadow_step(self, trainer, step_i: int) -> Optional[Dict[str, float]]:
         """Run one training step in the shadow run."""
         try:
             if hasattr(trainer, "_train_step") and hasattr(trainer, "train_dataloader"):
@@ -272,6 +271,7 @@ class TwinRunner:
         try:
             import torch
             import copy
+
             state = {}
             if hasattr(trainer, "model"):
                 state["model"] = copy.deepcopy(trainer.model.state_dict())
@@ -299,6 +299,7 @@ class TwinRunner:
     def _load_checkpoint_for_shadow(self, trainer, step: int) -> None:
         """Load checkpoint for shadow run start."""
         import os
+
         paths = [
             f"{self.checkpoint_dir}/step_{step}.pt",
             f"{self.checkpoint_dir}/latest.pt",
@@ -310,6 +311,7 @@ class TwinRunner:
                         trainer.load_checkpoint(path)
                     else:
                         import torch
+
                         state = torch.load(path, map_location="cpu")
                         if hasattr(trainer, "model") and "model" in state:
                             trainer.model.load_state_dict(state["model"])
@@ -321,6 +323,7 @@ class TwinRunner:
         """Compute FID score using your existing metrics/fid.py."""
         try:
             from metrics.fid import FIDCalculator
+
             calc = FIDCalculator()
             if hasattr(trainer, "model") and hasattr(trainer, "val_dataloader"):
                 return calc.compute(trainer.model, trainer.val_dataloader)
@@ -354,4 +357,3 @@ class TwinRunner:
             path.write_text(json.dumps(shadow.to_dict(), indent=2))
         except Exception as exc:
             logger.debug(f"Could not save shadow log: {exc}")
-

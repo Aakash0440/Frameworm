@@ -33,7 +33,7 @@ class RollbackController:
     DEPLOY_LOG = Path("experiments/deploy_logs")
 
     def __init__(self, model_name: str, current_version: str):
-        self.model_name      = model_name
+        self.model_name = model_name
         self.current_version = current_version
         self.DEPLOY_LOG.mkdir(parents=True, exist_ok=True)
 
@@ -66,13 +66,15 @@ class RollbackController:
             # Update registry
             self._update_registry_on_rollback(previous_version)
             logger.info(
-                f"[DEPLOY] Rollback complete — "
-                f"{self.current_version} → {previous_version}"
+                f"[DEPLOY] Rollback complete — " f"{self.current_version} → {previous_version}"
             )
 
-        self._alert(reason, rolled_back=started,
-                    previous_version=previous_version,
-                    latency_summary=latency_summary)
+        self._alert(
+            reason,
+            rolled_back=started,
+            previous_version=previous_version,
+            latency_summary=latency_summary,
+        )
         self._log_event(reason, previous_version, started, latency_summary)
 
     # ──────────────────────────────────────────────── registry lookup
@@ -81,8 +83,9 @@ class RollbackController:
         """Find the last production version before the current one."""
         try:
             from deploy.core.registry import ModelRegistry
+
             registry = ModelRegistry()
-            history  = registry.get_production_history(self.model_name)
+            history = registry.get_production_history(self.model_name)
             for entry in reversed(history):
                 if entry["version"] != self.current_version:
                     return entry["version"]
@@ -98,8 +101,7 @@ class RollbackController:
             return
         try:
             subprocess.run(
-                ["docker", "stop", container_name],
-                check=True, capture_output=True, timeout=30
+                ["docker", "stop", container_name], check=True, capture_output=True, timeout=30
             )
             logger.info(f"[DEPLOY] Stopped container: {container_name}")
         except subprocess.CalledProcessError:
@@ -112,7 +114,9 @@ class RollbackController:
         try:
             subprocess.run(
                 ["docker", "run", "-d", "--name", container_name, image],
-                check=True, capture_output=True, timeout=60
+                check=True,
+                capture_output=True,
+                timeout=60,
             )
             logger.info(f"[DEPLOY] Started rollback container: {container_name}")
             return True
@@ -123,13 +127,15 @@ class RollbackController:
     # ──────────────────────────────────────────────── alert
 
     def _alert(
-        self, reason: str,
+        self,
+        reason: str,
         rolled_back: bool = False,
         previous_version: Optional[str] = None,
         latency_summary: Optional[dict] = None,
     ):
         """Fire Slack alert. Reuses FRAMEWORM Slack integration."""
         import os, urllib.request
+
         webhook = os.getenv("FRAMEWORM_SLACK_WEBHOOK")
         if not webhook:
             logger.warning("[DEPLOY] No Slack webhook configured — alert not sent")
@@ -151,7 +157,8 @@ class RollbackController:
         data = json.dumps({"text": msg_text}).encode()
         try:
             req = urllib.request.Request(
-                webhook, data=data,
+                webhook,
+                data=data,
                 headers={"Content-Type": "application/json"},
                 method="POST",
             )
@@ -164,13 +171,13 @@ class RollbackController:
     def _log_event(self, reason, previous_version, success, latency_summary):
         log_file = self.DEPLOY_LOG / f"{self.model_name}_rollbacks.jsonl"
         entry = {
-            "timestamp":        datetime.utcnow().isoformat(),
-            "model_name":       self.model_name,
-            "from_version":     self.current_version,
-            "to_version":       previous_version,
-            "reason":           reason,
-            "success":          success,
-            "latency_summary":  latency_summary,
+            "timestamp": datetime.utcnow().isoformat(),
+            "model_name": self.model_name,
+            "from_version": self.current_version,
+            "to_version": previous_version,
+            "reason": reason,
+            "success": success,
+            "latency_summary": latency_summary,
         }
         with open(log_file, "a") as f:
             f.write(json.dumps(entry) + "\n")
@@ -178,10 +185,14 @@ class RollbackController:
     def _update_registry_on_rollback(self, previous_version: str):
         try:
             from deploy.core.registry import ModelRegistry
+
             registry = ModelRegistry()
             registry.promote(self.model_name, previous_version, "production")
-            registry.demote(self.model_name, self.current_version, "archived",
-                            note="Auto-archived after rollback")
+            registry.demote(
+                self.model_name,
+                self.current_version,
+                "archived",
+                note="Auto-archived after rollback",
+            )
         except Exception as e:
             logger.warning(f"[DEPLOY] Registry update after rollback failed: {e}")
-

@@ -37,10 +37,11 @@ logger = logging.getLogger(__name__)
 
 class NodeStatus(Enum):
     """Health status of a causal node at a given step."""
-    NORMAL = auto()       # within expected range
-    DEVIATED = auto()     # outside expected range — potential root cause
-    UNKNOWN = auto()      # insufficient data to determine
-    MASKED = auto()       # upstream deviation makes this downstream irrelevant
+
+    NORMAL = auto()  # within expected range
+    DEVIATED = auto()  # outside expected range — potential root cause
+    UNKNOWN = auto()  # insufficient data to determine
+    MASKED = auto()  # upstream deviation makes this downstream irrelevant
 
 
 @dataclass
@@ -51,9 +52,10 @@ class CausalNode:
     Stores baseline statistics (from first N steps of the run)
     and current value for anomaly detection via z-score.
     """
+
     name: str
     description: str
-    parents: List[str] = field(default_factory=list)   # upstream node names
+    parents: List[str] = field(default_factory=list)  # upstream node names
     children: List[str] = field(default_factory=list)  # downstream node names
 
     # Baseline stats — computed from first 100 healthy steps
@@ -105,9 +107,10 @@ class CausalNode:
 @dataclass
 class CausalEdge:
     """Directed edge: parent → child in causal graph."""
+
     parent: str
     child: str
-    strength: float = 1.0   # correlation strength (0–1), estimated from data
+    strength: float = 1.0  # correlation strength (0–1), estimated from data
 
 
 class CausalGraph:
@@ -141,19 +144,21 @@ class CausalGraph:
 
     # Fixed graph structure — same for all models
     GRAPH_STRUCTURE = {
-        "batch_quality":    {"parents": [],                    "desc": "Mini-batch outlier score"},
-        "data_stats":       {"parents": [],                    "desc": "Batch statistics vs dataset"},
-        "optimizer_state":  {"parents": [],                    "desc": "Optimizer momentum + step size"},
-        "lr_schedule":      {"parents": [],                    "desc": "Current LR relative to peak"},
-        "gradient_dist":    {"parents": ["batch_quality",
-                                         "data_stats",
-                                         "lr_schedule"],       "desc": "Gradient norm distribution"},
-        "layer_grad_norms": {"parents": ["gradient_dist"],     "desc": "Per-layer gradient norms"},
-        "activation_stats": {"parents": ["batch_quality"],     "desc": "Per-layer activations"},
-        "weight_updates":   {"parents": ["layer_grad_norms",
-                                         "optimizer_state"],   "desc": "Weight update magnitude"},
-        "loss":             {"parents": ["weight_updates",
-                                         "activation_stats"],  "desc": "Scalar training loss"},
+        "batch_quality": {"parents": [], "desc": "Mini-batch outlier score"},
+        "data_stats": {"parents": [], "desc": "Batch statistics vs dataset"},
+        "optimizer_state": {"parents": [], "desc": "Optimizer momentum + step size"},
+        "lr_schedule": {"parents": [], "desc": "Current LR relative to peak"},
+        "gradient_dist": {
+            "parents": ["batch_quality", "data_stats", "lr_schedule"],
+            "desc": "Gradient norm distribution",
+        },
+        "layer_grad_norms": {"parents": ["gradient_dist"], "desc": "Per-layer gradient norms"},
+        "activation_stats": {"parents": ["batch_quality"], "desc": "Per-layer activations"},
+        "weight_updates": {
+            "parents": ["layer_grad_norms", "optimizer_state"],
+            "desc": "Weight update magnitude",
+        },
+        "loss": {"parents": ["weight_updates", "activation_stats"], "desc": "Scalar training loss"},
     }
 
     def __init__(self, z_threshold: float = 2.5) -> None:
@@ -173,6 +178,7 @@ class CausalGraph:
         # Try to hook into your existing graph engine first
         try:
             from graph.graph import Graph as FWGraph
+
             self._fw_graph = FWGraph()
             logger.debug("CausalGraph: using FRAMEWORM graph engine for traversal")
         except ImportError:
@@ -259,10 +265,9 @@ class CausalGraph:
         self.nodes["weight_updates"].update_baseline(weight_update_proxy)
 
         # optimizer_state ≈ grad_norm variance (momentum smooths gradients)
-        grad_var = np.array([
-            np.var(grad_norms[max(0, i-10):i+1])
-            for i in range(len(grad_norms))
-        ])
+        grad_var = np.array(
+            [np.var(grad_norms[max(0, i - 10) : i + 1]) for i in range(len(grad_norms))]
+        )
         self.nodes["optimizer_state"].update_baseline(grad_var)
 
         # Layer-level nodes get approximate baselines
@@ -275,9 +280,7 @@ class CausalGraph:
                     mean_layer = float(np.mean(list(snap.layer_grad_norms.values())))
                     all_layer_norms.append(mean_layer)
             if all_layer_norms:
-                self.nodes["layer_grad_norms"].update_baseline(
-                    np.array(all_layer_norms)
-                )
+                self.nodes["layer_grad_norms"].update_baseline(np.array(all_layer_norms))
 
         logger.info(
             f"CausalGraph: baseline calibrated from {len(losses)} steps. "
@@ -289,7 +292,7 @@ class CausalGraph:
 
     def evaluate_at(
         self,
-        snapshot,              # MetricSnapshot from observer
+        snapshot,  # MetricSnapshot from observer
         signals: SignalSnapshot,
         step: int,
     ) -> Dict[str, NodeStatus]:
@@ -316,9 +319,7 @@ class CausalGraph:
 
         # batch_quality and data_stats are harder to observe directly
         # Use loss z-score as proxy for batch quality
-        self.nodes["batch_quality"].evaluate(
-            abs(signals.loss_z_score), step, z_threshold=2.0
-        )
+        self.nodes["batch_quality"].evaluate(abs(signals.loss_z_score), step, z_threshold=2.0)
 
         return {name: node.status for name, node in self.nodes.items()}
 
@@ -330,10 +331,7 @@ class CausalGraph:
         Returns list of root cause nodes (usually 1–2),
         sorted by how early their deviation started.
         """
-        deviated = [
-            node for node in self.nodes.values()
-            if node.status == NodeStatus.DEVIATED
-        ]
+        deviated = [node for node in self.nodes.values() if node.status == NodeStatus.DEVIATED]
 
         if not deviated:
             return []
@@ -349,15 +347,11 @@ class CausalGraph:
                 root_causes.append(node)
 
         # Sort by earliest deviation
-        root_causes.sort(
-            key=lambda n: n.first_deviation_step or float("inf")
-        )
+        root_causes.sort(key=lambda n: n.first_deviation_step or float("inf"))
 
         return root_causes
 
-    def get_causal_path(
-        self, root_name: str, sink_name: str = "loss"
-    ) -> List[str]:
+    def get_causal_path(self, root_name: str, sink_name: str = "loss") -> List[str]:
         """
         Get the causal path from a root cause node to the loss node.
         Used for generating human-readable attribution explanations.
@@ -367,6 +361,7 @@ class CausalGraph:
 
         # BFS from root to sink
         from collections import deque
+
         queue = deque([[root_name]])
         while queue:
             path = queue.popleft()

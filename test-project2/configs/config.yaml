@@ -1,0 +1,15 @@
+model:
+  type: dcgan
+  latent_dim: 100
+  image_size: 64
+  channels: 3
+  features_g: 64
+  features_d: 64
+training:
+  epochs: 100
+  batch_size: 64
+  gradient_accumulation_steps: 1
+optimizer:
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999

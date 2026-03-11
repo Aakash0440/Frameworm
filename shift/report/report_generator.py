@@ -1,4 +1,3 @@
-
 """
 Generates HTML and JSON drift reports.
 HTML report shows per-feature histogram overlays + severity badges.
@@ -46,10 +45,10 @@ class ReportGenerator:
         model_name: str,
     ) -> str:
         severity_colours = {
-            "NONE":   "#22c55e",
-            "LOW":    "#eab308",
+            "NONE": "#22c55e",
+            "LOW": "#eab308",
             "MEDIUM": "#f97316",
-            "HIGH":   "#ef4444",
+            "HIGH": "#ef4444",
         }
         sev = result.overall_severity.value
         sev_colour = severity_colours.get(sev, "#6b7280")
@@ -65,7 +64,7 @@ class ReportGenerator:
         )
 
         drifted_n = len(result.drifted_features)
-        total_n   = result.n_features_checked
+        total_n = result.n_features_checked
 
         return f"""<!DOCTYPE html>
 <html lang="en">
@@ -168,7 +167,9 @@ class ReportGenerator:
         hist_html = ""
         if report.feature_type == "numerical" and name in reference.numerical:
             ref_counts = reference.numerical[name].histogram_counts
-            cur_counts = current.numerical[name].histogram_counts if name in current.numerical else []
+            cur_counts = (
+                current.numerical[name].histogram_counts if name in current.numerical else []
+            )
             hist_html = self._histogram_html(ref_counts, cur_counts)
 
         # Delta metrics
@@ -224,4 +225,3 @@ class ReportGenerator:
   <span><span class="legend-dot" style="background:#3b82f6"></span>Reference</span>
   <span><span class="legend-dot" style="background:#f97316"></span>Current</span>
 </div>"""
-

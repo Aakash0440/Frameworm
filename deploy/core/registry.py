@@ -25,42 +25,43 @@ VALID_STAGES = {"dev", "staging", "production", "archived"}
 
 
 class ModelStage(Enum):
-    DEV        = "dev"
-    STAGING    = "staging"
+    DEV = "dev"
+    STAGING = "staging"
     PRODUCTION = "production"
-    ARCHIVED   = "archived"
+    ARCHIVED = "archived"
 
     @classmethod
     def transitions(cls) -> Dict[str, list]:
         return {
-            cls.DEV.value:        [cls.STAGING.value, cls.ARCHIVED.value],
-            cls.STAGING.value:    [cls.PRODUCTION.value, cls.DEV.value, cls.ARCHIVED.value],
+            cls.DEV.value: [cls.STAGING.value, cls.ARCHIVED.value],
+            cls.STAGING.value: [cls.PRODUCTION.value, cls.DEV.value, cls.ARCHIVED.value],
             cls.PRODUCTION.value: [cls.ARCHIVED.value, cls.STAGING.value],
-            cls.ARCHIVED.value:   [],
+            cls.ARCHIVED.value: [],
         }
 
 
 @dataclass
 class DeploymentRecord:
     """Steps 1–5 record object returned by the manifest-based API."""
-    id:               str
-    model_name:       str
-    version:          str
-    stage:            str
-    export_dir:       str
-    manifest_path:    str
-    checkpoint_path:  str
-    checkpoint_hash:  str
-    model_class:      str
-    experiment_id:    Optional[str]
-    git_hash:         Optional[str]
-    config_snapshot:  Optional[str]
+
+    id: str
+    model_name: str
+    version: str
+    stage: str
+    export_dir: str
+    manifest_path: str
+    checkpoint_path: str
+    checkpoint_hash: str
+    model_class: str
+    experiment_id: Optional[str]
+    git_hash: Optional[str]
+    config_snapshot: Optional[str]
     training_metrics: Optional[str]
-    deployed_at:      Optional[str]
-    archived_at:      Optional[str]
-    created_at:       str
-    notes:            str = ""
-    tags:             str = ""
+    deployed_at: Optional[str]
+    archived_at: Optional[str]
+    created_at: str
+    notes: str = ""
+    tags: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -112,9 +113,16 @@ class ModelRegistry:
     # UNIFIED register()
     # ─────────────────────────────────────────────────────────────────────────
 
-    def register(self, name_or_model_name, version_or_manifest=None,
-                 model_type_or_experiment_id=None, checkpoint_path=None,
-                 stage=None, notes="", tags=None):
+    def register(
+        self,
+        name_or_model_name,
+        version_or_manifest=None,
+        model_type_or_experiment_id=None,
+        checkpoint_path=None,
+        stage=None,
+        notes="",
+        tags=None,
+    ):
         if isinstance(version_or_manifest, str):
             return self._register_flat(
                 name=name_or_model_name,
@@ -137,17 +145,18 @@ class ModelRegistry:
     # Steps 1–5 manifest-based API
     # ─────────────────────────────────────────────────────────────────────────
 
-    def _register_manifest(self, model_name, manifest, experiment_id=None,
-                           notes="", tags=None) -> DeploymentRecord:
-        git_hash, config_snapshot, training_metrics = \
-            self._pull_experiment_context(experiment_id)
+    def _register_manifest(
+        self, model_name, manifest, experiment_id=None, notes="", tags=None
+    ) -> DeploymentRecord:
+        git_hash, config_snapshot, training_metrics = self._pull_experiment_context(experiment_id)
 
-        version   = self._next_semver(model_name)
+        version = self._next_semver(model_name)
         record_id = str(uuid.uuid4())[:8]
-        now       = datetime.utcnow().isoformat()
+        now = datetime.utcnow().isoformat()
 
         with self._conn() as conn:
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT INTO deployments (
                     id, model_name, version, stage,
                     export_dir, manifest_path, checkpoint_path, checkpoint_hash,
@@ -155,24 +164,35 @@ class ModelRegistry:
                     config_snapshot, training_metrics,
                     deployed_at, archived_at, created_at, notes, tags
                 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            """, (
-                record_id, model_name, version, ModelStage.DEV.value,
-                getattr(manifest, "export_dir", ""),
-                str(Path(getattr(manifest, "export_dir", "")) / "manifest.json"),
-                getattr(manifest, "checkpoint_path", ""),
-                getattr(manifest, "checkpoint_hash", ""),
-                getattr(manifest, "model_class", "unknown"),
-                experiment_id, git_hash, config_snapshot, training_metrics,
-                None, None, now, notes,
-                ",".join(tags) if tags else "",
-            ))
+            """,
+                (
+                    record_id,
+                    model_name,
+                    version,
+                    ModelStage.DEV.value,
+                    getattr(manifest, "export_dir", ""),
+                    str(Path(getattr(manifest, "export_dir", "")) / "manifest.json"),
+                    getattr(manifest, "checkpoint_path", ""),
+                    getattr(manifest, "checkpoint_hash", ""),
+                    getattr(manifest, "model_class", "unknown"),
+                    experiment_id,
+                    git_hash,
+                    config_snapshot,
+                    training_metrics,
+                    None,
+                    None,
+                    now,
+                    notes,
+                    ",".join(tags) if tags else "",
+                ),
+            )
 
-        print(f"[DEPLOY] Registered '{model_name}' v{version} "
-              f"(id={record_id}, stage=DEV)")
+        print(f"[DEPLOY] Registered '{model_name}' v{version} " f"(id={record_id}, stage=DEV)")
         return self.get(record_id)
 
-    def transition(self, record_id: str, new_stage: ModelStage,
-                   notes: str = "") -> DeploymentRecord:
+    def transition(
+        self, record_id: str, new_stage: ModelStage, notes: str = ""
+    ) -> DeploymentRecord:
         record = self.get(record_id)
         if record is None:
             raise ValueError(f"[DEPLOY] No record with id={record_id}")
@@ -187,12 +207,17 @@ class ModelRegistry:
         if new_stage == ModelStage.PRODUCTION:
             current_prod = self.get_production(record.model_name)
             if current_prod and current_prod.id != record_id:
-                self._update_fields(current_prod.id, {
-                    "stage":       ModelStage.ARCHIVED.value,
-                    "archived_at": datetime.utcnow().isoformat(),
-                })
-                print(f"[DEPLOY] Archived previous production "
-                      f"v{current_prod.version} (id={current_prod.id})")
+                self._update_fields(
+                    current_prod.id,
+                    {
+                        "stage": ModelStage.ARCHIVED.value,
+                        "archived_at": datetime.utcnow().isoformat(),
+                    },
+                )
+                print(
+                    f"[DEPLOY] Archived previous production "
+                    f"v{current_prod.version} (id={current_prod.id})"
+                )
 
         updates: dict = {"stage": new_stage.value}
         if new_stage == ModelStage.PRODUCTION:
@@ -208,9 +233,7 @@ class ModelRegistry:
 
     def get(self, record_id: str) -> Optional[DeploymentRecord]:
         with self._conn() as conn:
-            cur = conn.execute(
-                "SELECT * FROM deployments WHERE id=?", (record_id,)
-            )
+            cur = conn.execute("SELECT * FROM deployments WHERE id=?", (record_id,))
             row = cur.fetchone()
             if row is None:
                 return None
@@ -246,8 +269,7 @@ class ModelRegistry:
     def history(self, model_name: str, limit: int = 20) -> List[DeploymentRecord]:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT * FROM deployments WHERE model_name=? "
-                "ORDER BY created_at DESC LIMIT ?",
+                "SELECT * FROM deployments WHERE model_name=? " "ORDER BY created_at DESC LIMIT ?",
                 (model_name, limit),
             )
             cols = [d[0] for d in cur.description]
@@ -255,9 +277,7 @@ class ModelRegistry:
 
     def list_models(self) -> List[str]:
         with self._conn() as conn:
-            cur = conn.execute(
-                "SELECT DISTINCT model_name FROM deployments ORDER BY model_name"
-            )
+            cur = conn.execute("SELECT DISTINCT model_name FROM deployments ORDER BY model_name")
             return [r[0] for r in cur.fetchall()]
 
     def print_status(self, model_name: Optional[str] = None):
@@ -265,18 +285,23 @@ class ModelRegistry:
         if not models:
             print("[DEPLOY] No models registered yet.")
             return
-        colours = {"dev": "\033[94m", "staging": "\033[93m",
-                   "production": "\033[92m", "archived": "\033[90m"}
+        colours = {
+            "dev": "\033[94m",
+            "staging": "\033[93m",
+            "production": "\033[92m",
+            "archived": "\033[90m",
+        }
         reset = "\033[0m"
-        print(f"\n  {'Model':<25} {'Version':<10} {'Stage':<12} "
-              f"{'Class':<12} {'Deployed'}")
+        print(f"\n  {'Model':<25} {'Version':<10} {'Stage':<12} " f"{'Class':<12} {'Deployed'}")
         print(f"  {'─'*25} {'─'*10} {'─'*12} {'─'*12} {'─'*20}")
         for name in models:
             for rec in self.history(name, limit=5):
-                c   = colours.get(rec.stage, "")
+                c = colours.get(rec.stage, "")
                 dep = rec.deployed_at[:10] if rec.deployed_at else "—"
-                print(f"  {rec.model_name:<25} {rec.version:<10} "
-                      f"{c}{rec.stage:<12}{reset} {rec.model_class:<12} {dep}")
+                print(
+                    f"  {rec.model_name:<25} {rec.version:<10} "
+                    f"{c}{rec.stage:<12}{reset} {rec.model_class:<12} {dep}"
+                )
         print()
 
     def close(self):
@@ -287,17 +312,24 @@ class ModelRegistry:
     # Steps 6–10 flat API
     # ─────────────────────────────────────────────────────────────────────────
 
-    def _register_flat(self, name: str, version: str, model_type: str,
-                       checkpoint_path: str, stage: str = "dev",
-                       notes: str = "") -> dict:
+    def _register_flat(
+        self,
+        name: str,
+        version: str,
+        model_type: str,
+        checkpoint_path: str,
+        stage: str = "dev",
+        notes: str = "",
+    ) -> dict:
         if stage not in VALID_STAGES:
             raise ValueError(f"Invalid stage '{stage}'. Valid: {VALID_STAGES}")
 
-        now       = datetime.utcnow().isoformat()
+        now = datetime.utcnow().isoformat()
         record_id = str(uuid.uuid4())[:8]
 
         with self._conn() as conn:
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT OR REPLACE INTO deployments (
                     id, model_name, version, stage,
                     export_dir, manifest_path, checkpoint_path, checkpoint_hash,
@@ -305,20 +337,33 @@ class ModelRegistry:
                     config_snapshot, training_metrics,
                     deployed_at, archived_at, created_at, notes, tags
                 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            """, (
-                record_id, name, version, stage,
-                "", "", checkpoint_path, "",
-                model_type, None, None, None, None,
-                now if stage == "production" else None,
-                now if stage == "archived"   else None,
-                now, notes, "",
-            ))
+            """,
+                (
+                    record_id,
+                    name,
+                    version,
+                    stage,
+                    "",
+                    "",
+                    checkpoint_path,
+                    "",
+                    model_type,
+                    None,
+                    None,
+                    None,
+                    None,
+                    now if stage == "production" else None,
+                    now if stage == "archived" else None,
+                    now,
+                    notes,
+                    "",
+                ),
+            )
 
         print(f"[DEPLOY] Registered '{name}' {version} (stage={stage})")
         return self._get_dict(name, version)
 
-    def promote(self, name: str, version: str, new_stage: str,
-                note: str = "") -> dict:
+    def promote(self, name: str, version: str, new_stage: str, note: str = "") -> dict:
         if new_stage not in VALID_STAGES:
             raise ValueError(f"Invalid stage '{new_stage}'")
         updates: dict = {"stage": new_stage}
@@ -330,15 +375,13 @@ class ModelRegistry:
         print(f"[DEPLOY] '{name}' {version} → {new_stage}")
         return self._get_dict(name, version)
 
-    def demote(self, name: str, version: str, new_stage: str,
-               note: str = "") -> dict:
+    def demote(self, name: str, version: str, new_stage: str, note: str = "") -> dict:
         return self.promote(name, version, new_stage, note)
 
     def get_by_name(self, name: str) -> List[dict]:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT * FROM deployments WHERE model_name=? "
-                "ORDER BY created_at DESC",
+                "SELECT * FROM deployments WHERE model_name=? " "ORDER BY created_at DESC",
                 (name,),
             )
             return self._rows(cur)
@@ -365,27 +408,30 @@ class ModelRegistry:
 
     def list_all(self):
         with self._conn() as conn:
-            cur = conn.execute(
-                "SELECT * FROM deployments ORDER BY model_name, created_at DESC"
-            )
+            cur = conn.execute("SELECT * FROM deployments ORDER BY model_name, created_at DESC")
             rows = self._rows(cur)
 
         if not rows:
             print("[DEPLOY] No deployments registered.")
             return
 
-        colours = {"dev": "\033[94m", "staging": "\033[93m",
-                   "production": "\033[92m", "archived": "\033[90m"}
+        colours = {
+            "dev": "\033[94m",
+            "staging": "\033[93m",
+            "production": "\033[92m",
+            "archived": "\033[90m",
+        }
         reset = "\033[0m"
-        print(f"\n  {'Name':<20} {'Version':<10} {'Stage':<12} "
-              f"{'Type':<12} {'Deployed'}")
+        print(f"\n  {'Name':<20} {'Version':<10} {'Stage':<12} " f"{'Type':<12} {'Deployed'}")
         print(f"  {'─'*20} {'─'*10} {'─'*12} {'─'*12} {'─'*20}")
         for r in rows:
-            c      = colours.get(r["stage"], "")
-            dep    = (r["deployed_at"] or "—")[:10]
+            c = colours.get(r["stage"], "")
+            dep = (r["deployed_at"] or "—")[:10]
             marker = "▶ " if r["stage"] == "production" else "  "
-            print(f"  {marker}{r['model_name']:<18} {r['version']:<10} "
-                  f"{c}{r['stage']:<12}{reset} {r['model_class']:<12} {dep}")
+            print(
+                f"  {marker}{r['model_name']:<18} {r['version']:<10} "
+                f"{c}{r['stage']:<12}{reset} {r['model_class']:<12} {dep}"
+            )
         print()
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -430,9 +476,7 @@ class ModelRegistry:
         sets = ", ".join(f"{k}=?" for k in fields)
         vals = list(fields.values()) + [record_id]
         with self._conn() as conn:
-            conn.execute(
-                f"UPDATE deployments SET {sets} WHERE id=?", vals
-            )
+            conn.execute(f"UPDATE deployments SET {sets} WHERE id=?", vals)
 
     def _update_by_name_version(self, name: str, version: str, fields: dict):
         sets = ", ".join(f"{k}=?" for k in fields)
@@ -496,9 +540,12 @@ class ModelRegistry:
     def _current_git_hash(self) -> Optional[str]:
         try:
             import subprocess
+
             result = subprocess.run(
                 ["git", "rev-parse", "--short", "HEAD"],
-                capture_output=True, text=True, timeout=3,
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             return result.stdout.strip() if result.returncode == 0 else None
         except Exception:

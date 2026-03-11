@@ -22,8 +22,8 @@ from agent.policy.experience_buffer import STATE_DIM, N_ACTIONS
 from agent.react.action_parser import ActionType
 from agent.classifier.anomaly_types import AnomalyType
 
-
 # ── State Space ───────────────────────────────────────────────────
+
 
 @dataclass
 class StateSpace:
@@ -55,8 +55,9 @@ class StateSpace:
         |S| = P + 2P + d_data + d_hw ≈ O(10^8) for typical models
         Observable proxy dimension: |O| = 16 (our STATE_DIM)
     """
+
     # Observed dimension (proxy for true state)
-    obs_dim: int = STATE_DIM      # 16
+    obs_dim: int = STATE_DIM  # 16
     # True state is infinite-dimensional (weights + optimizer)
     # We approximate it via the observation + belief updater
 
@@ -71,6 +72,7 @@ class StateSpace:
 
 
 # ── Observation Space ─────────────────────────────────────────────
+
 
 @dataclass
 class ObservationSpace:
@@ -97,33 +99,38 @@ class ObservationSpace:
         o_t = f(s_t) + ε_t,  ε_t ~ N(0, Σ_obs)
         where Σ_obs is diagonal with known (estimated) variances
     """
+
     dim: int = STATE_DIM
 
     # Estimated observation noise std per feature
     # (calibrated from first 100 steps of each run)
     noise_std: np.ndarray = field(
-        default_factory=lambda: np.array([
-            0.02,   # loss_ema
-            0.05,   # loss_delta
-            0.3,    # loss_z_score
-            0.1,    # grad_norm
-            0.05,   # grad_norm_var
-            0.3,    # grad_norm_z
-            0.01,   # lr_log
-            0.02,   # plateau_score
-            0.05,   # divergence_score
-            0.02,   # oscillation_score
-            0.0,    # one-hot dims (no noise)
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        ], dtype=np.float32)
+        default_factory=lambda: np.array(
+            [
+                0.02,  # loss_ema
+                0.05,  # loss_delta
+                0.3,  # loss_z_score
+                0.1,  # grad_norm
+                0.05,  # grad_norm_var
+                0.3,  # grad_norm_z
+                0.01,  # lr_log
+                0.02,  # plateau_score
+                0.05,  # divergence_score
+                0.02,  # oscillation_score
+                0.0,  # one-hot dims (no noise)
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ],
+            dtype=np.float32,
+        )
     )
 
 
 # ── Action Space ──────────────────────────────────────────────────
+
 
 @dataclass
 class ActionSpace:
@@ -145,16 +152,19 @@ class ActionSpace:
         ROLLBACK:       1.0   (expensive — compute wasted)
         PAUSE:          2.0   (most expensive — human blocked)
     """
+
     n_actions: int = N_ACTIONS
 
-    action_costs: Dict[ActionType, float] = field(default_factory=lambda: {
-        ActionType.WATCH: 0.0,
-        ActionType.ADJUST_LR: 0.1,
-        ActionType.SWAP_SCHEDULER: 0.2,
-        ActionType.ALERT: 0.3,
-        ActionType.ROLLBACK: 1.0,
-        ActionType.PAUSE: 2.0,
-    })
+    action_costs: Dict[ActionType, float] = field(
+        default_factory=lambda: {
+            ActionType.WATCH: 0.0,
+            ActionType.ADJUST_LR: 0.1,
+            ActionType.SWAP_SCHEDULER: 0.2,
+            ActionType.ALERT: 0.3,
+            ActionType.ROLLBACK: 1.0,
+            ActionType.PAUSE: 2.0,
+        }
+    )
 
     action_reversibility: Dict[ActionType, bool] = field(
         default_factory=lambda: {
@@ -169,6 +179,7 @@ class ActionSpace:
 
 
 # ── Transition Model ──────────────────────────────────────────────
+
 
 @dataclass
 class TransitionModel:
@@ -189,6 +200,7 @@ class TransitionModel:
          Instead, we learn an observation-space approximation
          T̂(o' | o, a) from offline data..."
     """
+
     is_known: bool = False
     approximation_method: str = "offline_RL_and_LSTM_forecaster"
 
@@ -204,6 +216,7 @@ class TransitionModel:
 
 
 # ── Reward Model ──────────────────────────────────────────────────
+
 
 @dataclass
 class RewardModel:
@@ -229,10 +242,11 @@ class RewardModel:
     not just correlatively — which is the key improvement over
     naive reward shaping.
     """
+
     w_recovery: float = 2.0
     w_loss_delta: float = 1.0
     w_fid_delta: float = 0.5
-    gamma: float = 0.99             # discount factor
+    gamma: float = 0.99  # discount factor
 
     @property
     def description(self) -> str:
@@ -247,6 +261,7 @@ class RewardModel:
 
 
 # ── Full POMDP Spec ───────────────────────────────────────────────
+
 
 class POMDPSpec:
     """
@@ -345,14 +360,17 @@ updated by the Bayesian belief updater at each observation.
 
     def to_json(self) -> str:
         """Serialize spec for logging."""
-        return json.dumps({
-            "S": self.S.description,
-            "O": {"dim": self.O.dim, "noise_std": self.O.noise_std.tolist()},
-            "A": {
-                "n_actions": self.A.n_actions,
-                "costs": {k.name: v for k, v in self.A.action_costs.items()},
+        return json.dumps(
+            {
+                "S": self.S.description,
+                "O": {"dim": self.O.dim, "noise_std": self.O.noise_std.tolist()},
+                "A": {
+                    "n_actions": self.A.n_actions,
+                    "costs": {k.name: v for k, v in self.A.action_costs.items()},
+                },
+                "T": self.T.description,
+                "R": self.R.description,
+                "gamma": self.gamma,
             },
-            "T": self.T.description,
-            "R": self.R.description,
-            "gamma": self.gamma,
-        }, indent=2)
+            indent=2,
+        )

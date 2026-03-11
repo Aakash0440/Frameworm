@@ -54,9 +54,11 @@ logger = logging.getLogger(__name__)
 # Decision log entry (written to JSON after every action)
 # ──────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class DecisionRecord:
     """One complete agent decision cycle — saved to disk."""
+
     step: int
     anomaly_type: str
     severity: str
@@ -74,6 +76,7 @@ class DecisionRecord:
 # ──────────────────────────────────────────────────────────────────
 # LLM client wrapper (thin, swap out any provider)
 # ──────────────────────────────────────────────────────────────────
+
 
 class LLMClient:
     """
@@ -96,9 +99,10 @@ class LLMClient:
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
         max_tokens: int = 300,
-        temperature: float = 0.2,   # low temp for deterministic structured output
+        temperature: float = 0.2,  # low temp for deterministic structured output
     ) -> None:
         import os
+
         self.model = os.environ.get("FRAMEWORM_AGENT_LLM_MODEL", model)
         self.base_url = os.environ.get("FRAMEWORM_AGENT_LLM_BASE_URL", base_url)
         self.api_key = os.environ.get("FRAMEWORM_AGENT_LLM_API_KEY", api_key)
@@ -111,6 +115,7 @@ class LLMClient:
             return self._client
         try:
             from openai import OpenAI
+
             kwargs = {"api_key": self.api_key or "dummy"}
             if self.base_url:
                 kwargs["base_url"] = self.base_url
@@ -147,6 +152,7 @@ class LLMClient:
 # Main agent
 # ──────────────────────────────────────────────────────────────────
 
+
 class FramewormAgent:
     """
     The main FRAMEWORM-AGENT ReAct loop.
@@ -171,7 +177,7 @@ class FramewormAgent:
         stream: MetricStream,
         rule_engine: RuleEngine,
         llm: LLMClient,
-        control,                # AgentControlPlugin — imported at runtime
+        control,  # AgentControlPlugin — imported at runtime
         verifier: Verifier,
         prompt_builder: PromptBuilder,
         log_dir: Path = Path("experiments/agent_logs"),
@@ -194,7 +200,7 @@ class FramewormAgent:
         # Policy + memory components
         self.policy = policy or CQLPolicy.from_checkpoint()
         self.buffer = buffer or ExperienceBuffer()
-        self.buffer.load_from_db()   # resume from past sessions
+        self.buffer.load_from_db()  # resume from past sessions
         self.belief_updater = belief_updater or BeliefUpdater()
         self._belief = self.belief_updater.initial_belief()
 
@@ -308,9 +314,7 @@ class FramewormAgent:
 
         # 7. Check cooldown
         if self.control.cooldown.is_blocked(event.anomaly_type):
-            logger.info(
-                f"[Step {event.step}] {event.anomaly_type.name} blocked by cooldown."
-            )
+            logger.info(f"[Step {event.step}] {event.anomaly_type.name} blocked by cooldown.")
             return
 
         # 8. Update belief state
@@ -320,9 +324,7 @@ class FramewormAgent:
 
         # 9. Try policy first — skip LLM if confident
         state_vec = encode_state(signals, event.anomaly_type)
-        policy_action, confidence = self.policy.select_action(
-            state_vec, event.anomaly_type
-        )
+        policy_action, confidence = self.policy.select_action(state_vec, event.anomaly_type)
 
         if policy_action is not None and confidence > 1.0:
             # Policy is confident — use it, skip LLM
@@ -376,9 +378,7 @@ class FramewormAgent:
             resolved = verification.resolved
 
             if not resolved:
-                logger.warning(
-                    f"[Step {event.step}] Intervention unresolved — escalating to user."
-                )
+                logger.warning(f"[Step {event.step}] Intervention unresolved — escalating to user.")
                 self.control.send_alert(
                     f"FRAMEWORM-AGENT: {action.action_type.name} did not resolve "
                     f"{event.anomaly_type.name} at step {event.step}. "
@@ -397,7 +397,7 @@ class FramewormAgent:
             fid_delta=None,  # filled in by delta_tracker later
             is_fallback=action.is_fallback or used_llm,
             step=event.step,
-            run_id=getattr(self, '_run_id', ''),
+            run_id=getattr(self, "_run_id", ""),
         )
 
         # 14. Log decision
@@ -415,11 +415,13 @@ class FramewormAgent:
             is_fallback=action.is_fallback,
         )
         self.decision_log.append(record)
-        self.action_history.append({
-            "step": event.step,
-            "action": f"{action.action_type.name}({action.params})",
-            "resolved": resolved,
-        })
+        self.action_history.append(
+            {
+                "step": event.step,
+                "action": f"{action.action_type.name}({action.params})",
+                "resolved": resolved,
+            }
+        )
 
         # Reset counter if resolved
         if resolved:
@@ -433,12 +435,12 @@ class FramewormAgent:
     def _default_params(self, action_type: ActionType) -> dict:
         """Default parameters for policy-driven actions (no LLM to fill them in)."""
         defaults = {
-            ActionType.WATCH:            {"steps": 50},
-            ActionType.ADJUST_LR:        {"factor": 0.5},
-            ActionType.ROLLBACK:         {"step": None},
-            ActionType.SWAP_SCHEDULER:   {"name": "cosine"},
-            ActionType.PAUSE:            {},
-            ActionType.ALERT:            {"message": "Agent action."},
+            ActionType.WATCH: {"steps": 50},
+            ActionType.ADJUST_LR: {"factor": 0.5},
+            ActionType.ROLLBACK: {"step": None},
+            ActionType.SWAP_SCHEDULER: {"name": "cosine"},
+            ActionType.PAUSE: {},
+            ActionType.ALERT: {"message": "Agent action."},
         }
         return defaults.get(action_type, {})
 
@@ -483,6 +485,7 @@ class FramewormAgent:
         agent_cfg = {}
         try:
             from core.config import load_config
+
             full_cfg = load_config(config_path)
             agent_cfg = full_cfg.get("agent", {})
         except Exception as exc:
@@ -511,12 +514,11 @@ class FramewormAgent:
         from agent.control.control_plugin import AgentControlPlugin
         from agent.control.cooldown import CooldownManager
 
-        cooldown = CooldownManager(
-            cooldown_steps=int(agent_cfg.get("cooldown_steps", 200))
-        )
+        cooldown = CooldownManager(cooldown_steps=int(agent_cfg.get("cooldown_steps", 200)))
         control = AgentControlPlugin(cooldown=cooldown)
 
         from agent.forecaster.failure_predictor import FailurePredictor
+
         predictor = FailurePredictor(
             confidence_threshold=float(agent_cfg.get("forecast_confidence", 0.80)),
             run_every=int(agent_cfg.get("forecast_run_every", 25)),

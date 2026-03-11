@@ -84,11 +84,11 @@ class ShiftMiddleware:
         )
 
         self._feature_names = feature_names
-        self._input_key     = input_key
-        self._window_size   = window_size
-        self._async_check   = async_check
-        self._buffer: List  = []
-        self._lock          = threading.Lock()
+        self._input_key = input_key
+        self._window_size = window_size
+        self._async_check = async_check
+        self._buffer: List = []
+        self._lock = threading.Lock()
 
         logger.info(
             f"[SHIFT] Middleware active — monitoring '{reference}' "
@@ -122,8 +122,10 @@ class ShiftMiddleware:
 
     def _make_receive(self, body: bytes):
         """Re-create receive callable so the endpoint can read the body normally."""
+
         async def receive():
             return {"type": "http.request", "body": body, "more_body": False}
+
         return receive
 
     # ──────────────────────────────────────────────── feature extraction

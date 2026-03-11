@@ -1,4 +1,3 @@
-
 """
 Parses LLM output into a structured ParsedAction.
 
@@ -58,6 +57,7 @@ class ParsedAction:
     Structured output of the LLM response.
     Always valid — defaults to WATCH on parse failure.
     """
+
     action_type: ActionType
     params: Dict[str, Any] = field(default_factory=dict)
 
@@ -112,8 +112,7 @@ class ActionParser:
 
         if not act_raw:
             logger.warning(
-                f"ActionParser: no ACT field found in LLM response. "
-                f"Raw text: {text[:200]!r}"
+                f"ActionParser: no ACT field found in LLM response. " f"Raw text: {text[:200]!r}"
             )
             return ParsedAction.watch_fallback(raw_text=text)
 
@@ -163,9 +162,7 @@ class ActionParser:
         action_type = ACTION_MAP.get(action_name)
 
         if action_type is None:
-            logger.warning(
-                f"ActionParser: unknown action '{action_name}' — defaulting to WATCH"
-            )
+            logger.warning(f"ActionParser: unknown action '{action_name}' — defaulting to WATCH")
             return ActionType.WATCH, {"steps": 50}
 
         # Extract params from parentheses
@@ -209,9 +206,7 @@ class ActionParser:
             pass
         return v  # keep as string
 
-    def _validate_params(
-        self, params: Dict[str, Any], action_type: ActionType
-    ) -> Dict[str, Any]:
+    def _validate_params(self, params: Dict[str, Any], action_type: ActionType) -> Dict[str, Any]:
         """Clamp params to safe ranges."""
         if action_type == ActionType.ADJUST_LR:
             factor = params.get("factor", 0.5)
@@ -228,9 +223,7 @@ class ActionParser:
         elif action_type == ActionType.SWAP_SCHEDULER:
             name = str(params.get("name", "cosine")).lower()
             if name not in VALID_SCHEDULERS:
-                logger.warning(
-                    f"ActionParser: unknown scheduler '{name}' — defaulting to cosine"
-                )
+                logger.warning(f"ActionParser: unknown scheduler '{name}' — defaulting to cosine")
                 name = "cosine"
             params["name"] = name
 

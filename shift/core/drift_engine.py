@@ -1,4 +1,3 @@
-
 """
 Wraps FRAMEWORM's existing KS / MMD / Chi-squared detectors.
 Takes two DatasetProfiles → returns a DriftResult with per-feature reports.
@@ -13,14 +12,14 @@ from enum import Enum
 
 from shift.core.feature_profiles import DatasetProfile, NumericalProfile, CategoricalProfile
 
-
 # ─── severity ────────────────────────────────────────────────────────────────
 
+
 class DriftSeverity(Enum):
-    NONE   = "NONE"     # p >= 0.10  — no meaningful drift
-    LOW    = "LOW"      # p >= 0.05  — worth watching
-    MEDIUM = "MEDIUM"   # p >= 0.01  — real drift, investigate
-    HIGH   = "HIGH"     # p <  0.01  — act now
+    NONE = "NONE"  # p >= 0.10  — no meaningful drift
+    LOW = "LOW"  # p >= 0.05  — worth watching
+    MEDIUM = "MEDIUM"  # p >= 0.01  — real drift, investigate
+    HIGH = "HIGH"  # p <  0.01  — act now
 
 
 def _severity(p_value: float) -> DriftSeverity:
@@ -35,35 +34,37 @@ def _severity(p_value: float) -> DriftSeverity:
 
 # ─── per-feature result ───────────────────────────────────────────────────────
 
+
 @dataclass
 class FeatureDriftReport:
     feature_name: str
-    feature_type: str       # "numerical" | "categorical"
-    test_used: str          # "KS" | "MMD" | "Chi2"
+    feature_type: str  # "numerical" | "categorical"
+    test_used: str  # "KS" | "MMD" | "Chi2"
     statistic: float
     p_value: float
     drifted: bool
     severity: DriftSeverity
-    mean_delta: Optional[float] = None      # numerical only
-    std_delta: Optional[float] = None       # numerical only
+    mean_delta: Optional[float] = None  # numerical only
+    std_delta: Optional[float] = None  # numerical only
     missing_rate_delta: Optional[float] = None
 
     def to_dict(self) -> dict:
         return {
-            "feature_name":        self.feature_name,
-            "feature_type":        self.feature_type,
-            "test_used":           self.test_used,
-            "statistic":           round(self.statistic, 6),
-            "p_value":             round(self.p_value, 6),
-            "drifted":             self.drifted,
-            "severity":            self.severity.value,
-            "mean_delta":          self.mean_delta,
-            "std_delta":           self.std_delta,
-            "missing_rate_delta":  self.missing_rate_delta,
+            "feature_name": self.feature_name,
+            "feature_type": self.feature_type,
+            "test_used": self.test_used,
+            "statistic": round(self.statistic, 6),
+            "p_value": round(self.p_value, 6),
+            "drifted": self.drifted,
+            "severity": self.severity.value,
+            "mean_delta": self.mean_delta,
+            "std_delta": self.std_delta,
+            "missing_rate_delta": self.missing_rate_delta,
         }
 
 
 # ─── dataset-level result ─────────────────────────────────────────────────────
+
 
 @dataclass
 class DriftResult:
@@ -71,45 +72,50 @@ class DriftResult:
     drifted_features: List[str] = field(default_factory=list)
     overall_drifted: bool = False
     overall_severity: DriftSeverity = DriftSeverity.NONE
-    drift_fraction: float = 0.0     # % of features that drifted
+    drift_fraction: float = 0.0  # % of features that drifted
     n_features_checked: int = 0
     summary: str = ""
 
     def to_dict(self) -> dict:
         return {
-            "overall_drifted":    self.overall_drifted,
-            "overall_severity":   self.overall_severity.value,
-            "drift_fraction":     round(self.drift_fraction, 4),
-            "drifted_features":   self.drifted_features,
+            "overall_drifted": self.overall_drifted,
+            "overall_severity": self.overall_severity.value,
+            "drift_fraction": round(self.drift_fraction, 4),
+            "drifted_features": self.drifted_features,
             "n_features_checked": self.n_features_checked,
-            "summary":            self.summary,
-            "features":           {k: v.to_dict() for k, v in self.features.items()},
+            "summary": self.summary,
+            "features": {k: v.to_dict() for k, v in self.features.items()},
         }
 
     def print_summary(self):
         severity_colours = {
-            "NONE":   "\033[92m",   # green
-            "LOW":    "\033[93m",   # yellow
-            "MEDIUM": "\033[33m",   # orange
-            "HIGH":   "\033[91m",   # red
+            "NONE": "\033[92m",  # green
+            "LOW": "\033[93m",  # yellow
+            "MEDIUM": "\033[33m",  # orange
+            "HIGH": "\033[91m",  # red
         }
         reset = "\033[0m"
         sev = self.overall_severity.value
         colour = severity_colours.get(sev, "")
         print(f"\n[SHIFT] Drift check — {colour}{sev}{reset}")
-        print(f"        {self.drift_fraction*100:.1f}% of features drifted "
-              f"({len(self.drifted_features)}/{self.n_features_checked})")
+        print(
+            f"        {self.drift_fraction*100:.1f}% of features drifted "
+            f"({len(self.drifted_features)}/{self.n_features_checked})"
+        )
         if self.drifted_features:
             print("        Drifted features:")
             for name in self.drifted_features:
                 r = self.features[name]
                 c = severity_colours.get(r.severity.value, "")
-                print(f"          · {name:<30} {c}{r.severity.value}{reset} "
-                      f"(p={r.p_value:.4f}, test={r.test_used})")
+                print(
+                    f"          · {name:<30} {c}{r.severity.value}{reset} "
+                    f"(p={r.p_value:.4f}, test={r.test_used})"
+                )
         print()
 
 
 # ─── engine ──────────────────────────────────────────────────────────────────
+
 
 class DriftEngine:
     """
@@ -134,7 +140,7 @@ class DriftEngine:
         Returns a DriftResult with per-feature breakdown.
         """
         result = DriftResult()
-        shared_numerical   = set(reference.numerical)   & set(current.numerical)
+        shared_numerical = set(reference.numerical) & set(current.numerical)
         shared_categorical = set(reference.categorical) & set(current.categorical)
         total = len(shared_numerical) + len(shared_categorical)
         result.n_features_checked = total
@@ -158,17 +164,12 @@ class DriftEngine:
                 result.drifted_features.append(name)
 
         # Dataset-level summary
-        result.drift_fraction = (
-            len(result.drifted_features) / total if total > 0 else 0.0
-        )
+        result.drift_fraction = len(result.drifted_features) / total if total > 0 else 0.0
         result.overall_drifted = len(result.drifted_features) > 0
 
         # Overall severity = worst individual severity
         if result.drifted_features:
-            worst = max(
-                result.features[f].severity.value
-                for f in result.drifted_features
-            )
+            worst = max(result.features[f].severity.value for f in result.drifted_features)
             result.overall_severity = DriftSeverity(worst)
 
         result.summary = self._build_summary(result)
@@ -241,6 +242,7 @@ class DriftEngine:
             p_value = 2.0 * (np.exp(-2 * lam**2) - np.exp(-8 * lam**2))
             p_value = float(np.clip(p_value, 0.0, 1.0))
         return ks_stat, p_value
+
     def _samples_from_histogram(self, counts, edges) -> np.ndarray:
         """Reconstruct approximate samples from histogram for FRAMEWORM detector."""
         samples = []
@@ -279,10 +281,9 @@ class DriftEngine:
         """
         try:
             from monitoring.drift import DriftDetector
+
             detector = DriftDetector()
-            result = detector.chi_squared_test(
-                ref.value_counts, cur.value_counts
-            )
+            result = detector.chi_squared_test(ref.value_counts, cur.value_counts)
             return result["statistic"], result["p_value"]
         except (ImportError, AttributeError, KeyError):
             return self._chi2_numpy(ref, cur)
@@ -313,11 +314,14 @@ class DriftEngine:
 
         # P(Z > z) via rational erfc approximation
         t = 1.0 / (1.0 + 0.3275911 * abs(z / np.sqrt(2)))
-        poly = t * (0.254829592 + t * (-0.284496736
-            + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
-        erfc_abs = poly * np.exp(-(z / np.sqrt(2)) ** 2)
+        poly = t * (
+            0.254829592
+            + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))
+        )
+        erfc_abs = poly * np.exp(-((z / np.sqrt(2)) ** 2))
         p_value = float(np.clip(erfc_abs / 2 if z >= 0 else 1.0 - erfc_abs / 2, 0.0, 1.0))
         return chi2_stat, p_value
+
     # ────────────────────────────────────────────── summary
 
     def _build_summary(self, result: DriftResult) -> str:
@@ -328,7 +332,4 @@ class DriftEngine:
         features = ", ".join(result.drifted_features[:5])
         if n > 5:
             features += f" (+{n-5} more)"
-        return (
-            f"{sev} drift detected in {n}/{result.n_features_checked} features: "
-            f"{features}."
-        )
+        return f"{sev} drift detected in {n}/{result.n_features_checked} features: " f"{features}."

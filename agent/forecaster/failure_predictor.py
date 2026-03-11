@@ -23,7 +23,11 @@ import numpy as np
 from agent.classifier.anomaly_types import AnomalyType
 from agent.forecaster.grad_forecaster import GradForecaster, ForecasterConfig
 from agent.forecaster.training_data import (
-    FAILURE_MODES, HORIZONS, N_FAILURE_MODES, N_FEATURES, SEQ_LEN,
+    FAILURE_MODES,
+    HORIZONS,
+    N_FAILURE_MODES,
+    N_FEATURES,
+    SEQ_LEN,
     DataCollector,
 )
 from agent.observer.rolling_window import RollingWindow
@@ -37,7 +41,7 @@ DEFAULT_WEIGHTS_PATH = Path("agent/forecaster/weights/grad_forecaster.pt")
 @dataclass
 class PredictionResult:
     step: int
-    probs: np.ndarray                           # (N_FAILURE_MODES, N_HORIZONS)
+    probs: np.ndarray  # (N_FAILURE_MODES, N_HORIZONS)
     high_confidence: List[Dict] = field(default_factory=list)
     triggered_proactive: bool = False
 
@@ -88,21 +92,21 @@ class FailurePredictor:
 
     FAILURE_MODE_TO_ANOMALY = {
         "gradient_explosion": AnomalyType.GRADIENT_EXPLOSION,
-        "divergence":         AnomalyType.DIVERGENCE,
-        "loss_spike":         AnomalyType.LOSS_SPIKE,
-        "vanishing_grad":     AnomalyType.VANISHING_GRAD,
-        "oscillating":        AnomalyType.OSCILLATING,
-        "plateau":            AnomalyType.PLATEAU,
+        "divergence": AnomalyType.DIVERGENCE,
+        "loss_spike": AnomalyType.LOSS_SPIKE,
+        "vanishing_grad": AnomalyType.VANISHING_GRAD,
+        "oscillating": AnomalyType.OSCILLATING,
+        "plateau": AnomalyType.PLATEAU,
     }
 
     # Softer proactive actions vs reactive ones
     PROACTIVE_ACTIONS = {
-        "gradient_explosion": ("adjust_lr",      {"factor": 0.8}),
-        "divergence":         ("adjust_lr",      {"factor": 0.9}),
-        "loss_spike":         ("watch",          {"steps": 50}),
-        "vanishing_grad":     ("adjust_lr",      {"factor": 1.2}),
-        "oscillating":        ("adjust_lr",      {"factor": 0.85}),
-        "plateau":            ("swap_scheduler", {"name": "cosine"}),
+        "gradient_explosion": ("adjust_lr", {"factor": 0.8}),
+        "divergence": ("adjust_lr", {"factor": 0.9}),
+        "loss_spike": ("watch", {"steps": 50}),
+        "vanishing_grad": ("adjust_lr", {"factor": 1.2}),
+        "oscillating": ("adjust_lr", {"factor": 0.85}),
+        "plateau": ("swap_scheduler", {"name": "cosine"}),
     }
 
     def __init__(
@@ -171,19 +175,26 @@ class FailurePredictor:
             ema[i] = alpha * losses[i] + (1 - alpha) * ema[i - 1]
 
         w = min(50, n)
-        rolling_mean = np.array([np.mean(losses[max(0,i-w):i+1]) for i in range(n)])
-        rolling_std = np.array([np.std(losses[max(0,i-w):i+1]) + 1e-8 for i in range(n)])
+        rolling_mean = np.array([np.mean(losses[max(0, i - w) : i + 1]) for i in range(n)])
+        rolling_std = np.array([np.std(losses[max(0, i - w) : i + 1]) + 1e-8 for i in range(n)])
         loss_delta = np.zeros(n)
         for i in range(10, n):
-            loss_delta[i] = np.mean(losses[i-5:i]) - np.mean(losses[max(0,i-10):i-5])
-        grad_var = np.array([np.var(grad_norms[max(0,i-w):i+1]) for i in range(n)])
+            loss_delta[i] = np.mean(losses[i - 5 : i]) - np.mean(losses[max(0, i - 10) : i - 5])
+        grad_var = np.array([np.var(grad_norms[max(0, i - w) : i + 1]) for i in range(n)])
 
-        features = np.stack([
-            losses, ema, loss_delta,
-            (losses - rolling_mean) / rolling_std,
-            grad_norms, grad_var, lrs,
-            np.abs(loss_delta) / rolling_std,
-        ], axis=1).astype(np.float32)
+        features = np.stack(
+            [
+                losses,
+                ema,
+                loss_delta,
+                (losses - rolling_mean) / rolling_std,
+                grad_norms,
+                grad_var,
+                lrs,
+                np.abs(loss_delta) / rolling_std,
+            ],
+            axis=1,
+        ).astype(np.float32)
 
         # Normalize
         for j in range(N_FEATURES):
@@ -206,12 +217,14 @@ class FailurePredictor:
             for h_idx, horizon in enumerate(HORIZONS):
                 p = float(probs[mode_idx, h_idx])
                 if p >= self.confidence_threshold:
-                    hits.append({
-                        "failure_mode": mode_name,
-                        "horizon": horizon,
-                        "prob": p,
-                        "step": step,
-                    })
+                    hits.append(
+                        {
+                            "failure_mode": mode_name,
+                            "horizon": horizon,
+                            "prob": p,
+                            "step": step,
+                        }
+                    )
         hits.sort(key=lambda x: -x["prob"])
         return hits
 
@@ -228,6 +241,7 @@ class FailurePredictor:
         try:
             from agent.react.action_parser import ParsedAction, ActionType
             from agent.classifier.anomaly_types import AnomalyEvent, Severity
+
             fake_action = ParsedAction(
                 action_type=ActionType[action_name.upper()],
                 params=action_params,
@@ -244,14 +258,16 @@ class FailurePredictor:
             logger.warning(f"Proactive intervention failed: {exc}")
             return
 
-        self.proactive_log.append(ProactiveIntervention(
-            step=current_step,
-            predicted_failure_mode=mode,
-            predicted_horizon=top["horizon"],
-            confidence=top["prob"],
-            action_taken=action_name,
-            action_params=action_params,
-        ))
+        self.proactive_log.append(
+            ProactiveIntervention(
+                step=current_step,
+                predicted_failure_mode=mode,
+                predicted_horizon=top["horizon"],
+                confidence=top["prob"],
+                action_taken=action_name,
+                action_params=action_params,
+            )
+        )
 
     def train_forecaster(
         self,
@@ -264,7 +280,9 @@ class FailurePredictor:
         dataset = collector.collect()
         history = self.model.fit(dataset)
         self.model.save(save_path)
-        logger.info(f"Forecaster trained. Best epoch: {history['best_epoch']}. Saved to {save_path}")
+        logger.info(
+            f"Forecaster trained. Best epoch: {history['best_epoch']}. Saved to {save_path}"
+        )
         return history
 
     @property

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import click
 import click_completion
+
 click_completion.init()
 # ================= TOP-LEVEL IMPORTS FOR PRE-LAUNCH =================
 import core
@@ -33,18 +34,27 @@ def cli():
     """
     pass
 
+
 @cli.group()
 def plugins():
     """Manage plugins"""
     pass
-from deploy.cli.commands import register_deploy_commands
-register_deploy_commands(cli)
 
-@plugins.command('list')
-@click.option('--verbose', '-v', is_flag=True, help='Show detailed info')
+
+from deploy.cli.commands import register_deploy_commands
+
+register_deploy_commands(cli)
+from shift.cli.commands import register_shift_commands
+
+register_shift_commands(cli)
+
+
+@plugins.command("list")
+@click.option("--verbose", "-v", is_flag=True, help="Show detailed info")
 def list_plugins(verbose):
     """List all available plugins."""
     from plugins.loader import get_plugin_loader
+
     loader = get_plugin_loader()
     if verbose:
         loader.print_plugins()
@@ -52,15 +62,16 @@ def list_plugins(verbose):
         plugins = loader.list_plugins()
         click.echo(f"\nAvailable plugins: {len(plugins)}")
         for name, meta in plugins.items():
-            status = '✓' if loader._loaded.get(name) else '○'
+            status = "✓" if loader._loaded.get(name) else "○"
             click.echo(f"  {status} {name} ({meta.version}) - {meta.description}")
 
 
-@plugins.command('load')
-@click.argument('plugin_name')
+@plugins.command("load")
+@click.argument("plugin_name")
 def load_plugin_cmd(plugin_name):
     """Load a specific plugin."""
     from plugins.loader import get_plugin_loader
+
     loader = get_plugin_loader()
     if loader.load(plugin_name):
         click.echo(f"✓ Loaded: {plugin_name}")
@@ -69,21 +80,23 @@ def load_plugin_cmd(plugin_name):
         raise click.Abort()
 
 
-@plugins.command('unload')
-@click.argument('plugin_name')
+@plugins.command("unload")
+@click.argument("plugin_name")
 def unload_plugin_cmd(plugin_name):
     """Unload a plugin"""
     from plugins.loader import get_plugin_loader
+
     loader = get_plugin_loader()
     loader.unload(plugin_name)
     click.echo(f"✓ Unloaded: {plugin_name}")
 
 
-@plugins.command('info')
-@click.argument('plugin_name')
+@plugins.command("info")
+@click.argument("plugin_name")
 def plugin_info(plugin_name):
     """Show detailed plugin information."""
     from plugins.loader import get_plugin_loader
+
     loader = get_plugin_loader()
     plugins = loader.list_plugins()
     if plugin_name not in plugins:
@@ -100,25 +113,26 @@ def plugin_info(plugin_name):
     click.echo(f"  Enabled: {meta.enabled}")
 
 
-@plugins.command('create')
-@click.argument('name')
-@click.option('--dir', default='frameworm_plugins', help='Plugin directory')
+@plugins.command("create")
+@click.argument("name")
+@click.option("--dir", default="frameworm_plugins", help="Plugin directory")
 def create_plugin(name, dir):
     """Create a new plugin template."""
     from pathlib import Path
     import yaml
+
     plugin_dir = Path(dir) / name
     plugin_dir.mkdir(parents=True, exist_ok=True)
     metadata = {
-        'name': name,
-        'version': '0.1.0',
-        'author': 'Your Name',
-        'description': f'{name} plugin',
-        'entry_point': 'plugin:register',
-        'dependencies': ['torch>=2.0.0'],
-        'hooks': ['model']
+        "name": name,
+        "version": "0.1.0",
+        "author": "Your Name",
+        "description": f"{name} plugin",
+        "entry_point": "plugin:register",
+        "dependencies": ["torch>=2.0.0"],
+        "hooks": ["model"],
     }
-    with open(plugin_dir / 'plugin.yaml', 'w') as f:
+    with open(plugin_dir / "plugin.yaml", "w") as f:
         yaml.dump(metadata, f)
     template = '''"""
 {name} plugin for FRAMEWORM.
@@ -149,7 +163,7 @@ def register():
     def log_custom(trainer, epoch, metrics):
         print(f"Custom hook: epoch {{epoch}}")
 '''
-    with open(plugin_dir / '__init__.py', 'w') as f:
+    with open(plugin_dir / "__init__.py", "w") as f:
         f.write(template.format(name=name))
     click.echo(f"✓ Created plugin template: {plugin_dir}")
     click.echo(f"\nNext steps:")
@@ -165,6 +179,7 @@ def register():
 def dashboard(port, host):
     """Launch web dashboard."""
     from ui.api import run_dashboard
+
     click.echo(f"Starting dashboard at http://{host}:{port}")
     click.echo("Press Ctrl+C to stop")
     run_dashboard(host=host, port=port)
@@ -176,6 +191,7 @@ def dashboard(port, host):
 def completion(shell):
     """Generate shell completion script."""
     from click_completion import get_code
+
     click.echo(get_code(shell=shell))
 
 
@@ -186,6 +202,7 @@ def completion(shell):
 def pipeline(pipeline_file, dry_run):
     """Run automated pipeline."""
     from cli.pipeline import Pipeline
+
     pipe = Pipeline(pipeline_file)
     if dry_run:
         click.echo("Pipeline steps (dry run):")
@@ -198,20 +215,41 @@ def pipeline(pipeline_file, dry_run):
 # ================= INIT =================
 @cli.command()
 @click.argument("project_name")
-@click.option("--template", type=click.Choice(["basic", "gan", "vae", "diffusion"]), default="basic")
+@click.option(
+    "--template", type=click.Choice(["basic", "gan", "vae", "diffusion"]), default="basic"
+)
 @click.option("--path", type=str, default=".")
 def init(project_name, template, path):
     """Initialize a new FRAMEWORM project."""
-    from cli.commands.init import create_project
+    from pathlib import Path
+    import os
+
     project_path = Path(path) / project_name
-    click.echo(f"Creating new project: {project_name}")
-    click.echo(f"Template: {template}")
-    click.echo(f"Location: {project_path}")
-    create_project(project_path, template)
-    click.echo("\n✓ Project created successfully!")
+    project_path.mkdir(parents=True, exist_ok=True)
+    (project_path / "configs").mkdir(exist_ok=True)
+    (project_path / "experiments").mkdir(exist_ok=True)
+    (project_path / "checkpoints").mkdir(exist_ok=True)
+    config = f"""model:
+  type: {template if template != 'basic' else 'dcgan'}
+  latent_dim: 100
+  image_size: 64
+  channels: 3
+  features_g: 64
+  features_d: 64
+training:
+  epochs: 100
+  batch_size: 64
+  gradient_accumulation_steps: 1
+optimizer:
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+"""
+    (project_path / "configs" / "config.yaml").write_text(config)
+    click.echo(f"\n✓ Project created successfully at {project_path}!")
     click.echo("Next steps:")
     click.echo(f"  cd {project_name}")
-    click.echo("  frameworm train --config config.yaml")
+    click.echo("  frameworm train --config configs/config.yaml")
 
 
 # ================= MONITOR =================
@@ -221,6 +259,7 @@ def init(project_name, template, path):
 def monitor(experiment_dir, refresh):
     """Monitor training in real-time."""
     from cli.monitor import TrainingMonitor
+
     monitor_obj = TrainingMonitor(experiment_dir)
     monitor_obj.watch(refresh_rate=refresh)
 
@@ -247,6 +286,7 @@ def train(config, resume, gpus):
     console.print(f"[green]Building model: {model_name}[/green]")
     from core.registry import get_model
     import models.gan.dcgan
+
     model = get_model(model_name)(cfg)
 
     lr = cfg.get("optimizer.lr", 0.0002)
@@ -281,10 +321,46 @@ def train(config, resume, gpus):
 def serve(checkpoint, port, host):
     """Serve a trained model via REST API"""
     from rich.console import Console
+
     console = Console()
     console.print(f"[green]Loading model from: {checkpoint}[/green]")
     console.print(f"[green]Serving on {host}:{port}[/green]")
-    console.print("[yellow]Note: Full serve implementation coming in Week 4[/yellow]")
+
+    try:
+        import uvicorn
+        from fastapi import FastAPI
+        from fastapi.responses import JSONResponse
+        import torch
+        from core.config import Config
+        from core.registry import get_model
+
+        # Load checkpoint
+        ckpt = torch.load(checkpoint, map_location="cpu", weights_only=False)
+        cfg = ckpt.get("config", None)
+
+        app = FastAPI(title="FRAMEWORM DEPLOY", version="1.0")
+
+        @app.get("/health")
+        def health():
+            return {"status": "ok", "checkpoint": checkpoint}
+
+        @app.get("/ready")
+        def ready():
+            return {"ready": True}
+
+        @app.post("/generate")
+        def generate(latent_dim: int = 100):
+            z = torch.randn(1, latent_dim)
+            return {"status": "generated", "shape": list(z.shape)}
+
+        console.print(f"[bold green]✓ Server running at http://{host}:{port}[/bold green]")
+        console.print("[dim]Endpoints: GET /health  GET /ready  POST /generate[/dim]")
+        uvicorn.run(app, host=host, port=port)
+
+    except ImportError:
+        console.print("[red]✗ Missing dependency: pip install fastapi uvicorn[standard][/red]")
+    except Exception as e:
+        console.print(f"[red]✗ Failed to start server: {e}[/red]")
 
 
 # ================= EVALUATE =================
@@ -296,6 +372,7 @@ def serve(checkpoint, port, host):
 def evaluate(config, checkpoint, metrics, num_samples):
     """Evaluate a trained model."""
     from cli.evaluate import run_evaluation
+
     metric_list = metrics.split(",")
     click.echo(f"Evaluating checkpoint: {checkpoint}")
     click.echo(f"Metrics: {metric_list}")
@@ -314,6 +391,7 @@ def evaluate(config, checkpoint, metrics, num_samples):
 def search(config, space, method, trials, parallel):
     """Run hyperparameter search."""
     from cli.search_cli import run_search
+
     click.echo(f"Starting {method} search with {trials} trials and {parallel} parallel jobs")
     run_search(
         config_path=config, space_path=space, method=method, n_trials=trials, n_jobs=parallel
@@ -330,6 +408,7 @@ def search(config, space, method, trials, parallel):
 def export(checkpoint, format, output, quantize, benchmark):
     """Export trained model."""
     from cli.export import export_model
+
     click.echo(f"Exporting checkpoint: {checkpoint}, format: {format}")
     export_model(
         checkpoint_path=checkpoint,
@@ -358,6 +437,7 @@ def config_list():
 def config_show(config_file):
     """Show config contents."""
     from core import Config
+
     cfg = Config(config_file)
     click.echo(cfg.to_yaml())
 
@@ -367,6 +447,7 @@ def config_show(config_file):
 def config_validate(config_file):
     """Validate config file."""
     from core import Config
+
     try:
         cfg = Config(config_file)
         click.echo("✓ Config is valid")

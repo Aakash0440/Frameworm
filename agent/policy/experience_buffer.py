@@ -62,29 +62,29 @@ INDEX_ACTION = {v: k for k, v in ACTION_INDEX.items()}
 N_ACTIONS = len(ACTION_INDEX)  # 6
 
 # Anomaly type one-hot indices
-ANOMALY_INDEX: Dict[AnomalyType, int] = {
-    atype: i for i, atype in enumerate(FAILURE_TYPES)
-}
+ANOMALY_INDEX: Dict[AnomalyType, int] = {atype: i for i, atype in enumerate(FAILURE_TYPES)}
 
 
 # ── Transition dataclass ─────────────────────────────────────────
+
 
 @dataclass
 class Transition:
     """
     One (s, a, r, s', done) transition for offline RL training.
     """
-    state: np.ndarray               # (STATE_DIM,) observation vector
-    action: int                     # action index (0–5)
-    reward: float                   # outcome quality
-    next_state: np.ndarray          # (STATE_DIM,) post-intervention obs
-    done: bool                      # episode ended?
+
+    state: np.ndarray  # (STATE_DIM,) observation vector
+    action: int  # action index (0–5)
+    reward: float  # outcome quality
+    next_state: np.ndarray  # (STATE_DIM,) post-intervention obs
+    done: bool  # episode ended?
 
     # Metadata (not used for training — for logging and debugging)
     step: int = 0
     anomaly_type: str = ""
     action_name: str = ""
-    loss_delta: float = 0.0         # from counterfactual (Part 4)
+    loss_delta: float = 0.0  # from counterfactual (Part 4)
     resolved: bool = False
     run_id: str = ""
     timestamp: float = field(default_factory=time.time)
@@ -92,13 +92,14 @@ class Transition:
     def __post_init__(self):
         self.state = np.asarray(self.state, dtype=np.float32)
         self.next_state = np.asarray(self.next_state, dtype=np.float32)
-        assert self.state.shape == (STATE_DIM,), \
-            f"State dim mismatch: {self.state.shape} vs ({STATE_DIM},)"
-        assert 0 <= self.action < N_ACTIONS, \
-            f"Invalid action index: {self.action}"
+        assert self.state.shape == (
+            STATE_DIM,
+        ), f"State dim mismatch: {self.state.shape} vs ({STATE_DIM},)"
+        assert 0 <= self.action < N_ACTIONS, f"Invalid action index: {self.action}"
 
 
 # ── State encoder ────────────────────────────────────────────────
+
 
 def encode_state(
     signals: SignalSnapshot,
@@ -126,18 +127,21 @@ def encode_state(
     lr_log = float(np.log10(lr))
 
     # Base features
-    base = np.array([
-        signals.loss_ema,
-        signals.loss_delta,
-        signals.loss_z_score,
-        signals.grad_norm_current,
-        signals.grad_norm_var,
-        signals.grad_norm_z_score,
-        lr_log,
-        signals.plateau_score,
-        signals.divergence_score,
-        signals.oscillation_score,
-    ], dtype=np.float32)
+    base = np.array(
+        [
+            signals.loss_ema,
+            signals.loss_delta,
+            signals.loss_z_score,
+            signals.grad_norm_current,
+            signals.grad_norm_var,
+            signals.grad_norm_z_score,
+            lr_log,
+            signals.plateau_score,
+            signals.divergence_score,
+            signals.oscillation_score,
+        ],
+        dtype=np.float32,
+    )
 
     # Anomaly type one-hot (6 dims)
     one_hot = np.zeros(len(FAILURE_TYPES), dtype=np.float32)
@@ -198,6 +202,7 @@ def compute_reward(
 
 # ── ExperienceBuffer ─────────────────────────────────────────────
 
+
 class ExperienceBuffer:
     """
     Stores and persists agent transitions for offline RL training.
@@ -250,9 +255,7 @@ class ExperienceBuffer:
             self._db_conn = sqlite3.connect(str(self.db_path))
             self._db_conn.execute(self.TABLE_DDL)
             self._db_conn.commit()
-            logger.info(
-                f"ExperienceBuffer: using SQLite at {self.db_path}"
-            )
+            logger.info(f"ExperienceBuffer: using SQLite at {self.db_path}")
         except Exception as exc:
             logger.warning(
                 f"ExperienceBuffer: SQLite unavailable ({exc}). "
@@ -291,7 +294,7 @@ class ExperienceBuffer:
                         int(transition.resolved),
                         transition.run_id,
                         transition.timestamp,
-                    )
+                    ),
                 )
                 self._db_conn.commit()
             except Exception as exc:
@@ -387,25 +390,24 @@ class ExperienceBuffer:
                 next_state = np.frombuffer(row[3], dtype=np.float32).copy()
                 if state.shape != (STATE_DIM,) or next_state.shape != (STATE_DIM,):
                     continue
-                loaded.append(Transition(
-                    state=state,
-                    action=int(row[1]),
-                    reward=float(row[2]),
-                    next_state=next_state,
-                    done=bool(row[4]),
-                    step=int(row[5] or 0),
-                    anomaly_type=str(row[6] or ""),
-                    action_name=str(row[7] or ""),
-                    loss_delta=float(row[8] or 0.0),
-                    resolved=bool(row[9]),
-                    run_id=str(row[10] or ""),
-                    timestamp=float(row[11] or 0.0),
-                ))
+                loaded.append(
+                    Transition(
+                        state=state,
+                        action=int(row[1]),
+                        reward=float(row[2]),
+                        next_state=next_state,
+                        done=bool(row[4]),
+                        step=int(row[5] or 0),
+                        anomaly_type=str(row[6] or ""),
+                        action_name=str(row[7] or ""),
+                        loss_delta=float(row[8] or 0.0),
+                        resolved=bool(row[9]),
+                        run_id=str(row[10] or ""),
+                        timestamp=float(row[11] or 0.0),
+                    )
+                )
             self._memory = loaded
-            logger.info(
-                f"ExperienceBuffer: loaded {len(loaded)} "
-                "transitions from DB."
-            )
+            logger.info(f"ExperienceBuffer: loaded {len(loaded)} " "transitions from DB.")
             return len(loaded)
         except Exception as exc:
             logger.warning(f"ExperienceBuffer load failed: {exc}")
@@ -454,4 +456,3 @@ class ExperienceBuffer:
                 for name in set(t.action_name for t in data)
             },
         }
-

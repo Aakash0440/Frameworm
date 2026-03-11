@@ -1,4 +1,3 @@
-
 """
 Anomaly type definitions and event dataclasses.
 Pure Python — no FRAMEWORM or numpy dependencies.
@@ -25,6 +24,7 @@ class AnomalyType(Enum):
         PLATEAU             — no progress for many steps
         HEALTHY             — everything fine, no action needed
     """
+
     # Ordered from most to least urgent
     GRADIENT_EXPLOSION = auto()
     DIVERGENCE = auto()
@@ -58,9 +58,10 @@ class AnomalyType(Enum):
 
 class Severity(Enum):
     """How bad is it? Used for prompt context and action selection."""
-    LOW = "low"         # Borderline threshold, monitor closely
-    MEDIUM = "medium"   # Clear anomaly, soft intervention
-    HIGH = "high"       # Aggressive intervention needed
+
+    LOW = "low"  # Borderline threshold, monitor closely
+    MEDIUM = "medium"  # Clear anomaly, soft intervention
+    HIGH = "high"  # Aggressive intervention needed
     CRITICAL = "critical"  # Immediate rollback or pause
 
 
@@ -113,6 +114,7 @@ FAILURE_TYPES = [
     AnomalyType.PLATEAU,
 ]
 
+
 @dataclass
 class AnomalyEvent:
     """
@@ -121,6 +123,7 @@ class AnomalyEvent:
     Created by RuleEngine, enqueued in AnomalyPriorityQueue,
     consumed by the ReAct agent loop.
     """
+
     anomaly_type: AnomalyType
     severity: Severity
     step: int

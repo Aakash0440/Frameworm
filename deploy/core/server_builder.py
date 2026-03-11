@@ -8,11 +8,10 @@ import textwrap
 from pathlib import Path
 from typing import Optional
 
-
 MODEL_SPECS = {
     "vae": {
         "description": "Variational Autoencoder — encode/decode image tensors",
-        "input_fields": 'x: list  # image tensor [B, C, H, W] normalised to [-1, 1]',
+        "input_fields": "x: list  # image tensor [B, C, H, W] normalised to [-1, 1]",
         "inference_code": textwrap.dedent("""
             import torch
             t = torch.tensor(body.x, dtype=torch.float32)
@@ -22,7 +21,7 @@ MODEL_SPECS = {
     },
     "dcgan": {
         "description": "DCGAN — generate images from noise",
-        "input_fields": 'z: list  # latent noise vector [B, latent_dim]',
+        "input_fields": "z: list  # latent noise vector [B, latent_dim]",
         "inference_code": textwrap.dedent("""
             import torch
             z = torch.tensor(body.z, dtype=torch.float32)
@@ -32,8 +31,7 @@ MODEL_SPECS = {
     },
     "ddpm": {
         "description": "DDPM — denoising diffusion probabilistic model",
-        "input_fields": ('noisy_image: list  # shape (B,C,H,W)\n'
-                         '    timestep: int'),
+        "input_fields": ("noisy_image: list  # shape (B,C,H,W)\n" "    timestep: int"),
         "inference_code": textwrap.dedent("""
             import torch
             x = torch.tensor(body.noisy_image, dtype=torch.float32)
@@ -44,7 +42,7 @@ MODEL_SPECS = {
     },
     "vqvae2": {
         "description": "VQ-VAE-2 — hierarchical discrete representation",
-        "input_fields": 'x: list  # image tensor [B, C, H, W]',
+        "input_fields": "x: list  # image tensor [B, C, H, W]",
         "inference_code": textwrap.dedent("""
             import torch
             t = torch.tensor(body.x, dtype=torch.float32)
@@ -54,7 +52,7 @@ MODEL_SPECS = {
     },
     "vitgan": {
         "description": "ViTGAN — Vision Transformer GAN",
-        "input_fields": 'z: list  # latent noise vector [B, latent_dim]',
+        "input_fields": "z: list  # latent noise vector [B, latent_dim]",
         "inference_code": textwrap.dedent("""
             import torch
             z = torch.tensor(body.z, dtype=torch.float32)
@@ -64,9 +62,7 @@ MODEL_SPECS = {
     },
     "cfg_ddpm": {
         "description": "CFG-DDPM — classifier-free guidance diffusion",
-        "input_fields": ('noisy_image: list\n'
-                         '    timestep: int\n'
-                         '    class_label: int'),
+        "input_fields": ("noisy_image: list\n" "    timestep: int\n" "    class_label: int"),
         "inference_code": textwrap.dedent("""
             import torch
             x = torch.tensor(body.noisy_image, dtype=torch.float32)
@@ -78,7 +74,7 @@ MODEL_SPECS = {
     },
     "generic": {
         "description": "Generic FRAMEWORM model",
-        "input_fields": 'inputs: list  # input tensor as nested list',
+        "input_fields": "inputs: list  # input tensor as nested list",
         "inference_code": textwrap.dedent("""
             import torch
             x = torch.tensor(body.inputs, dtype=torch.float32)
@@ -108,22 +104,23 @@ class ServerBuilder:
 
     def build(
         self,
-        model_type:      str,
-        model_name:      str,
-        model_version:   str,
-        model_path:      str,
-        output_dir:      Optional[str] = None,
+        model_type: str,
+        model_name: str,
+        model_version: str,
+        model_path: str,
+        output_dir: Optional[str] = None,
         shift_reference: Optional[str] = None,
-        port:            int = 8000,
-        device:          str = "cpu",
+        port: int = 8000,
+        device: str = "cpu",
     ) -> str:
         """Generate server.py in output_dir. Returns path as string."""
-        spec    = MODEL_SPECS.get(model_type.lower(), MODEL_SPECS["generic"])
+        spec = MODEL_SPECS.get(model_type.lower(), MODEL_SPECS["generic"])
         out_dir = Path(output_dir) if output_dir else self.GENERATED_DIR / model_name
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        code = self._render(spec, model_type, model_name, model_version,
-                            model_path, shift_reference, port, device)
+        code = self._render(
+            spec, model_type, model_name, model_version, model_path, shift_reference, port, device
+        )
 
         out_path = out_dir / "server.py"
         # encoding="utf-8" is required on Windows — cp1252 (the default) cannot
@@ -141,11 +138,12 @@ class ServerBuilder:
         print(f"[DEPLOY] Server generated -> {out_path}")
         return str(out_path)
 
-    def _render(self, spec, model_type, model_name, model_version,
-                model_path, shift_reference, port, device) -> str:
-        shift_arg   = f'"{shift_reference}"' if shift_reference else "None"
+    def _render(
+        self, spec, model_type, model_name, model_version, model_path, shift_reference, port, device
+    ) -> str:
+        shift_arg = f'"{shift_reference}"' if shift_reference else "None"
         input_field = spec["input_fields"]
-        inference   = textwrap.indent(spec["inference_code"], "            ")
+        inference = textwrap.indent(spec["inference_code"], "            ")
 
         return f'''\
 """

@@ -1,4 +1,3 @@
-
 """
 Tests for agent/classifier/ — rule engine + priority queue.
 Run with: pytest tests/agent/test_classifier.py -v
@@ -16,12 +15,13 @@ from agent.observer.signal_extractor import SignalExtractor
 def _make_signals(n=120, loss_override=None, grad_override=None):
     w = RollingWindow(size=300)
     for i in range(n):
-        loss = loss_override if loss_override and i == n-1 else \
-               (1.0 - i * 0.004 + np.random.normal(0, 0.01))
-        gn = grad_override if grad_override and i == n-1 else \
-             (2.0 + np.random.normal(0, 0.1))
-        w.push(MetricSnapshot(step=i, loss=max(loss, 0.0),
-                              grad_norm=max(gn, 0.0), lr=0.0002))
+        loss = (
+            loss_override
+            if loss_override and i == n - 1
+            else (1.0 - i * 0.004 + np.random.normal(0, 0.01))
+        )
+        gn = grad_override if grad_override and i == n - 1 else (2.0 + np.random.normal(0, 0.1))
+        w.push(MetricSnapshot(step=i, loss=max(loss, 0.0), grad_norm=max(gn, 0.0), lr=0.0002))
     return SignalExtractor().extract(w)
 
 
@@ -56,14 +56,17 @@ class TestRuleEngine:
         events = engine.classify(signals)
         if len(events) >= 2:
             for i in range(len(events) - 1):
-                assert events[i].anomaly_type.priority <= events[i+1].anomaly_type.priority
+                assert events[i].anomaly_type.priority <= events[i + 1].anomaly_type.priority
 
     def test_early_training_lenience(self):
         """Thresholds should be relaxed during first 10% of training."""
         w = RollingWindow(size=100)
         for i in range(15):
-            w.push(MetricSnapshot(step=i, loss=1.0 + np.random.normal(0, 0.05),
-                                  grad_norm=2.0, lr=0.0002))
+            w.push(
+                MetricSnapshot(
+                    step=i, loss=1.0 + np.random.normal(0, 0.05), grad_norm=2.0, lr=0.0002
+                )
+            )
         signals = SignalExtractor(total_steps=10_000).extract(w)
         engine = RuleEngine()
         # A borderline z-score that would fire in normal training
@@ -127,4 +130,3 @@ class TestAnomalyPriorityQueue:
         q.push(AnomalyEvent(AnomalyType.DIVERGENCE, Severity.HIGH, step=1))
         assert q.has_type(AnomalyType.DIVERGENCE)
         assert not q.has_type(AnomalyType.PLATEAU)
-

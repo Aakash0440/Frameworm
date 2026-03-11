@@ -104,6 +104,7 @@ class AgentControlPlugin:
         if self._pause_requested:
             logger.warning("AgentControlPlugin: training paused by agent. Waiting...")
             import time
+
             while self._pause_requested:
                 time.sleep(2.0)
             logger.info("AgentControlPlugin: training resumed.")
@@ -147,8 +148,7 @@ class AgentControlPlugin:
         """
         if self.executor is None:
             logger.warning(
-                "AgentControlPlugin: no executor — "
-                "trainer not registered yet. Skipping action."
+                "AgentControlPlugin: no executor — " "trainer not registered yet. Skipping action."
             )
             return False
 

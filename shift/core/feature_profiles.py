@@ -1,4 +1,3 @@
-
 """
 Computes a statistical fingerprint of any dataset.
 Runs on training data (reference) and production data (current).
@@ -21,7 +20,7 @@ class NumericalProfile:
     skewness: float
     kurtosis: float
     missing_rate: float
-    percentiles: Dict[str, float]   # p5, p25, p75, p95
+    percentiles: Dict[str, float]  # p5, p25, p75, p95
     histogram_counts: List[float]
     histogram_edges: List[float]
     n_samples: int
@@ -37,8 +36,8 @@ class NumericalProfile:
 @dataclass
 class CategoricalProfile:
     feature_name: str
-    value_counts: Dict[str, int]    # category -> count
-    top_k: List[str]                # top 10 most frequent
+    value_counts: Dict[str, int]  # category -> count
+    top_k: List[str]  # top 10 most frequent
     entropy: float
     n_unique: int
     missing_rate: float
@@ -55,6 +54,7 @@ class CategoricalProfile:
 @dataclass
 class DatasetProfile:
     """Full statistical fingerprint of a dataset."""
+
     numerical: Dict[str, NumericalProfile] = field(default_factory=dict)
     categorical: Dict[str, CategoricalProfile] = field(default_factory=dict)
     n_samples: int = 0
@@ -98,7 +98,9 @@ class FeatureProfiler:
 
     N_HISTOGRAM_BINS = 20
     TOP_K_CATEGORIES = 10
-    CATEGORICAL_THRESHOLD = 20   # if n_unique <= this AND n_unique/n_samples > 0.3, treat as categorical
+    CATEGORICAL_THRESHOLD = (
+        20  # if n_unique <= this AND n_unique/n_samples > 0.3, treat as categorical
+    )
 
     def profile(self, data, feature_names: Optional[List[str]] = None) -> DatasetProfile:
         """
@@ -133,6 +135,7 @@ class FeatureProfiler:
     def _normalise_input(self, data, feature_names):
         try:
             import pandas as pd
+
             if isinstance(data, pd.DataFrame):
                 names = list(data.columns) if feature_names is None else feature_names
                 return data.values.astype(object), names
@@ -157,7 +160,7 @@ class FeatureProfiler:
             ratio = n_unique / len(clean)
             return n_unique <= self.CATEGORICAL_THRESHOLD and ratio < 0.9
         except (ValueError, TypeError):
-            return True   # non-numeric → definitely categorical
+            return True  # non-numeric → definitely categorical
 
     def _profile_numerical(self, col: np.ndarray, name: str) -> NumericalProfile:
         try:
@@ -178,8 +181,8 @@ class FeatureProfiler:
         mean = float(np.mean(clean))
         std = float(np.std(clean)) or 1e-8
         z = (clean - mean) / std
-        skewness = float(np.mean(z ** 3))
-        kurtosis = float(np.mean(z ** 4) - 3)
+        skewness = float(np.mean(z**3))
+        kurtosis = float(np.mean(z**4) - 3)
 
         return NumericalProfile(
             feature_name=name,
@@ -192,7 +195,7 @@ class FeatureProfiler:
             kurtosis=kurtosis,
             missing_rate=missing_rate,
             percentiles={
-                "p5":  float(np.percentile(clean, 5)),
+                "p5": float(np.percentile(clean, 5)),
                 "p25": float(np.percentile(clean, 25)),
                 "p75": float(np.percentile(clean, 75)),
                 "p95": float(np.percentile(clean, 95)),
@@ -212,7 +215,7 @@ class FeatureProfiler:
             value_counts[v] = value_counts.get(v, 0) + 1
 
         total = max(sum(value_counts.values()), 1)
-        top_k = sorted(value_counts, key=lambda x: -value_counts[x])[:self.TOP_K_CATEGORIES]
+        top_k = sorted(value_counts, key=lambda x: -value_counts[x])[: self.TOP_K_CATEGORIES]
 
         # Shannon entropy
         probs = np.array([c / total for c in value_counts.values()])
@@ -227,4 +230,3 @@ class FeatureProfiler:
             missing_rate=missing_rate,
             n_samples=len(col),
         )
-

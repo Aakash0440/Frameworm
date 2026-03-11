@@ -41,17 +41,18 @@ class TestRollingWindow:
 
     def test_thread_safety(self):
         import threading
+
         w = RollingWindow(size=200)
         errors = []
 
         def push_worker(offset):
             try:
                 for i in range(50):
-                    w.push(MetricSnapshot(step=offset+i, loss=1.0, grad_norm=1.0, lr=0.001))
+                    w.push(MetricSnapshot(step=offset + i, loss=1.0, grad_norm=1.0, lr=0.001))
             except Exception as e:
                 errors.append(e)
 
-        threads = [threading.Thread(target=push_worker, args=(i*100,)) for i in range(4)]
+        threads = [threading.Thread(target=push_worker, args=(i * 100,)) for i in range(4)]
         for t in threads:
             t.start()
         for t in threads:
@@ -89,14 +90,16 @@ class TestSignalExtractor:
         w = self._make_window(n=120, anomaly=True)
         e = SignalExtractor()
         sig = e.extract(w)
-        assert sig.loss_z_score > 3.0, \
-            f"Expected z_score > 3, got {sig.loss_z_score}"
+        assert sig.loss_z_score > 3.0, f"Expected z_score > 3, got {sig.loss_z_score}"
 
     def test_plateau_score_low_when_stuck(self):
         w = RollingWindow(size=300)
         for i in range(200):
-            w.push(MetricSnapshot(step=i, loss=0.5 + np.random.normal(0, 0.0005),
-                                  grad_norm=0.1, lr=0.0001))
+            w.push(
+                MetricSnapshot(
+                    step=i, loss=0.5 + np.random.normal(0, 0.0005), grad_norm=0.1, lr=0.0001
+                )
+            )
         e = SignalExtractor()
         sig = e.extract(w)
         assert sig.plateau_score < 0.1
@@ -104,9 +107,8 @@ class TestSignalExtractor:
     def test_divergence_score_high_when_rising(self):
         w = RollingWindow(size=300)
         for i in range(150):
-            loss = 0.5 + i * 0.01   # always increasing
+            loss = 0.5 + i * 0.01  # always increasing
             w.push(MetricSnapshot(step=i, loss=loss, grad_norm=1.0, lr=0.001))
         e = SignalExtractor()
         sig = e.extract(w)
         assert sig.divergence_score > 0.7
-

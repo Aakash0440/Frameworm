@@ -27,17 +27,17 @@ LOGS_DIR = Path("experiments/deploy_logs")
 
 @dataclass
 class LatencySnapshot:
-    model_name:   str
-    p50_ms:       float
-    p95_ms:       float
-    p99_ms:       float
-    mean_ms:      float
-    max_ms:       float
-    min_ms:       float
-    n_requests:   int
-    error_rate:   float
+    model_name: str
+    p50_ms: float
+    p95_ms: float
+    p99_ms: float
+    mean_ms: float
+    max_ms: float
+    min_ms: float
+    n_requests: int
+    error_rate: float
     window_start: str
-    window_end:   str
+    window_end: str
 
     def breaches_threshold(self, p95_warn_ms: float, p95_crit_ms: float) -> str:
         if self.p95_ms >= p95_crit_ms:
@@ -48,17 +48,17 @@ class LatencySnapshot:
 
     def to_dict(self) -> dict:
         return {
-            "model_name":   self.model_name,
-            "p50_ms":       round(self.p50_ms, 2),
-            "p95_ms":       round(self.p95_ms, 2),
-            "p99_ms":       round(self.p99_ms, 2),
-            "mean_ms":      round(self.mean_ms, 2),
-            "max_ms":       round(self.max_ms, 2),
-            "min_ms":       round(self.min_ms, 2),
-            "n_requests":   self.n_requests,
-            "error_rate":   round(self.error_rate, 4),
+            "model_name": self.model_name,
+            "p50_ms": round(self.p50_ms, 2),
+            "p95_ms": round(self.p95_ms, 2),
+            "p99_ms": round(self.p99_ms, 2),
+            "mean_ms": round(self.mean_ms, 2),
+            "max_ms": round(self.max_ms, 2),
+            "min_ms": round(self.min_ms, 2),
+            "n_requests": self.n_requests,
+            "error_rate": round(self.error_rate, 4),
             "window_start": self.window_start,
-            "window_end":   self.window_end,
+            "window_end": self.window_end,
         }
 
     def print_summary(self):
@@ -71,15 +71,17 @@ class LatencySnapshot:
         )
         c = colours.get(status, "")
         print(f"\n[DEPLOY] Latency — {self.model_name}  {c}[{status.upper()}]{reset}")
-        print(f"  p50={self.p50_ms:.1f}ms  p95={self.p95_ms:.1f}ms  "
-              f"p99={self.p99_ms:.1f}ms  mean={self.mean_ms:.1f}ms")
-        print(f"  requests={self.n_requests}  "
-              f"error_rate={self.error_rate*100:.2f}%\n")
+        print(
+            f"  p50={self.p50_ms:.1f}ms  p95={self.p95_ms:.1f}ms  "
+            f"p99={self.p99_ms:.1f}ms  mean={self.mean_ms:.1f}ms"
+        )
+        print(f"  requests={self.n_requests}  " f"error_rate={self.error_rate*100:.2f}%\n")
 
 
 def _load_config() -> dict:
     try:
         import yaml
+
         with open("configs/deploy_config.yaml") as f:
             return yaml.safe_load(f).get("deploy", {})
     except Exception:
@@ -89,18 +91,17 @@ def _load_config() -> dict:
 class LatencyTracker:
     WINDOW_SIZE = 1000
 
-    def __init__(self, model_name: str, logs_dir: Optional[str] = None,
-                 persist_every: int = 50):
-        self.model_name    = model_name
-        self.logs_dir      = Path(logs_dir) if logs_dir else LOGS_DIR
+    def __init__(self, model_name: str, logs_dir: Optional[str] = None, persist_every: int = 50):
+        self.model_name = model_name
+        self.logs_dir = Path(logs_dir) if logs_dir else LOGS_DIR
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.persist_every = persist_every
 
-        self._lock          = threading.Lock()
-        self._timings_ms    = deque(maxlen=self.WINDOW_SIZE)
-        self._errors        = deque(maxlen=self.WINDOW_SIZE)
+        self._lock = threading.Lock()
+        self._timings_ms = deque(maxlen=self.WINDOW_SIZE)
+        self._errors = deque(maxlen=self.WINDOW_SIZE)
         self._request_count = 0
-        self._window_start  = datetime.utcnow().isoformat()
+        self._window_start = datetime.utcnow().isoformat()
 
         self._db_path = self.logs_dir / f"{model_name}_latency.db"
         self._init_db()
@@ -144,7 +145,7 @@ class LatencyTracker:
     def _snapshot_unlocked(self) -> Optional[LatencySnapshot]:
         """Same as snapshot() but assumes lock is already held by caller."""
         timings = list(self._timings_ms)
-        errors  = list(self._errors)
+        errors = list(self._errors)
         if not timings:
             return None
         arr = np.array(timings)
@@ -190,7 +191,7 @@ class LatencyTracker:
     # ─── persistence ──────────────────────────────────────────────────────────
 
     def _write_snapshot_to_db(self, snap: LatencySnapshot):
-        d    = snap.to_dict()
+        d = snap.to_dict()
         cols = list(d.keys())
         vals = list(d.values())
         try:

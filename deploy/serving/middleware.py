@@ -1,4 +1,3 @@
-
 """
 Latency + error-rate tracking middleware for generated FRAMEWORM servers.
 Feeds p50/p95/p99 data to the rollback monitor.
@@ -21,9 +20,9 @@ class LatencyMiddleware:
     """
 
     def __init__(self, app, latency_tracker, health_checker):
-        self.app             = app
-        self._tracker        = latency_tracker
-        self._health         = health_checker
+        self.app = app
+        self._tracker = latency_tracker
+        self._health = health_checker
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -36,7 +35,7 @@ class LatencyMiddleware:
             await self.app(scope, receive, send)
             return
 
-        start   = time.perf_counter()
+        start = time.perf_counter()
         success = True
 
         async def send_wrapper(message):
@@ -57,4 +56,3 @@ class LatencyMiddleware:
             elapsed_ms = (time.perf_counter() - start) * 1000
             self._tracker.record(elapsed_ms)
             self._health.record_request(success=success)
-

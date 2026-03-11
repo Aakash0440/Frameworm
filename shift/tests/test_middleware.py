@@ -9,6 +9,7 @@ import json
 import numpy as np
 import tempfile
 import time
+
 sys.path.insert(0, ".")
 
 rng = np.random.default_rng(13)
@@ -27,9 +28,10 @@ def test_middleware_passes_request_through():
     X_train = rng.normal(0, 1, (500, 3))
     with tempfile.TemporaryDirectory() as d:
         m = ShiftMonitor("mw_test", store_dir=d, auto_alert=False)
-        m.profile_reference(X_train, ["a","b","c"])
+        m.profile_reference(X_train, ["a", "b", "c"])
 
         import os
+
         ref_path = os.path.join(d, "mw_test")
 
         app = FastAPI()
@@ -41,7 +43,7 @@ def test_middleware_passes_request_through():
         app.add_middleware(
             ShiftMiddleware,
             reference=ref_path,
-            feature_names=["a","b","c"],
+            feature_names=["a", "b", "c"],
             window_size=5,
             async_check=False,
         )
@@ -60,7 +62,8 @@ def test_middleware_feature_extraction():
     from shift.middleware.fastapi_middleware import ShiftMiddleware
 
     class FakeApp:
-        async def __call__(self, scope, receive, send): pass
+        async def __call__(self, scope, receive, send):
+            pass
 
     mw = ShiftMiddleware.__new__(ShiftMiddleware)
     mw._input_key = "features"
@@ -72,4 +75,3 @@ def test_middleware_feature_extraction():
 
     body_bad = b"not json at all"
     assert mw._extract_features(body_bad) is None
-

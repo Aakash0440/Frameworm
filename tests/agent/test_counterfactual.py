@@ -10,7 +10,6 @@ from agent.counterfactual.delta_tracker import DeltaTracker
 from agent.counterfactual.eval_report import EvalReportGenerator
 from agent.classifier.anomaly_types import AnomalyType
 
-
 TMP = Path("/tmp/fw_test_cf")
 
 
@@ -20,21 +19,27 @@ class TestDeltaTracker:
 
     def test_record_intervention(self):
         d = self.tracker.record_intervention(
-            AnomalyType.LOSS_SPIKE, "ADJUST_LR(factor=0.5)",
-            200, run_a_loss=0.4, run_a_grad_norm=2.0
+            AnomalyType.LOSS_SPIKE,
+            "ADJUST_LR(factor=0.5)",
+            200,
+            run_a_loss=0.4,
+            run_a_grad_norm=2.0,
         )
         assert d.intervention_id is not None
         assert not d.shadow_available
 
     def test_record_shadow_result(self):
         d = self.tracker.record_intervention(
-            AnomalyType.GRADIENT_EXPLOSION, "ROLLBACK",
-            300, run_a_loss=0.3, run_a_grad_norm=1.5
+            AnomalyType.GRADIENT_EXPLOSION, "ROLLBACK", 300, run_a_loss=0.3, run_a_grad_norm=1.5
         )
         shadow = ShadowRun(
-            run_id="sh1", spawn_step=280, seed=300,
-            n_steps=200, completed=True,
-            final_loss=0.9, final_grad_norm=4.0
+            run_id="sh1",
+            spawn_step=280,
+            seed=300,
+            n_steps=200,
+            completed=True,
+            final_loss=0.9,
+            final_grad_norm=4.0,
         )
         updated = self.tracker.record_shadow_result(d.intervention_id, shadow)
         assert updated.shadow_available
@@ -42,33 +47,32 @@ class TestDeltaTracker:
         assert updated.agent_helped  # A loss < B loss
 
     def test_unknown_intervention_id(self):
-        result = self.tracker.record_shadow_result("nonexistent", ShadowRun(
-            run_id="x", spawn_step=0, seed=0, n_steps=0, completed=True
-        ))
+        result = self.tracker.record_shadow_result(
+            "nonexistent", ShadowRun(run_id="x", spawn_step=0, seed=0, n_steps=0, completed=True)
+        )
         assert result is None
 
     def test_incomplete_shadow_skipped(self):
         d = self.tracker.record_intervention(
             AnomalyType.PLATEAU, "WATCH", 100, run_a_loss=0.5, run_a_grad_norm=1.0
         )
-        shadow = ShadowRun(
-            run_id="sh_inc", spawn_step=80, seed=0,
-            n_steps=0, completed=False
-        )
+        shadow = ShadowRun(run_id="sh_inc", spawn_step=80, seed=0, n_steps=0, completed=False)
         updated = self.tracker.record_shadow_result(d.intervention_id, shadow)
         assert not updated.shadow_available
 
     def test_success_rate(self):
         for i in range(5):
             d = self.tracker.record_intervention(
-                AnomalyType.OSCILLATING, "ADJUST_LR",
-                i * 100, run_a_loss=0.3, run_a_grad_norm=1.0
+                AnomalyType.OSCILLATING, "ADJUST_LR", i * 100, run_a_loss=0.3, run_a_grad_norm=1.0
             )
             shadow = ShadowRun(
-                run_id=f"sh{i}", spawn_step=i*100-20, seed=i,
-                n_steps=200, completed=True,
+                run_id=f"sh{i}",
+                spawn_step=i * 100 - 20,
+                seed=i,
+                n_steps=200,
+                completed=True,
                 final_loss=0.8,  # worse than agent
-                final_grad_norm=3.0
+                final_grad_norm=3.0,
             )
             self.tracker.record_shadow_result(d.intervention_id, shadow)
         assert self.tracker.success_rate == 1.0  # all deltas negative
@@ -86,12 +90,19 @@ class TestEvalReportGenerator:
         tracker = DeltaTracker(log_dir=TMP / "md_deltas")
         for i in range(6):
             d = tracker.record_intervention(
-                AnomalyType.LOSS_SPIKE, "ADJUST_LR",
-                i * 50, run_a_loss=0.3 + i * 0.01, run_a_grad_norm=1.0
+                AnomalyType.LOSS_SPIKE,
+                "ADJUST_LR",
+                i * 50,
+                run_a_loss=0.3 + i * 0.01,
+                run_a_grad_norm=1.0,
             )
             shadow = ShadowRun(
-                run_id=f"s{i}", spawn_step=i*50, seed=i,
-                n_steps=100, completed=True, final_loss=0.7
+                run_id=f"s{i}",
+                spawn_step=i * 50,
+                seed=i,
+                n_steps=100,
+                completed=True,
+                final_loss=0.7,
             )
             tracker.record_shadow_result(d.intervention_id, shadow)
         gen = EvalReportGenerator(tracker, log_dir=TMP / "md_reports")
@@ -99,4 +110,3 @@ class TestEvalReportGenerator:
         md = report.to_markdown_table()
         assert "LOSS_SPIKE" in md or "FRAMEWORM" in md
         assert "success rate" in md.lower() or "%" in md
-

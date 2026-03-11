@@ -1,4 +1,5 @@
 import sys, os, pickle
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agent.forecaster.failure_predictor import FailurePredictor

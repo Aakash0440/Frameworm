@@ -69,9 +69,7 @@ class ResultsAnalyzer:
             rec = self.result.mean_time_to_recovery(b)
             dl_str = f"{dl:.0f}" if dl < float("inf") else "N/A"
             rec_str = f"{rec:.0f}" if rec < float("inf") else "N/A"
-            lines.append(
-                f"| {b} | {dr:.1%} | {rr:.1%} | {dl_str} steps | {rec_str} steps |"
-            )
+            lines.append(f"| {b} | {dr:.1%} | {rr:.1%} | {dl_str} steps | {rec_str} steps |")
 
         lines += [
             "",
@@ -84,10 +82,7 @@ class ResultsAnalyzer:
         for atype in ANOMALY_TYPES:
             row = [atype]
             for b in BASELINES:
-                r = [
-                    x for x in self.result.results
-                    if x.baseline == b and x.anomaly_type == atype
-                ]
+                r = [x for x in self.result.results if x.baseline == b and x.anomaly_type == atype]
                 rate = float(np.mean([x.resolved for x in r])) if r else 0.0
                 row.append(f"{rate:.1%}")
             lines.append("| " + " | ".join(row) + " |")
@@ -103,10 +98,7 @@ class ResultsAnalyzer:
         for sev in ["mild", "moderate", "severe"]:
             row = [sev.upper()]
             for b in BASELINES:
-                r = [
-                    x for x in self.result.results
-                    if x.baseline == b and x.severity == sev
-                ]
+                r = [x for x in self.result.results if x.baseline == b and x.severity == sev]
                 rate = float(np.mean([x.detected for x in r])) if r else 0.0
                 row.append(f"{rate:.1%}")
             lines.append("| " + " | ".join(row) + " |")
@@ -129,9 +121,7 @@ class ResultsAnalyzer:
             rec = self.result.mean_time_to_recovery(b)
             dl_str = f"{dl:.0f}" if dl < float("inf") else "---"
             rec_str = f"{rec:.0f}" if rec < float("inf") else "---"
-            rows.append(
-                f"        {b} & {dr:.1%} & {rr:.1%} & {dl_str} & {rec_str} \\\\"
-            )
+            rows.append(f"        {b} & {dr:.1%} & {rr:.1%} & {dl_str} & {rec_str} \\\\")
 
         return (
             "\\begin{table}[h]\n"
@@ -140,8 +130,7 @@ class ResultsAnalyzer:
             "\\hline\n"
             "Baseline & Detection Rate & Resolution Rate "
             "& Detect Latency & Recovery Steps \\\\\n"
-            "\\hline\n"
-            + "\n".join(rows) + "\n"
+            "\\hline\n" + "\n".join(rows) + "\n"
             "\\hline\n"
             "\\end{tabular}\n"
             "\\caption{FRAMEWORM-AGENT benchmark results "
@@ -157,9 +146,6 @@ class ResultsAnalyzer:
 
         (self.output_dir / "results_table.md").write_text(md)
         (self.output_dir / "results_table.tex").write_text(latex)
-        (self.output_dir / "summary.json").write_text(
-            json.dumps(summary, indent=2)
-        )
+        (self.output_dir / "summary.json").write_text(json.dumps(summary, indent=2))
         logger.info(f"Results saved to {self.output_dir}/")
         print(md)
-

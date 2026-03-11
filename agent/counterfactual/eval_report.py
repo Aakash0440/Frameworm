@@ -37,22 +37,24 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AnomalyTypeStats:
     """Stats for one anomaly type across all interventions."""
+
     anomaly_type: str
     n_interventions: int
     n_with_shadow: int
-    success_rate: float             # fraction where agent helped
-    mean_loss_delta: float          # negative = agent improved loss
+    success_rate: float  # fraction where agent helped
+    mean_loss_delta: float  # negative = agent improved loss
     std_loss_delta: float
-    mean_fid_delta: float           # negative = agent improved FID
+    mean_fid_delta: float  # negative = agent improved FID
     std_fid_delta: float
-    welch_t_stat: float             # Welch's t-test statistic
-    welch_p_value: float            # p < 0.05 = statistically significant
-    is_significant: bool            # p < 0.05
+    welch_t_stat: float  # Welch's t-test statistic
+    welch_p_value: float  # p < 0.05 = statistically significant
+    is_significant: bool  # p < 0.05
 
 
 @dataclass
 class EvalReport:
     """Complete evaluation report — goes in the paper."""
+
     n_total_interventions: int
     n_with_shadow: int
     overall_success_rate: float
@@ -182,10 +184,9 @@ class EvalReportGenerator:
 
         # ── Overall stats ─────────────────────────────────────────
         loss_deltas = np.array([d.loss_delta for d in completed])
-        fid_deltas = np.array([
-            d.fid_delta for d in completed
-            if d.run_a_fid is not None and d.run_b_fid is not None
-        ])
+        fid_deltas = np.array(
+            [d.fid_delta for d in completed if d.run_a_fid is not None and d.run_b_fid is not None]
+        )
         success_flags = np.array([d.agent_helped for d in completed])
         overheads = np.array([d.compute_overhead_seconds for d in completed])
 
@@ -208,27 +209,32 @@ class EvalReportGenerator:
                 continue
 
             type_loss = np.array([d.loss_delta for d in type_deltas])
-            type_fid = np.array([
-                d.fid_delta for d in type_deltas
-                if d.run_a_fid is not None and d.run_b_fid is not None
-            ])
+            type_fid = np.array(
+                [
+                    d.fid_delta
+                    for d in type_deltas
+                    if d.run_a_fid is not None and d.run_b_fid is not None
+                ]
+            )
             type_success = np.array([d.agent_helped for d in type_deltas])
 
             t_stat, p_val = self._welch_t_test(type_loss)
 
-            anomaly_stats.append(AnomalyTypeStats(
-                anomaly_type=atype.name,
-                n_interventions=len([d for d in all_deltas if d.anomaly_type == atype]),
-                n_with_shadow=len(type_deltas),
-                success_rate=float(np.mean(type_success)),
-                mean_loss_delta=float(np.mean(type_loss)),
-                std_loss_delta=float(np.std(type_loss)),
-                mean_fid_delta=float(np.mean(type_fid)) if len(type_fid) > 0 else 0.0,
-                std_fid_delta=float(np.std(type_fid)) if len(type_fid) > 0 else 0.0,
-                welch_t_stat=t_stat,
-                welch_p_value=p_val,
-                is_significant=p_val < self.alpha,
-            ))
+            anomaly_stats.append(
+                AnomalyTypeStats(
+                    anomaly_type=atype.name,
+                    n_interventions=len([d for d in all_deltas if d.anomaly_type == atype]),
+                    n_with_shadow=len(type_deltas),
+                    success_rate=float(np.mean(type_success)),
+                    mean_loss_delta=float(np.mean(type_loss)),
+                    std_loss_delta=float(np.std(type_loss)),
+                    mean_fid_delta=float(np.mean(type_fid)) if len(type_fid) > 0 else 0.0,
+                    std_fid_delta=float(np.std(type_fid)) if len(type_fid) > 0 else 0.0,
+                    welch_t_stat=t_stat,
+                    welch_p_value=p_val,
+                    is_significant=p_val < self.alpha,
+                )
+            )
 
         report = EvalReport(
             n_total_interventions=len(all_deltas),
@@ -257,6 +263,7 @@ class EvalReportGenerator:
         # Try your existing ab_testing module first
         try:
             from monitoring.ab_testing import ABTester
+
             tester = ABTester()
             # Your ab_testing compares two groups — use zeros as baseline
             zeros = np.zeros(len(deltas))
@@ -269,6 +276,7 @@ class EvalReportGenerator:
         # Fallback: scipy
         try:
             from scipy import stats
+
             t_stat, p_val = stats.ttest_1samp(deltas, 0.0, alternative="less")
             return float(t_stat), float(p_val)
         except ImportError:
@@ -292,6 +300,4 @@ class EvalReportGenerator:
         # Markdown
         md_path = self.log_dir / f"eval_report_{ts}.md"
         md_path.write_text(report.to_markdown_table(), encoding="utf-8")
-        logger.info(
-            f"EvalReport saved: {json_path}, {md_path}"
-        )
+        logger.info(f"EvalReport saved: {json_path}, {md_path}")

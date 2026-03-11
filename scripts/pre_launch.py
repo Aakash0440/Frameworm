@@ -56,11 +56,11 @@ def run_pytest():
     )
 
     # Always print a clean summary
-    lines = result.stdout.split('\n')
+    lines = result.stdout.split("\n")
 
     # Show only failed/error lines for quick diagnosis
-    failures = [l for l in lines if 'FAILED' in l or 'ERROR' in l]
-    passed = [l for l in lines if 'passed' in l or 'failed' in l]
+    failures = [l for l in lines if "FAILED" in l or "ERROR" in l]
+    passed = [l for l in lines if "passed" in l or "failed" in l]
 
     if failures:
         print("\n  ❌ FAILING TESTS:")
@@ -113,6 +113,7 @@ print("\nCore Features")
 try:
     from core import Config
     from core.registry import get_model
+
     check("Config imports", lambda: True)
 except Exception as e:
     print("Error importing core:", e)
@@ -128,6 +129,7 @@ try:
         sys.path.insert(0, project_root)
 
     import importlib
+
     importlib.import_module("models.vae.vanilla")
 
     check("Model registry works", lambda: get_model("vae", auto_discover=False) is not None)
@@ -138,6 +140,7 @@ except Exception as e:
 
 try:
     from training import Trainer
+
     check("Trainer imports", lambda: True)
 except Exception as e:
     print("Error importing Trainer:", e)
@@ -146,6 +149,7 @@ except Exception as e:
 
 try:
     from experiment import Experiment, ExperimentManager
+
     check("Experiment tracking imports", lambda: True)
 except Exception as e:
     print("Error importing Experiment:", e)
@@ -154,6 +158,7 @@ except Exception as e:
 
 try:
     from search import GridSearch, RandomSearch
+
     check("Search imports", lambda: True)
 except Exception as e:
     print("Error importing search:", e)
@@ -162,6 +167,7 @@ except Exception as e:
 
 try:
     from deployment import ModelExporter
+
     check("Deployment imports", lambda: True)
 except Exception as e:
     print("Error importing ModelExporter:", e)

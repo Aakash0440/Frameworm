@@ -32,12 +32,14 @@ def register_shift_commands(cli):
     """
     try:
         import click
+
         _register_click(cli)
     except ImportError:
         pass
 
 
 # ──────────────────────────────────────────────────── Click implementation
+
 
 def _register_click(cli):
     import click
@@ -48,10 +50,10 @@ def _register_click(cli):
         pass
 
     @shift.command()
-    @click.option("--data",     required=True,  help="Path to reference CSV or numpy .npy file")
-    @click.option("--name",     required=True,  help="Model/profile name (e.g. fraud_classifier)")
-    @click.option("--features", default=None,   help="Comma-separated feature names (optional)")
-    @click.option("--store-dir",default=None,   help="Where to save .shift file")
+    @click.option("--data", required=True, help="Path to reference CSV or numpy .npy file")
+    @click.option("--name", required=True, help="Model/profile name (e.g. fraud_classifier)")
+    @click.option("--features", default=None, help="Comma-separated feature names (optional)")
+    @click.option("--store-dir", default=None, help="Where to save .shift file")
     def profile(data, name, features, store_dir):
         """Save a reference distribution profile from training data."""
         from shift.core.reference_store import ReferenceStore
@@ -65,10 +67,10 @@ def _register_click(cli):
         click.echo(f"[SHIFT] Profile saved → {path}")
 
     @shift.command()
-    @click.option("--name",    required=True,  help="Reference profile name")
-    @click.option("--current", required=True,  help="Path to current data CSV or .npy")
-    @click.option("--features",default=None,   help="Comma-separated feature names")
-    @click.option("--json",    "as_json", is_flag=True, help="Output raw JSON")
+    @click.option("--name", required=True, help="Reference profile name")
+    @click.option("--current", required=True, help="Path to current data CSV or .npy")
+    @click.option("--features", default=None, help="Comma-separated feature names")
+    @click.option("--json", "as_json", is_flag=True, help="Output raw JSON")
     def check(name, current, features, as_json):
         """Check current data for drift against saved reference."""
         from shift.sdk.monitor import ShiftMonitor
@@ -88,10 +90,10 @@ def _register_click(cli):
         sys.exit(1 if result.overall_drifted else 0)
 
     @shift.command()
-    @click.option("--name",    required=True,  help="Reference profile name")
-    @click.option("--current", required=True,  help="Path to current data CSV or .npy")
-    @click.option("--output",  default="shift_report.html", help="Output file path")
-    @click.option("--features",default=None,   help="Comma-separated feature names")
+    @click.option("--name", required=True, help="Reference profile name")
+    @click.option("--current", required=True, help="Path to current data CSV or .npy")
+    @click.option("--output", default="shift_report.html", help="Output file path")
+    @click.option("--features", default=None, help="Comma-separated feature names")
     def report(name, current, output, features):
         """Generate an HTML drift report."""
         from shift.sdk.monitor import ShiftMonitor
@@ -101,7 +103,7 @@ def _register_click(cli):
         X = _load_data(current)
 
         monitor = ShiftMonitor.from_reference(name, auto_alert=False)
-        result  = monitor.check(X, feature_names)
+        result = monitor.check(X, feature_names)
 
         ref_profile = monitor._reference_profile
         cur_profile = monitor._profiler.profile(X, feature_names)
@@ -119,6 +121,7 @@ def _register_click(cli):
     def list_profiles(store_dir):
         """List all saved reference profiles."""
         from shift.core.reference_store import ReferenceStore
+
         ReferenceStore(store_dir).list_profiles()
 
     @shift.command()
@@ -126,14 +129,17 @@ def _register_click(cli):
     def status(name):
         """Show drift monitoring status for a model."""
         from shift.sdk.monitor import ShiftMonitor
+
         monitor = ShiftMonitor.from_reference(name, auto_alert=False)
         monitor.print_status()
 
 
 # ──────────────────────────────────────────────────── helpers
 
+
 def _load_data(path: str):
     import numpy as np
+
     p = Path(path)
     if not p.exists():
         print(f"[SHIFT] File not found: {path}")
@@ -145,6 +151,7 @@ def _load_data(path: str):
         sep = "\t" if p.suffix == ".tsv" else ","
         try:
             import pandas as pd
+
             return pd.read_csv(path, sep=sep)
         except ImportError:
             data = []
@@ -170,17 +177,17 @@ def _load_data(path: str):
 def _print_feature_table(result):
     """Print a clean terminal table of per-feature drift results."""
     colours = {
-        "NONE":   "\033[92m",
-        "LOW":    "\033[93m",
+        "NONE": "\033[92m",
+        "LOW": "\033[93m",
         "MEDIUM": "\033[33m",
-        "HIGH":   "\033[91m",
+        "HIGH": "\033[91m",
     }
     reset = "\033[0m"
     print(f"\n  {'Feature':<28} {'Test':<6} {'Stat':>8} {'p-value':>10} {'Severity'}")
     print(f"  {'─'*28} {'─'*6} {'─'*8} {'─'*10} {'─'*10}")
     for name, r in result.features.items():
         sev = r.severity.value
-        c   = colours.get(sev, "")
+        c = colours.get(sev, "")
         marker = "●" if r.drifted else " "
         print(
             f"  {marker} {name:<26} {r.test_used:<6} "

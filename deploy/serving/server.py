@@ -1,4 +1,3 @@
-
 """
 Runtime FastAPI server loaded from a generated server spec.
 This is NOT hand-written — it's the template that server_builder.py generates
@@ -37,20 +36,20 @@ class FramewormModelServer:
         shift_reference: Optional[str] = None,
         device: str = "cpu",
     ):
-        self.model_path      = model_path
-        self.model_name      = model_name
-        self.model_version   = model_version
-        self.model_type      = model_type
-        self.device          = device
-        self.model           = None
-        self._shift_monitor  = None
+        self.model_path = model_path
+        self.model_name = model_name
+        self.model_version = model_version
+        self.model_type = model_type
+        self.device = device
+        self.model = None
+        self._shift_monitor = None
 
         # Health + latency — imported from deploy/core/
         from deploy.core.latency_tracker import LatencyTracker
         from deploy.serving.health import HealthChecker
 
         self._latency = LatencyTracker(model_name=model_name)
-        self._health  = HealthChecker(model_name, model_version)
+        self._health = HealthChecker(model_name, model_version)
 
         # SHIFT drift monitor — auto-attached if reference exists
         if shift_reference:
@@ -59,21 +58,44 @@ class FramewormModelServer:
     # ──────────────────────────────────────────────── lifecycle
 
     def load(self):
-        """Load model from TorchScript .pt file."""
+        """Load model from checkpoint — TorchScript or state dict."""
         logger.info(f"[DEPLOY] Loading {self.model_type} model from {self.model_path}")
         try:
+            # Try TorchScript first
             self.model = torch.jit.load(self.model_path, map_location=self.device)
             self.model.eval()
             self._health.mark_ready()
-            logger.info(f"[DEPLOY] Model loaded — {self.model_name} v{self.model_version}")
-        except Exception as e:
-            self._health.mark_not_ready(str(e))
-            raise RuntimeError(f"[DEPLOY] Failed to load model: {e}")
+            logger.info(
+                f"[DEPLOY] TorchScript model loaded — {self.model_name} v{self.model_version}"
+            )
+        except Exception:
+            try:
+                # Fall back to state dict checkpoint
+                ckpt = torch.load(self.model_path, map_location=self.device, weights_only=False)
+                # Build model from registry
+                from core.registry import get_model
+                from core.config import Config
+
+                cfg = ckpt.get("config", None)
+                if cfg is None:
+                    # Minimal stub model that just holds the weights
+                    self.model = ckpt.get("model_state_dict", ckpt)
+                else:
+                    self.model = get_model(self.model_type)(cfg)
+                    state = ckpt.get("model_state_dict", ckpt)
+                    self.model.load_state_dict(state, strict=False)
+                    self.model.eval()
+                self._health.mark_ready()
+                logger.info(f"[DEPLOY] State dict model loaded — {self.model_name}")
+            except Exception as e:
+                self._health.mark_not_ready(str(e))
+                raise RuntimeError(f"[DEPLOY] Failed to load model: {e}")
 
     def load_onnx(self):
         """Load model from ONNX file using onnxruntime."""
         try:
             import onnxruntime as ort
+
             self.model = ort.InferenceSession(
                 self.model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
@@ -82,8 +104,7 @@ class FramewormModelServer:
             logger.info(f"[DEPLOY] ONNX model loaded — {self.model_name}")
         except ImportError:
             raise RuntimeError(
-                "[DEPLOY] onnxruntime not installed. "
-                "pip install onnxruntime or onnxruntime-gpu"
+                "[DEPLOY] onnxruntime not installed. " "pip install onnxruntime or onnxruntime-gpu"
             )
 
     # ──────────────────────────────────────────────── inference helpers
@@ -130,8 +151,8 @@ class FramewormModelServer:
 
     def metrics_route(self) -> dict:
         return {
-            "latency": self._latency.summary(),
-            "health":  self._health.health(),
+            "latency": self._latency.snapshot(),
+            "health": self._health.health(),
         }
 
     # ──────────────────────────────────────────────── SHIFT
@@ -139,6 +160,7 @@ class FramewormModelServer:
     def _attach_shift(self, reference: str):
         try:
             from shift.sdk.monitor import ShiftMonitor
+
             self._shift_monitor = ShiftMonitor.from_reference(
                 reference,
                 auto_alert=True,

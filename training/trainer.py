@@ -5,6 +5,7 @@ Main Trainer class for training models.
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 from plugins.hooks import get_default_registry
+
 HookRegistry = get_default_registry()
 import torch
 import torch.nn as nn
@@ -114,6 +115,7 @@ class Trainer:
 
     def set_evaluator(self, evaluator: "MetricEvaluator", eval_every: int = 5):
         from training.evaluation import EvaluationCallback
+
         callback = EvaluationCallback(evaluator=evaluator, eval_every=eval_every, num_samples=5000)
         self.add_callback(callback)
 
@@ -272,13 +274,20 @@ class Trainer:
 
             # Write metrics for agent monitoring
             import json, pathlib, os
-            _agent_path = pathlib.Path(os.environ.get('TEMP', '/tmp')) / 'frameworm_agent_metrics.json'
+
+            _agent_path = (
+                pathlib.Path(os.environ.get("TEMP", "/tmp")) / "frameworm_agent_metrics.json"
+            )
             _agent_metrics = {
-                'step': self.state.global_step,
-                'loss': float(loss_dict.get('loss', loss).item() if hasattr(loss_dict.get('loss', loss), 'item') else loss_dict.get('loss', 0)),
-                'grad_norm': float(loss_dict.get('grad_norm', 0)),
-                'lr': float(self.optimizer.param_groups[0]['lr']),
-                'epoch': epoch,
+                "step": self.state.global_step,
+                "loss": float(
+                    loss_dict.get("loss", loss).item()
+                    if hasattr(loss_dict.get("loss", loss), "item")
+                    else loss_dict.get("loss", 0)
+                ),
+                "grad_norm": float(loss_dict.get("grad_norm", 0)),
+                "lr": float(self.optimizer.param_groups[0]["lr"]),
+                "epoch": epoch,
             }
             _agent_path.write_text(json.dumps(_agent_metrics))
             if self.enable_hooks:
@@ -304,7 +313,7 @@ class Trainer:
             self.logger.log_batch(epoch + 1, batch_idx, len(train_loader), loss_dict)
             self.state.global_step += 1
             # FRAMEWORM-AGENT hook — 4 lines, safe if agent not running
-            if hasattr(self, '_agent_plugin') and self._agent_plugin is not None:
+            if hasattr(self, "_agent_plugin") and self._agent_plugin is not None:
                 if self.state.global_step % 50 == 0:
                     self._agent_plugin.check_commands()
         return self.train_tracker.epoch_end()

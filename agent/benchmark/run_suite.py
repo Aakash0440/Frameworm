@@ -27,9 +27,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from agent.benchmark.inject_failures import (
-    FailureInjector, FailureScenario, SCENARIO_REGISTRY
-)
+from agent.benchmark.inject_failures import FailureInjector, FailureScenario, SCENARIO_REGISTRY
 from agent.classifier.rule_engine import RuleEngine
 from agent.observer.rolling_window import RollingWindow, MetricSnapshot
 from agent.observer.signal_extractor import SignalExtractor
@@ -40,8 +38,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ScenarioResult:
     """Result of running one scenario under one baseline."""
+
     scenario_name: str
-    baseline: str                       # HUMAN / RULE_BASED / LLM_ONLY / FULL_AGENT
+    baseline: str  # HUMAN / RULE_BASED / LLM_ONLY / FULL_AGENT
     anomaly_type: str
     severity: str
 
@@ -56,13 +55,14 @@ class ScenarioResult:
     final_loss: float = float("inf")
     compute_overhead_seconds: float = 0.0
 
-    false_positive: bool = False        # fired on a healthy run?
+    false_positive: bool = False  # fired on a healthy run?
     error: Optional[str] = None
 
 
 @dataclass
 class SuiteResult:
     """Aggregate results for all scenarios under all baselines."""
+
     results: List[ScenarioResult] = field(default_factory=list)
     generated_at: float = field(default_factory=time.time)
     total_duration_seconds: float = 0.0
@@ -74,27 +74,24 @@ class SuiteResult:
         return float(np.mean([x.detected for x in r]))
 
     def resolution_rate(self, baseline: str) -> float:
-        detected = [
-            x for x in self.results
-            if x.baseline == baseline and x.detected
-        ]
+        detected = [x for x in self.results if x.baseline == baseline and x.detected]
         if not detected:
             return 0.0
         return float(np.mean([x.resolved for x in detected]))
 
     def mean_detection_latency(self, baseline: str) -> float:
         r = [
-            x.detection_latency_steps for x in self.results
-            if x.baseline == baseline
-            and x.detection_latency_steps is not None
+            x.detection_latency_steps
+            for x in self.results
+            if x.baseline == baseline and x.detection_latency_steps is not None
         ]
         return float(np.mean(r)) if r else float("inf")
 
     def mean_time_to_recovery(self, baseline: str) -> float:
         r = [
-            x.time_to_recovery_steps for x in self.results
-            if x.baseline == baseline
-            and x.time_to_recovery_steps is not None
+            x.time_to_recovery_steps
+            for x in self.results
+            if x.baseline == baseline and x.time_to_recovery_steps is not None
         ]
         return float(np.mean(r)) if r else float("inf")
 
@@ -118,8 +115,8 @@ class BenchmarkSuite:
 
     BASELINES = ["HUMAN", "RULE_BASED", "LLM_ONLY", "FULL_AGENT"]
     # Human baseline: average steps to detection (simulated)
-    HUMAN_DETECTION_STEPS = 900     # ~15 minutes at 1s/step
-    HUMAN_RESOLUTION_STEPS = 1800   # ~30 minutes total
+    HUMAN_DETECTION_STEPS = 900  # ~15 minutes at 1s/step
+    HUMAN_RESOLUTION_STEPS = 1800  # ~30 minutes total
 
     def __init__(
         self,
@@ -148,8 +145,7 @@ class BenchmarkSuite:
             n_steps_per_scenario: Steps to simulate per scenario.
         """
         scenarios = [
-            SCENARIO_REGISTRY[name]
-            for name in (scenario_names or SCENARIO_REGISTRY.keys())
+            SCENARIO_REGISTRY[name] for name in (scenario_names or SCENARIO_REGISTRY.keys())
         ]
         active_baselines = baselines or self.BASELINES
 
@@ -164,12 +160,8 @@ class BenchmarkSuite:
 
         for scenario in scenarios:
             for baseline in active_baselines:
-                logger.info(
-                    f"  Running: {scenario.name} [{baseline}]"
-                )
-                result = self._run_one(
-                    scenario, baseline, n_steps_per_scenario
-                )
+                logger.info(f"  Running: {scenario.name} [{baseline}]")
+                result = self._run_one(scenario, baseline, n_steps_per_scenario)
                 suite_result.results.append(result)
 
         suite_result.total_duration_seconds = time.monotonic() - start
@@ -221,8 +213,7 @@ class BenchmarkSuite:
         # Humans resolve ~70% of anomalies on first attempt
         result.resolved = np.random.random() < 0.70
         if result.resolved:
-            result.resolution_step = result.detection_step + \
-                                     self.HUMAN_RESOLUTION_STEPS
+            result.resolution_step = result.detection_step + self.HUMAN_RESOLUTION_STEPS
             result.time_to_recovery_steps = self.HUMAN_RESOLUTION_STEPS
         result.final_loss = 0.45 + np.random.uniform(0, 0.2)
         return result
@@ -244,10 +235,11 @@ class BenchmarkSuite:
         # Build pre-injection healthy baseline (first 100 steps)
         for step in range(100):
             loss = 1.0 - step * 0.005 + np.random.normal(0, 0.01)
-            window.push(MetricSnapshot(
-                step=step, loss=loss, grad_norm=2.0 + np.random.normal(0, 0.1),
-                lr=0.0002
-            ))
+            window.push(
+                MetricSnapshot(
+                    step=step, loss=loss, grad_norm=2.0 + np.random.normal(0, 0.1), lr=0.0002
+                )
+            )
 
         metrics = {"loss": 0.5, "grad_norm": 2.0, "lr": 0.0002}
         injected = False
@@ -261,12 +253,14 @@ class BenchmarkSuite:
             # Add noise on top of injected metrics
             step_loss = metrics["loss"] + np.random.normal(0, 0.02)
             step_grad = metrics["grad_norm"] + np.random.normal(0, 0.1)
-            window.push(MetricSnapshot(
-                step=step,
-                loss=max(step_loss, 0.0),
-                grad_norm=max(step_grad, 0.0),
-                lr=metrics["lr"],
-            ))
+            window.push(
+                MetricSnapshot(
+                    step=step,
+                    loss=max(step_loss, 0.0),
+                    grad_norm=max(step_grad, 0.0),
+                    lr=metrics["lr"],
+                )
+            )
 
             signals = extractor.extract(window)
             if signals is None:
@@ -278,9 +272,7 @@ class BenchmarkSuite:
                     result.false_positive = True
                 result.detected = True
                 result.detection_step = step
-                result.detection_latency_steps = max(
-                    0, step - scenario.inject_at_step
-                )
+                result.detection_latency_steps = max(0, step - scenario.inject_at_step)
 
                 # Rule-based fixed response: always ADJUST_LR by 0.5
                 # Resolves ~60% of the time
@@ -326,12 +318,14 @@ class BenchmarkSuite:
                 injected = True
 
             step_loss = metrics["loss"] + np.random.normal(0, 0.02)
-            window.push(MetricSnapshot(
-                step=step,
-                loss=max(step_loss, 0.0),
-                grad_norm=max(metrics["grad_norm"] + np.random.normal(0, 0.1), 0.0),
-                lr=metrics["lr"],
-            ))
+            window.push(
+                MetricSnapshot(
+                    step=step,
+                    loss=max(step_loss, 0.0),
+                    grad_norm=max(metrics["grad_norm"] + np.random.normal(0, 0.1), 0.0),
+                    lr=metrics["lr"],
+                )
+            )
 
             signals = extractor.extract(window)
             if signals is None:
@@ -359,9 +353,7 @@ class BenchmarkSuite:
                         "DIVERGENCE": 0.87,
                     },
                 }
-                rate = resolution_rates.get(baseline, {}).get(
-                    scenario.anomaly_type, 0.75
-                )
+                rate = resolution_rates.get(baseline, {}).get(scenario.anomaly_type, 0.75)
                 result.resolved = np.random.random() < rate
 
                 if result.resolved:
@@ -369,9 +361,7 @@ class BenchmarkSuite:
                     result.time_to_recovery_steps = recovery.get(
                         scenario.severity.value.upper(), 50
                     )
-                    result.resolution_step = (
-                        result.detection_step + result.time_to_recovery_steps
-                    )
+                    result.resolution_step = result.detection_step + result.time_to_recovery_steps
                     metrics["loss"] = 0.45 + np.random.uniform(0, 0.1)
                 break
 
@@ -380,10 +370,14 @@ class BenchmarkSuite:
 
     def _save(self, suite_result: SuiteResult) -> None:
         path = self.output_dir / "suite_results.json"
-        path.write_text(json.dumps(
-            {"results": [asdict(r) for r in suite_result.results],
-             "generated_at": suite_result.generated_at,
-             "total_duration_seconds": suite_result.total_duration_seconds},
-            indent=2
-        ))
+        path.write_text(
+            json.dumps(
+                {
+                    "results": [asdict(r) for r in suite_result.results],
+                    "generated_at": suite_result.generated_at,
+                    "total_duration_seconds": suite_result.total_duration_seconds,
+                },
+                indent=2,
+            )
+        )
         logger.info(f"Suite results saved to {path}")

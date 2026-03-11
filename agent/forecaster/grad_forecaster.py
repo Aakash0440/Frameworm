@@ -26,7 +26,10 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from agent.forecaster.training_data import (
     ForecasterDataset,
-    N_FEATURES, N_FAILURE_MODES, N_HORIZONS, SEQ_LEN,
+    N_FEATURES,
+    N_FAILURE_MODES,
+    N_HORIZONS,
+    SEQ_LEN,
 )
 
 logger = logging.getLogger(__name__)
@@ -101,14 +104,18 @@ class GradForecaster(nn.Module):
 
         train_loader = DataLoader(
             TensorDataset(torch.tensor(train_X), torch.tensor(train_y)),
-            batch_size=cfg.batch_size, shuffle=True,
+            batch_size=cfg.batch_size,
+            shuffle=True,
         )
         val_loader = DataLoader(
             TensorDataset(torch.tensor(val_X), torch.tensor(val_y)),
-            batch_size=cfg.batch_size * 2, shuffle=False,
+            batch_size=cfg.batch_size * 2,
+            shuffle=False,
         )
 
-        optimizer = optim.AdamW(self.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
+        optimizer = optim.AdamW(
+            self.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay
+        )
         scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=cfg.max_epochs)
         criterion = nn.BCELoss()
 
@@ -145,7 +152,9 @@ class GradForecaster(nn.Module):
             scheduler.step()
 
             if (epoch + 1) % 10 == 0:
-                logger.info(f"Epoch {epoch+1}/{cfg.max_epochs} — train: {train_loss:.4f}, val: {val_loss:.4f}")
+                logger.info(
+                    f"Epoch {epoch+1}/{cfg.max_epochs} — train: {train_loss:.4f}, val: {val_loss:.4f}"
+                )
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
@@ -184,7 +193,14 @@ class GradForecaster(nn.Module):
     def save(self, path: Path) -> None:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save({"state_dict": self.state_dict(), "config": self.config, "is_trained": self._is_trained}, path)
+        torch.save(
+            {
+                "state_dict": self.state_dict(),
+                "config": self.config,
+                "is_trained": self._is_trained,
+            },
+            path,
+        )
         logger.info(f"GradForecaster saved to {path}")
 
     @classmethod

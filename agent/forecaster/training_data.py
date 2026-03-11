@@ -30,8 +30,14 @@ logger = logging.getLogger(__name__)
 
 # Feature set — 8 features per step, same order always
 FEATURE_NAMES = [
-    "loss", "loss_ema", "loss_delta", "loss_z_score",
-    "grad_norm", "grad_norm_var", "lr", "plateau_score",
+    "loss",
+    "loss_ema",
+    "loss_delta",
+    "loss_z_score",
+    "grad_norm",
+    "grad_norm_var",
+    "lr",
+    "plateau_score",
 ]
 N_FEATURES = len(FEATURE_NAMES)
 
@@ -41,8 +47,12 @@ N_HORIZONS = len(HORIZONS)
 
 # Failure mode labels — matches AnomalyType enum order (no HEALTHY)
 FAILURE_MODES = [
-    "gradient_explosion", "divergence", "loss_spike",
-    "vanishing_grad", "oscillating", "plateau",
+    "gradient_explosion",
+    "divergence",
+    "loss_spike",
+    "vanishing_grad",
+    "oscillating",
+    "plateau",
 ]
 N_FAILURE_MODES = len(FAILURE_MODES)
 
@@ -52,8 +62,9 @@ SEQ_LEN = 100  # steps of history per sample
 @dataclass
 class ForecasterSample:
     """One training example for the GradForecaster."""
-    features: np.ndarray      # (SEQ_LEN, N_FEATURES) float32
-    labels: np.ndarray        # (N_FAILURE_MODES, N_HORIZONS) float32 in [0,1]
+
+    features: np.ndarray  # (SEQ_LEN, N_FEATURES) float32
+    labels: np.ndarray  # (N_FAILURE_MODES, N_HORIZONS) float32 in [0,1]
     run_id: str = ""
     start_step: int = 0
 
@@ -196,14 +207,17 @@ class DataCollector:
             for run_id in run_ids:
                 cursor.execute(
                     "SELECT step, loss, grad_norm, lr FROM metrics "
-                    "WHERE run_id=? ORDER BY step ASC", (run_id,)
+                    "WHERE run_id=? ORDER BY step ASC",
+                    (run_id,),
                 )
                 rows = cursor.fetchall()
                 if len(rows) < self.min_run_length:
                     continue
-                samples.extend(self._build_samples_from_rows(
-                    rows, str(run_id), {"step": 0, "loss": 1, "grad_norm": 2, "lr": 3}
-                ))
+                samples.extend(
+                    self._build_samples_from_rows(
+                        rows, str(run_id), {"step": 0, "loss": 1, "grad_norm": 2, "lr": 3}
+                    )
+                )
         except Exception as exc:
             logger.debug(f"metrics table extraction failed: {exc}")
         return samples
@@ -217,14 +231,17 @@ class DataCollector:
                 try:
                     cursor.execute(
                         "SELECT step, loss, grad_norm, lr FROM run_metrics "
-                        "WHERE run_id=? ORDER BY step", (run_id,)
+                        "WHERE run_id=? ORDER BY step",
+                        (run_id,),
                     )
                     rows = cursor.fetchall()
                     if len(rows) < self.min_run_length:
                         continue
-                    samples.extend(self._build_samples_from_rows(
-                        rows, str(run_id), {"step": 0, "loss": 1, "grad_norm": 2, "lr": 3}
-                    ))
+                    samples.extend(
+                        self._build_samples_from_rows(
+                            rows, str(run_id), {"step": 0, "loss": 1, "grad_norm": 2, "lr": 3}
+                        )
+                    )
                 except Exception:
                     pass
         except Exception as exc:
@@ -260,23 +277,28 @@ class DataCollector:
                 step = item.get("step", item.get("epoch", len(rows)))
                 loss = item.get("loss", item.get("train_loss"))
                 if loss is not None:
-                    rows.append((
-                        int(step),
-                        float(loss),
-                        float(item.get("grad_norm", 1.0)),
-                        float(item.get("lr", item.get("learning_rate", 0.001))),
-                    ))
+                    rows.append(
+                        (
+                            int(step),
+                            float(loss),
+                            float(item.get("grad_norm", 1.0)),
+                            float(item.get("lr", item.get("learning_rate", 0.001))),
+                        )
+                    )
         elif isinstance(data, dict):
             losses = data.get("loss", data.get("train_loss", []))
             grad_norms = data.get("grad_norm", [1.0] * len(losses))
             lrs = data.get("lr", [0.001] * len(losses))
             for i, loss in enumerate(losses):
                 if loss is not None:
-                    rows.append((
-                        i, float(loss),
-                        float(grad_norms[i]) if i < len(grad_norms) else 1.0,
-                        float(lrs[i]) if i < len(lrs) else 0.001,
-                    ))
+                    rows.append(
+                        (
+                            i,
+                            float(loss),
+                            float(grad_norms[i]) if i < len(grad_norms) else 1.0,
+                            float(lrs[i]) if i < len(lrs) else 0.001,
+                        )
+                    )
         if len(rows) < self.min_run_length:
             return []
         return self._build_samples_from_rows(
@@ -297,12 +319,14 @@ class DataCollector:
             seq_end = start + SEQ_LEN
             if seq_end + max(HORIZONS) > len(anomaly_labels):
                 break
-            samples.append(ForecasterSample(
-                features=features_array[start:seq_end],
-                labels=self._build_label_matrix(anomaly_labels, seq_end),
-                run_id=run_id,
-                start_step=start,
-            ))
+            samples.append(
+                ForecasterSample(
+                    features=features_array[start:seq_end],
+                    labels=self._build_label_matrix(anomaly_labels, seq_end),
+                    run_id=run_id,
+                    start_step=start,
+                )
+            )
         return samples
 
     def _compute_features(self, losses, grad_norms, lrs) -> np.ndarray:
@@ -314,12 +338,12 @@ class DataCollector:
         for i in range(1, n):
             ema[i] = alpha * losses[i] + (1 - alpha) * ema[i - 1]
         w = 50
-        rolling_mean = np.array([np.mean(losses[max(0,i-w):i+1]) for i in range(n)])
-        rolling_std = np.array([np.std(losses[max(0,i-w):i+1]) + 1e-8 for i in range(n)])
+        rolling_mean = np.array([np.mean(losses[max(0, i - w) : i + 1]) for i in range(n)])
+        rolling_std = np.array([np.std(losses[max(0, i - w) : i + 1]) + 1e-8 for i in range(n)])
         loss_delta = np.zeros(n)
         for i in range(10, n):
-            loss_delta[i] = np.mean(losses[i-5:i]) - np.mean(losses[max(0,i-10):i-5])
-        grad_var = np.array([np.var(grad_norms[max(0,i-w):i+1]) for i in range(n)])
+            loss_delta[i] = np.mean(losses[i - 5 : i]) - np.mean(losses[max(0, i - 10) : i - 5])
+        grad_var = np.array([np.var(grad_norms[max(0, i - w) : i + 1]) for i in range(n)])
         features[:, 0] = losses
         features[:, 1] = ema
         features[:, 2] = loss_delta
@@ -339,19 +363,19 @@ class DataCollector:
         n = len(losses)
         labels = np.zeros((n, N_FAILURE_MODES), dtype=np.float32)
         w = 50
-        rolling_mean = np.array([np.mean(losses[max(0,i-w):i+1]) for i in range(n)])
-        rolling_std = np.array([np.std(losses[max(0,i-w):i+1]) + 1e-8 for i in range(n)])
+        rolling_mean = np.array([np.mean(losses[max(0, i - w) : i + 1]) for i in range(n)])
+        rolling_std = np.array([np.std(losses[max(0, i - w) : i + 1]) + 1e-8 for i in range(n)])
         z_scores = (losses - rolling_mean) / rolling_std
         loss_delta = np.zeros(n)
         for i in range(10, n):
-            loss_delta[i] = np.mean(losses[i-5:i]) - np.mean(losses[max(0,i-10):i-5])
+            loss_delta[i] = np.mean(losses[i - 5 : i]) - np.mean(losses[max(0, i - 10) : i - 5])
         divergence = np.zeros(n)
         for i in range(10, n):
-            diffs = np.diff(losses[max(0,i-20):i+1])
+            diffs = np.diff(losses[max(0, i - 20) : i + 1])
             divergence[i] = np.mean(diffs > 0) if len(diffs) > 0 else 0
         oscillation = np.zeros(n)
         for i in range(20, n):
-            oscillation[i] = np.var(np.diff(losses[i-20:i+1]))
+            oscillation[i] = np.var(np.diff(losses[i - 20 : i + 1]))
         plateau = np.zeros(n)
         counter = 0
         for i in range(1, n):
@@ -389,12 +413,12 @@ class DataCollector:
             inject_at = int(rng.integers(n_steps // 3, 2 * n_steps // 3))
             failure_type = run_idx % N_FAILURE_MODES
             if failure_type == 0:
-                grad_norms[inject_at:inject_at+20] = rng.uniform(15, 80, 20)
+                grad_norms[inject_at : inject_at + 20] = rng.uniform(15, 80, 20)
             elif failure_type == 1:
-                for i in range(inject_at, min(inject_at+200, n_steps)):
+                for i in range(inject_at, min(inject_at + 200, n_steps)):
                     losses[i] = losses[inject_at] * (1.002 ** (i - inject_at))
             elif failure_type == 2:
-                losses[inject_at:inject_at+5] *= float(rng.uniform(3, 8))
+                losses[inject_at : inject_at + 5] *= float(rng.uniform(3, 8))
             elif failure_type == 3:
                 grad_norms[inject_at:] = rng.uniform(0.0001, 0.0009, n_steps - inject_at)
             elif failure_type == 4:
@@ -409,10 +433,12 @@ class DataCollector:
                 seq_end = start + SEQ_LEN
                 if seq_end + max(HORIZONS) > len(labels):
                     break
-                samples.append(ForecasterSample(
-                    features=features[start:seq_end],
-                    labels=self._build_label_matrix(labels, seq_end),
-                    run_id=f"synthetic_{run_idx}",
-                    start_step=start,
-                ))
+                samples.append(
+                    ForecasterSample(
+                        features=features[start:seq_end],
+                        labels=self._build_label_matrix(labels, seq_end),
+                        run_id=f"synthetic_{run_idx}",
+                        start_step=start,
+                    )
+                )
         return samples

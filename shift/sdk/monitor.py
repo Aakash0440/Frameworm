@@ -53,18 +53,18 @@ class ShiftMonitor:
         self.name = name
         self.auto_alert = auto_alert
 
-        self._store     = ReferenceStore(store_dir)
-        self._profiler  = FeatureProfiler()
-        self._engine    = DriftEngine()
-        self._alerter   = AlertManager(
+        self._store = ReferenceStore(store_dir)
+        self._profiler = FeatureProfiler()
+        self._engine = DriftEngine()
+        self._alerter = AlertManager(
             channels=alert_channels,
             slack_webhook=slack_webhook,
             min_severity=min_severity,
         )
 
         self._reference_profile = None
-        self._check_count       = 0
-        self._drift_count       = 0
+        self._check_count = 0
+        self._drift_count = 0
 
         # Eagerly load reference if it already exists
         if self._store.exists(name):
@@ -154,24 +154,20 @@ class ShiftMonitor:
             self._window_buffer = []
             return self.check(batch, feature_names)
 
-        return None   # window not yet full
+        return None  # window not yet full
 
     # ──────────────────────────────────────────────── status / reporting
 
     def status(self) -> dict:
         """Return current monitor stats."""
         return {
-            "model_name":        self.name,
-            "checks_run":        self._check_count,
-            "drift_detections":  self._drift_count,
-            "drift_rate":        (
-                self._drift_count / self._check_count
-                if self._check_count > 0 else 0.0
-            ),
-            "reference_loaded":  self._reference_profile is not None,
+            "model_name": self.name,
+            "checks_run": self._check_count,
+            "drift_detections": self._drift_count,
+            "drift_rate": (self._drift_count / self._check_count if self._check_count > 0 else 0.0),
+            "reference_loaded": self._reference_profile is not None,
             "reference_samples": (
-                self._reference_profile.n_samples
-                if self._reference_profile else 0
+                self._reference_profile.n_samples if self._reference_profile else 0
             ),
         }
 
@@ -179,8 +175,10 @@ class ShiftMonitor:
         s = self.status()
         print(f"\n[SHIFT] Monitor: {s['model_name']}")
         print(f"  Checks run:       {s['checks_run']}")
-        print(f"  Drift detections: {s['drift_detections']}  "
-              f"({s['drift_rate']*100:.1f}% drift rate)")
+        print(
+            f"  Drift detections: {s['drift_detections']}  "
+            f"({s['drift_rate']*100:.1f}% drift rate)"
+        )
         print(f"  Reference:        {s['reference_samples']} samples\n")
 
     # ──────────────────────────────────────────────── private
@@ -205,6 +203,7 @@ class ShiftMonitor:
         Accepts short name ("fraud_classifier") or full/partial path.
         """
         from pathlib import Path
+
         p = Path(name_or_path)
         name = p.stem
         store_dir = str(p.parent) if str(p.parent) not in (".", "") else None

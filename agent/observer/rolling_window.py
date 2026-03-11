@@ -1,4 +1,3 @@
-
 """
 Rolling window buffer for metric history.
 Pure numpy — no FRAMEWORM dependencies.
@@ -20,6 +19,7 @@ class MetricSnapshot:
     A single point-in-time reading from the training loop.
     Raw values — no derived signals yet.
     """
+
     step: int
     loss: float
     grad_norm: float

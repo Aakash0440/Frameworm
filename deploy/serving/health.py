@@ -10,12 +10,14 @@ from typing import Optional
 
 try:
     import psutil
+
     _PSUTIL = True
 except ImportError:
     _PSUTIL = False
 
 try:
     import torch
+
     _TORCH = True
 except ImportError:
     _TORCH = False
@@ -37,22 +39,22 @@ class HealthChecker:
     WINDOW = 200
 
     def __init__(self, model_name: str, model_version: str):
-        self.model_name    = model_name
+        self.model_name = model_name
         self.model_version = model_version
-        self.started_at    = datetime.utcnow().isoformat()
-        self._ready        = False
+        self.started_at = datetime.utcnow().isoformat()
+        self._ready = False
         self._model_loaded = False
 
-        self._lock           = threading.Lock()
-        self._window         = deque(maxlen=self.WINDOW)  # True=success, False=error
-        self._request_count  = 0
-        self._error_count    = 0
+        self._lock = threading.Lock()
+        self._window = deque(maxlen=self.WINDOW)  # True=success, False=error
+        self._request_count = 0
+        self._error_count = 0
         self._last_request_at: Optional[str] = None
 
     # ─── state ────────────────────────────────────────────────────────────────
 
     def mark_ready(self):
-        self._ready        = True
+        self._ready = True
         self._model_loaded = True
 
     def mark_not_ready(self, reason: str = ""):
@@ -102,34 +104,35 @@ class HealthChecker:
         if _TORCH:
             try:
                 import torch
+
                 if torch.cuda.is_available():
                     gpu_mem_mb = torch.cuda.memory_allocated() // (1024 * 1024)
             except Exception:
                 pass
 
         return {
-            "status":         "ok",
-            "model_name":     self.model_name,
-            "model_version":  self.model_version,
-            "started_at":     self.started_at,
+            "status": "ok",
+            "model_name": self.model_name,
+            "model_version": self.model_version,
+            "started_at": self.started_at,
             "uptime_seconds": self._uptime(),
-            "requests":       self.request_count,
-            "errors":         self._error_count,
-            "error_rate":     self.error_rate,
-            "last_request":   self._last_request_at,
+            "requests": self.request_count,
+            "errors": self._error_count,
+            "error_rate": self.error_rate,
+            "last_request": self._last_request_at,
             "system": {
                 "cpu_percent": cpu,
                 "mem_percent": mem,
-                "gpu_mem_mb":  gpu_mem_mb,
+                "gpu_mem_mb": gpu_mem_mb,
             },
         }
 
     def readiness(self) -> dict:
         """/ready response."""
         return {
-            "ready":        self._ready,
+            "ready": self._ready,
             "model_loaded": self._model_loaded,
-            "model_name":   self.model_name,
+            "model_name": self.model_name,
         }
 
     # ─── helpers ──────────────────────────────────────────────────────────────

@@ -1,4 +1,3 @@
-
 """
 CLI commands for FRAMEWORM-AGENT.
 
@@ -40,58 +39,59 @@ def add_agent_parser(subparsers) -> None:
         "agent",
         help="FRAMEWORM-AGENT: autonomous training monitor",
     )
-    agent_sub = agent_parser.add_subparsers(
-        dest="agent_command", required=True
-    )
+    agent_sub = agent_parser.add_subparsers(dest="agent_command", required=True)
 
     # ── start ──────────────────────────────────────────────────────
     start_p = agent_sub.add_parser("start", help="Start agent daemon")
-    start_p.add_argument("--run-id", type=str, default=None,
-                         help="W&B run ID to monitor (omit for local mode)")
-    start_p.add_argument("--config", type=str, default="configs/base.yaml",
-                         help="FRAMEWORM config file")
-    start_p.add_argument("--model", type=str, default="unknown",
-                         help="Model architecture name (e.g. DCGAN)")
-    start_p.add_argument("--total-steps", type=int, default=10_000,
-                         help="Total training steps")
-    start_p.add_argument("--block", action="store_true",
-                         help="Block until training ends (default: daemon)")
+    start_p.add_argument(
+        "--run-id", type=str, default=None, help="W&B run ID to monitor (omit for local mode)"
+    )
+    start_p.add_argument(
+        "--config", type=str, default="configs/base.yaml", help="FRAMEWORM config file"
+    )
+    start_p.add_argument(
+        "--model", type=str, default="unknown", help="Model architecture name (e.g. DCGAN)"
+    )
+    start_p.add_argument("--total-steps", type=int, default=10_000, help="Total training steps")
+    start_p.add_argument(
+        "--block", action="store_true", help="Block until training ends (default: daemon)"
+    )
 
     # ── status ─────────────────────────────────────────────────────
     status_p = agent_sub.add_parser("status", help="Show agent status")
-    status_p.add_argument("--log-dir", type=str,
-                          default="experiments/agent_logs",
-                          help="Agent log directory")
-    status_p.add_argument("--n", type=int, default=5,
-                          help="Last N decisions to show")
+    status_p.add_argument(
+        "--log-dir", type=str, default="experiments/agent_logs", help="Agent log directory"
+    )
+    status_p.add_argument("--n", type=int, default=5, help="Last N decisions to show")
 
     # ── train ──────────────────────────────────────────────────────
     train_p = agent_sub.add_parser("train", help="Train forecaster and/or policy")
-    train_p.add_argument("--forecaster", action="store_true",
-                         help="Train GradForecaster LSTM")
-    train_p.add_argument("--policy", action="store_true",
-                         help="Train CQL policy")
+    train_p.add_argument("--forecaster", action="store_true", help="Train GradForecaster LSTM")
+    train_p.add_argument("--policy", action="store_true", help="Train CQL policy")
     train_p.add_argument("--epochs", type=int, default=50)
 
     # ── bench ──────────────────────────────────────────────────────
     bench_p = agent_sub.add_parser("bench", help="Run benchmark suite")
-    bench_p.add_argument("--scenarios", nargs="*", default=None,
-                         help="Scenario names (default: all 12)")
-    bench_p.add_argument("--baselines", nargs="*",
-                         default=["HUMAN", "RULE_BASED", "LLM_ONLY", "FULL_AGENT"],
-                         help="Baselines to compare")
-    bench_p.add_argument("--steps", type=int, default=800,
-                         help="Steps per scenario")
+    bench_p.add_argument(
+        "--scenarios", nargs="*", default=None, help="Scenario names (default: all 12)"
+    )
+    bench_p.add_argument(
+        "--baselines",
+        nargs="*",
+        default=["HUMAN", "RULE_BASED", "LLM_ONLY", "FULL_AGENT"],
+        help="Baselines to compare",
+    )
+    bench_p.add_argument("--steps", type=int, default=800, help="Steps per scenario")
     bench_p.add_argument("--seed", type=int, default=42)
 
     # ── report ─────────────────────────────────────────────────────
     report_p = agent_sub.add_parser("report", help="Generate eval report")
-    report_p.add_argument("--delta-dir", type=str,
-                          default="experiments/agent_logs/deltas",
-                          help="Delta log directory")
-    report_p.add_argument("--out", type=str,
-                          default="experiments/agent_logs",
-                          help="Output directory")
+    report_p.add_argument(
+        "--delta-dir", type=str, default="experiments/agent_logs/deltas", help="Delta log directory"
+    )
+    report_p.add_argument(
+        "--out", type=str, default="experiments/agent_logs", help="Output directory"
+    )
 
 
 def run_agent_command(args) -> int:
@@ -129,6 +129,7 @@ def _cmd_start(args) -> int:
 
     try:
         from agent.react.agent import FramewormAgent
+
         agent = FramewormAgent.from_config(
             config_path=args.config,
             run_id=args.run_id,
@@ -170,7 +171,7 @@ def _cmd_status(args) -> int:
         with open(latest) as f:
             decisions = json.load(f)
 
-        recent = decisions[-args.n:]
+        recent = decisions[-args.n :]
         print(f"Last {len(recent)} decisions:\n")
         for d in recent:
             resolved = "✓" if d.get("resolved") else "✗"
@@ -184,8 +185,7 @@ def _cmd_status(args) -> int:
 
         total = len(decisions)
         resolved_count = sum(1 for d in decisions if d.get("resolved"))
-        print(f"\nTotal: {total} decisions, "
-              f"{resolved_count/total:.1%} resolved")
+        print(f"\nTotal: {total} decisions, " f"{resolved_count/total:.1%} resolved")
         return 0
 
     except Exception as exc:
@@ -203,15 +203,18 @@ def _cmd_train(args) -> int:
         print("Training GradForecaster LSTM...")
         try:
             from agent.forecaster.training_data import DataCollector, ForecasterDataset
-            from agent.forecaster.grad_forecaster import GradForecaster, ForecasterConfig, train_forecaster
+            from agent.forecaster.grad_forecaster import (
+                GradForecaster,
+                ForecasterConfig,
+                train_forecaster,
+            )
 
             collector = DataCollector()
             samples = collector.collect_all()
             print(f"  Collected {len(samples)} samples from experiments/")
 
             if len(samples) < 10:
-                print("  Not enough data yet (need 10+). "
-                      "Run more training experiments first.")
+                print("  Not enough data yet (need 10+). " "Run more training experiments first.")
             else:
                 dataset = ForecasterDataset(samples)
                 config = ForecasterConfig(max_epochs=args.epochs)
@@ -237,8 +240,10 @@ def _cmd_train(args) -> int:
             print(f"  Loaded {n} transitions from DB")
 
             if not buffer.is_ready:
-                print(f"  Not enough transitions (need 100, have {len(buffer)}). "
-                      "Run more training experiments first.")
+                print(
+                    f"  Not enough transitions (need 100, have {len(buffer)}). "
+                    "Run more training experiments first."
+                )
             else:
                 config = CQLConfig(max_epochs=args.epochs)
                 policy = CQLPolicy(config=config)
@@ -280,8 +285,10 @@ def _cmd_bench(args) -> int:
         analyzer = ResultsAnalyzer(result)
         analyzer.save()
 
-        print(f"\nBenchmark complete: {len(result.results)} runs, "
-              f"{result.total_duration_seconds:.1f}s")
+        print(
+            f"\nBenchmark complete: {len(result.results)} runs, "
+            f"{result.total_duration_seconds:.1f}s"
+        )
         return 0
 
     except Exception as exc:

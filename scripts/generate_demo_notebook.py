@@ -6,15 +6,8 @@ notebook = {
     "nbformat": 4,
     "nbformat_minor": 5,
     "metadata": {
-        "kernelspec": {
-            "display_name": "Python 3",
-            "language": "python",
-            "name": "python3"
-        },
-        "language_info": {
-            "name": "python",
-            "version": "3.10.0"
-        }
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "language_info": {"name": "python", "version": "3.10.0"},
     },
     "cells": [
         {
@@ -25,24 +18,17 @@ notebook = {
                 "\n",
                 "Complete ML workflow: **Train → Track → Search → Deploy**\n",
                 "\n",
-                "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aakash0440/frameworm/blob/main/examples/demo.ipynb)\n"
-            ]
+                "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aakash0440/frameworm/blob/main/examples/demo.ipynb)\n",
+            ],
         },
         {
             "cell_type": "code",
             "execution_count": None,
             "metadata": {},
             "outputs": [],
-            "source": [
-                "# Install FRAMEWORM\n",
-                "!pip install frameworm -q"
-            ]
+            "source": ["# Install FRAMEWORM\n", "!pip install frameworm -q"],
         },
-        {
-            "cell_type": "markdown",
-            "metadata": {},
-            "source": ["## 1. Setup & Data"]
-        },
+        {"cell_type": "markdown", "metadata": {}, "source": ["## 1. Setup & Data"]},
         {
             "cell_type": "code",
             "execution_count": None,
@@ -62,13 +48,13 @@ notebook = {
                 "train_loader = DataLoader(TensorDataset(X), batch_size=64, shuffle=True)\n",
                 "val_loader = DataLoader(TensorDataset(X[:100]), batch_size=64)\n",
                 "\n",
-                "print('✓ Setup complete')"
-            ]
+                "print('✓ Setup complete')",
+            ],
         },
         {
             "cell_type": "markdown",
             "metadata": {},
-            "source": ["## 2. Train with Experiment Tracking"]
+            "source": ["## 2. Train with Experiment Tracking"],
         },
         {
             "cell_type": "code",
@@ -87,14 +73,10 @@ notebook = {
                 "    trainer.train(train_loader, val_loader, epochs=5)\n",
                 "\n",
                 "print(f'✓ Experiment ID: {exp.experiment_id}')\n",
-                "print(f'✓ Final val_loss: {trainer.state.val_metrics[\"loss\"][-1]:.4f}')"
-            ]
+                "print(f'✓ Final val_loss: {trainer.state.val_metrics[\"loss\"][-1]:.4f}')",
+            ],
         },
-        {
-            "cell_type": "markdown",
-            "metadata": {},
-            "source": ["## 3. Hyperparameter Search"]
-        },
+        {"cell_type": "markdown", "metadata": {}, "source": ["## 3. Hyperparameter Search"]},
         {
             "cell_type": "code",
             "execution_count": None,
@@ -119,14 +101,10 @@ notebook = {
                 "\n",
                 "best_config, best_score = search.run(train_fn)\n",
                 "print(f'✓ Best score: {best_score:.4f}')\n",
-                "print(f'✓ Best lr: {best_config[\"training.lr\"]:.5f}')"
-            ]
+                "print(f'✓ Best lr: {best_config[\"training.lr\"]:.5f}')",
+            ],
         },
-        {
-            "cell_type": "markdown",
-            "metadata": {},
-            "source": ["## 4. Export & Deploy"]
-        },
+        {"cell_type": "markdown", "metadata": {}, "source": ["## 4. Export & Deploy"]},
         {
             "cell_type": "code",
             "execution_count": None,
@@ -140,13 +118,13 @@ notebook = {
                 "exporter.to_torchscript('model.pt')\n",
                 "\n",
                 "print('✓ Model exported!')\n",
-                "print('✓ Run: frameworm serve model.pt --port 8000')"
-            ]
-        }
-    ]
+                "print('✓ Run: frameworm serve model.pt --port 8000')",
+            ],
+        },
+    ],
 }
 
-with open('examples/demo.ipynb', 'w') as f:
+with open("examples/demo.ipynb", "w") as f:
     json.dump(notebook, f, indent=2)
 
 print("✓ Demo notebook created: examples/demo.ipynb")

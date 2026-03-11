@@ -56,8 +56,8 @@ class BeliefState:
     p_unknown: float = 0.01
 
     # GP posterior estimate (mean prediction, uncertainty)
-    gp_mean: float = 0.0           # predicted health score
-    gp_std: float = 1.0            # uncertainty
+    gp_mean: float = 0.0  # predicted health score
+    gp_std: float = 1.0  # uncertainty
 
     # Entropy of belief (high = uncertain)
     entropy: float = 0.0
@@ -78,10 +78,7 @@ class BeliefState:
             self.p_unknown /= total
 
     def _compute_entropy(self) -> float:
-        probs = np.array([
-            self.p_healthy, self.p_degrading,
-            self.p_anomalous, self.p_unknown
-        ])
+        probs = np.array([self.p_healthy, self.p_degrading, self.p_anomalous, self.p_unknown])
         probs = probs[probs > 0]
         return float(-np.sum(probs * np.log(probs + 1e-10)))
 
@@ -148,6 +145,7 @@ class BeliefUpdater:
             return
         try:
             from search.bayesian_search import BayesianSearch
+
             # Your BayesianSearch uses a GP internally
             # We access it for belief state estimation
             self._bayesian_search = None  # initialized lazily when needed
@@ -157,6 +155,7 @@ class BeliefUpdater:
                 # Fallback: sklearn GP
                 from sklearn.gaussian_process import GaussianProcessRegressor
                 from sklearn.gaussian_process.kernels import RBF, WhiteKernel
+
                 kernel = RBF(length_scale=1.0) + WhiteKernel(noise_level=0.1)
                 self._gp = GaussianProcessRegressor(
                     kernel=kernel,
@@ -198,13 +197,16 @@ class BeliefUpdater:
             P(h_t | h_{t-1}) = transition prior (training tends to be stable)
         """
         # Build observation vector for GP
-        obs = np.array([
-            signals.loss_z_score,
-            signals.grad_norm_z_score,
-            signals.plateau_score,
-            signals.divergence_score,
-            float(n_anomaly_events),
-        ], dtype=np.float32)
+        obs = np.array(
+            [
+                signals.loss_z_score,
+                signals.grad_norm_z_score,
+                signals.plateau_score,
+                signals.divergence_score,
+                float(n_anomaly_events),
+            ],
+            dtype=np.float32,
+        )
 
         # Compute health score: negative = unhealthy
         health_score = self._compute_health_score(signals, n_anomaly_events)
@@ -231,7 +233,7 @@ class BeliefUpdater:
 
         # Boost anomaly probability if rule engine fired
         if n_anomaly_events > 0:
-            p_anomalous_post *= (1.0 + n_anomaly_events)
+            p_anomalous_post *= 1.0 + n_anomaly_events
 
         posterior = BeliefState(
             p_healthy=p_healthy_post,
@@ -245,9 +247,7 @@ class BeliefUpdater:
 
         return posterior
 
-    def _compute_health_score(
-        self, signals: SignalSnapshot, n_anomalies: int
-    ) -> float:
+    def _compute_health_score(self, signals: SignalSnapshot, n_anomalies: int) -> float:
         """
         Scalar health score in [-3, +1].
         Positive = healthy, negative = problematic.
@@ -272,15 +272,13 @@ class BeliefUpdater:
             return float(np.exp(-0.5 * z**2) * (1 - div))
         elif health_class == "DEGRADING":
             # High likelihood when divergence is moderate
-            return float(np.exp(-0.5 * (z - 1.5)**2) * div)
+            return float(np.exp(-0.5 * (z - 1.5) ** 2) * div)
         elif health_class == "ANOMALOUS":
             # High likelihood when z-score is large
-            return float(np.exp(-0.5 * (abs(z) - 3.0)**2 / 4.0))
+            return float(np.exp(-0.5 * (abs(z) - 3.0) ** 2 / 4.0))
         return 0.1
 
-    def _update_gp(
-        self, obs: np.ndarray, health_score: float
-    ) -> Tuple[float, float]:
+    def _update_gp(self, obs: np.ndarray, health_score: float) -> Tuple[float, float]:
         """
         Update GP model and return (mean_prediction, std_prediction).
         """

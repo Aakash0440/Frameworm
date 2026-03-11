@@ -33,19 +33,20 @@ logger = logging.getLogger(__name__)
 
 
 class AttributionMode(Enum):
-    FAST = auto()   # graph only — always runs
-    FULL = auto()   # graph + do-intervention — CRITICAL/HIGH only
+    FAST = auto()  # graph only — always runs
+    FULL = auto()  # graph + do-intervention — CRITICAL/HIGH only
 
 
 @dataclass
 class RootCause:
     """One identified root cause node."""
+
     node_name: str
     node_description: str
     z_score: float
     first_deviation_step: Optional[int]
-    causal_path_to_loss: List[str]      # e.g. ["batch_quality", "gradient_dist", "loss"]
-    confirmed_by_replay: bool = False   # True if do-intervention confirmed it
+    causal_path_to_loss: List[str]  # e.g. ["batch_quality", "gradient_dist", "loss"]
+    confirmed_by_replay: bool = False  # True if do-intervention confirmed it
 
     @property
     def confidence(self) -> str:
@@ -62,15 +63,16 @@ class AttributionReport:
     Full attribution report for one anomaly event.
     Logged to disk and appended to LLM prompt.
     """
+
     anomaly_type: str
     anomaly_step: int
-    mode: str                           # "FAST" or "FULL"
+    mode: str  # "FAST" or "FULL"
 
     root_causes: List[RootCause] = field(default_factory=list)
     replay_results: List[ReplayResult] = field(default_factory=list)
 
-    graph_summary: str = ""             # human-readable graph status
-    attribution_summary: str = ""       # one-sentence for LLM prompt
+    graph_summary: str = ""  # human-readable graph status
+    attribution_summary: str = ""  # one-sentence for LLM prompt
 
     duration_seconds: float = 0.0
     timestamp: float = field(default_factory=time.time)
@@ -98,9 +100,7 @@ class AttributionReport:
         for rc in self.root_causes[:2]:  # max 2 root causes in prompt
             conf = "✓ confirmed" if rc.confirmed_by_replay else "~ inferred"
             path = " → ".join(rc.causal_path_to_loss)
-            lines.append(
-                f"  {conf}: {rc.node_name} (z={rc.z_score:+.2f})"
-            )
+            lines.append(f"  {conf}: {rc.node_name} (z={rc.z_score:+.2f})")
             lines.append(f"  Causal path: {path}")
         lines.append(f"  Summary: {self.attribution_summary}")
         return "\n".join(lines)
@@ -151,9 +151,7 @@ class AttributionEngine:
         self.graph = graph or CausalGraph()
         self.do_intervention = do_intervention
         self.log_dir = log_dir
-        self.full_mode_severities = full_mode_severities or {
-            Severity.CRITICAL, Severity.HIGH
-        }
+        self.full_mode_severities = full_mode_severities or {Severity.CRITICAL, Severity.HIGH}
         self._is_calibrated = False
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -166,7 +164,7 @@ class AttributionEngine:
     def attribute(
         self,
         event: AnomalyEvent,
-        snapshot,                   # MetricSnapshot
+        snapshot,  # MetricSnapshot
         signals: SignalSnapshot,
         window: RollingWindow,
         pre_anomaly_checkpoint_step: Optional[int] = None,
@@ -198,12 +196,16 @@ class AttributionEngine:
             self.calibrate(window)
 
         # Determine mode
-        mode = AttributionMode.FULL if (
-            event.severity in self.full_mode_severities
-            and self.do_intervention is not None
-            and pre_anomaly_checkpoint_step is not None
-            and self._is_calibrated
-        ) else AttributionMode.FAST
+        mode = (
+            AttributionMode.FULL
+            if (
+                event.severity in self.full_mode_severities
+                and self.do_intervention is not None
+                and pre_anomaly_checkpoint_step is not None
+                and self._is_calibrated
+            )
+            else AttributionMode.FAST
+        )
 
         # ── FAST: graph evaluation ────────────────────────────────
         node_statuses = self.graph.evaluate_at(snapshot, signals, event.step)
@@ -212,14 +214,16 @@ class AttributionEngine:
         root_causes = []
         for node in root_cause_nodes:
             path = self.graph.get_causal_path(node.name, "loss")
-            root_causes.append(RootCause(
-                node_name=node.name,
-                node_description=node.description,
-                z_score=node.current_z_score,
-                first_deviation_step=node.first_deviation_step,
-                causal_path_to_loss=path,
-                confirmed_by_replay=False,
-            ))
+            root_causes.append(
+                RootCause(
+                    node_name=node.name,
+                    node_description=node.description,
+                    z_score=node.current_z_score,
+                    first_deviation_step=node.first_deviation_step,
+                    causal_path_to_loss=path,
+                    confirmed_by_replay=False,
+                )
+            )
 
         graph_summary = self.graph.summary()
         replay_results = []
@@ -265,9 +269,7 @@ class AttributionEngine:
                                 rc.confirmed_by_replay = True
 
         # ── Build summary ─────────────────────────────────────────
-        attribution_summary = self._build_summary(
-            event, root_causes, replay_results
-        )
+        attribution_summary = self._build_summary(event, root_causes, replay_results)
 
         duration = time.monotonic() - start
         report = AttributionReport(

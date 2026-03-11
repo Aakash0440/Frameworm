@@ -9,6 +9,7 @@ Quick start:
     trainer = Trainer(model, optimizer)
     trainer.train(train_loader, val_loader)
 """
+
 import models  # triggers all @register_model decorators
 
 # Distributed
@@ -55,6 +56,6 @@ __all__ = [
     "OptimizedDataLoader",
     "PerformanceProfiler",
     "PerformanceProfiler",
-    "Experiment",          # ADD
+    "Experiment",  # ADD
     "ExperimentManager",
 ]

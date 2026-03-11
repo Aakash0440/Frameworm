@@ -1,4 +1,3 @@
-
 """
 Saves and loads reference (training) distribution profiles to disk.
 Stored as .shift files (JSON under the hood) in experiments/shift_profiles/.
@@ -11,7 +10,6 @@ from pathlib import Path
 from typing import Optional
 
 from shift.core.feature_profiles import DatasetProfile, FeatureProfiler
-
 
 DEFAULT_STORE_DIR = Path("experiments/shift_profiles")
 
@@ -66,9 +64,11 @@ class ReferenceStore:
             json.dump(payload, f, indent=2)
 
         print(f"[SHIFT] Reference profile saved → {path}")
-        print(f"        {profile.n_samples} samples · "
-              f"{len(profile.numerical)} numerical · "
-              f"{len(profile.categorical)} categorical features")
+        print(
+            f"        {profile.n_samples} samples · "
+            f"{len(profile.numerical)} numerical · "
+            f"{len(profile.categorical)} categorical features"
+        )
         return path
 
     def load(self, name_or_path: str) -> DatasetProfile:
@@ -118,7 +118,9 @@ class ReferenceStore:
 
     def _resolve(self, name_or_path: str) -> Path:
         p = Path(name_or_path)
-        if p.suffix == ".shift" and (p.is_absolute() or "/" in name_or_path or "\\" in name_or_path):
+        if p.suffix == ".shift" and (
+            p.is_absolute() or "/" in name_or_path or "\\" in name_or_path
+        ):
             return p
         # Also handle the case where a directory path is given without .shift extension
         # e.g. "C:\Users\...\mymodel" — treat parent as store_dir, stem as name
@@ -133,6 +135,7 @@ class ReferenceStore:
     def _checksum(self, data) -> str:
         try:
             import numpy as np
+
             arr = np.array(data)
             return hashlib.md5(arr.tobytes()).hexdigest()
         except Exception:
@@ -141,8 +144,10 @@ class ReferenceStore:
 
 # ─── convenience shortcut ────────────────────────────────────────────────────
 
+
 def save_reference(data, name: str, feature_names=None, **kwargs) -> Path:
     return ReferenceStore().save(data, name, feature_names, **kwargs)
+
 
 def load_reference(name: str) -> DatasetProfile:
     return ReferenceStore().load(name)

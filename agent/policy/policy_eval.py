@@ -48,6 +48,7 @@ class EvalComparison:
     """
     Head-to-head comparison of policy vs LLM on one state.
     """
+
     state_idx: int
     anomaly_type: str
 
@@ -58,7 +59,7 @@ class EvalComparison:
 
     # LLM (ground truth from buffer — what the LLM chose historically)
     llm_action: str
-    llm_reward: float               # actual reward the LLM got
+    llm_reward: float  # actual reward the LLM got
 
     # Simulated policy reward (from Q-network estimate)
     policy_est_reward: float
@@ -77,11 +78,12 @@ class PolicyEvalResult:
     Aggregate policy vs LLM evaluation results.
     One of these is generated per training checkpoint.
     """
-    n_transitions_trained_on: int   # size of buffer at eval time
+
+    n_transitions_trained_on: int  # size of buffer at eval time
     n_test_states: int
 
-    overall_win_rate: float         # fraction policy won
-    mean_reward_delta: float        # positive = policy better on average
+    overall_win_rate: float  # fraction policy won
+    mean_reward_delta: float  # positive = policy better on average
 
     # Per anomaly type
     win_rate_per_type: dict = field(default_factory=dict)
@@ -175,9 +177,7 @@ class PolicyEvaluator:
             n_test_states=len(comparisons),
             overall_win_rate=float(np.mean(win_flags)),
             mean_reward_delta=float(np.mean(reward_deltas)),
-            win_rate_per_type={
-                k: float(np.mean(v)) for k, v in win_per_type.items()
-            },
+            win_rate_per_type={k: float(np.mean(v)) for k, v in win_per_type.items()},
         )
 
         self._eval_history.append(result)
@@ -191,19 +191,17 @@ class PolicyEvaluator:
 
         return result
 
-    def _compare_on_transition(
-        self, idx: int, t: Transition
-    ) -> Optional[EvalComparison]:
+    def _compare_on_transition(self, idx: int, t: Transition) -> Optional[EvalComparison]:
         """Compare policy vs LLM on one held-out transition."""
         try:
-            anomaly_type = AnomalyType[t.anomaly_type] \
-                if t.anomaly_type in AnomalyType.__members__ \
+            anomaly_type = (
+                AnomalyType[t.anomaly_type]
+                if t.anomaly_type in AnomalyType.__members__
                 else AnomalyType.HEALTHY
+            )
 
             # Policy choice
-            policy_action, confidence = self.policy.select_action(
-                t.state, anomaly_type
-            )
+            policy_action, confidence = self.policy.select_action(t.state, anomaly_type)
 
             if policy_action is None:
                 # Policy deferred to LLM — count as LLM win
@@ -245,17 +243,15 @@ class PolicyEvaluator:
             logger.debug(f"PolicyEvaluator comparison failed: {exc}")
             return None
 
-    def _estimate_q_value(
-        self, state: np.ndarray, action: ActionType
-    ) -> float:
+    def _estimate_q_value(self, state: np.ndarray, action: ActionType) -> float:
         """Get Q-value estimate for a state-action pair."""
         from agent.policy.experience_buffer import ACTION_INDEX
+
         try:
             import torch
+
             self.policy._q_network.eval()
-            state_t = torch.tensor(
-                state, dtype=torch.float32
-            ).unsqueeze(0).to(self.policy._device)
+            state_t = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(self.policy._device)
             with torch.no_grad():
                 q_values = self.policy._q_network(state_t).squeeze(0)
                 action_idx = ACTION_INDEX.get(action, 0)

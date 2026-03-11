@@ -1,4 +1,3 @@
-
 """
 Metric stream — polls W&B or reads from a local shared file.
 
@@ -82,10 +81,7 @@ class MetricStream:
             self.mode = StreamMode.WANDB
         else:
             self.mode = StreamMode.LOCAL
-            logger.info(
-                "No run_id provided — using LOCAL mode. "
-                f"Reading from {self.local_path}"
-            )
+            logger.info("No run_id provided — using LOCAL mode. " f"Reading from {self.local_path}")
 
         # Core components
         self.window = RollingWindow(size=window_size)
@@ -181,6 +177,7 @@ class MetricStream:
             return self._wandb_api
         try:
             import wandb
+
             self._wandb_api = wandb.Api()
             return self._wandb_api
         except ImportError:
