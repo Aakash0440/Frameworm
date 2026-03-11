@@ -70,7 +70,6 @@ class TestCompleteWorkflow:
                 return {"val_loss": trainer.state.val_metrics["loss"][-1]}
 
             search_config = config.copy()
-            search_config.training = Config.from_dict({"lr": 0.001})
 
             search = RandomSearch(
                 base_config=search_config,
