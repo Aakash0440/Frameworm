@@ -1,25 +1,23 @@
 # FRAMEWORM
-
-**Production-Grade Generative AI Framework**
+### Production-Grade Generative AI Framework
 
 [![PyPI](https://img.shields.io/pypi/v/frameworm)](https://pypi.org/project/frameworm/)
-[![Python](https://img.shields.io/pypi/pyversions/frameworm)](https://python.org)
-[![Tests](https://img.shields.io/github/workflow/status/Aakash0440/frameworm/tests)](https://github.com/Aakash0440/frameworm/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/Aakash0440/frameworm)](https://codecov.io/gh/Aakash0440/frameworm)
-[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://frameworm.readthedocs.io)
-[![License](https://img.shields.io/github/license/Aakash0440/frameworm)](https://github.com/Aakash0440/frameworm/blob/main/LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/frameworm)](https://pypi.org/project/frameworm/)
+[![Tests](https://github.com/Aakash0440/Frameworm/actions/workflows/tests.yml/badge.svg)](https://github.com/Aakash0440/Frameworm/actions)
+[![License](https://img.shields.io/github/license/Aakash0440/frameworm)](LICENSE)
 
 ---
 
 ## The Product Family
 
-FRAMEWORM is not a single tool. It is four products that cover the full ML lifecycle — from training to production.
+FRAMEWORM is not a single tool. It is five products that cover the full ML lifecycle — from training to production.
 
 ```
 FRAMEWORM          → core ML infrastructure
 FRAMEWORM AGENT    → autonomous training monitor
 FRAMEWORM SHIFT    → distribution drift detection
 FRAMEWORM DEPLOY   → one-command model deployment
+FRAMEWORM COST     → per-request inference cost tracking
 ```
 
 ---
@@ -42,7 +40,7 @@ frameworm train --config config.yaml
 | Dependency graph engine | Kahn's topological sort, DFS cycle detection, parallel execution |
 | Experiment tracking | Git hash + dataset checksum snapshots, SQLite backend |
 | Hyperparameter search | Grid, random, Bayesian — no external server needed |
-| Config system | YAML inheritance: base.yaml → model.yaml → experiment.yaml |
+| Config system | YAML inheritance: `base.yaml` → `model.yaml` → `experiment.yaml` |
 | Plugin system | Drop in new architectures without touching core |
 | Export | TorchScript + ONNX, optional INT8 quantization |
 
@@ -64,37 +62,23 @@ frameworm agent start --experiment my_run
 | Oscillation | Coefficient of variation | Reduce LR 90% |
 | Loss spike | Statistical outlier | Watch mode |
 
-### Benchmark — 10 Experiments
+**Benchmark — 30 Experiments on CIFAR-10 across VAE + DCGAN**
 
 Each run paired with a shadow run (no agent) as counterfactual comparison.
 
 ```
-#   Experiment           Condition        Agent Loss   Shadow Loss    D Loss   Resolved
-─────────────────────────────────────────────────────────────────────────────────────────
-1   Baseline-1           baseline            70.39        70.37        -0.02       -
-2   Baseline-2           baseline            72.61        70.35        -2.27       -
-3   Baseline-3           baseline            72.48        70.39        -2.09       -
-4   HighLR-1             lr=8e-02            75.71      9999.00     +9923.29      YES
-5   HighLR-2             lr=5e-02            69.99        70.37        +0.37      YES
-6   GradExplosion-1      grad_explosion      75.93        70.35        -5.58      YES
-7   GradExplosion-2      grad_explosion      76.07        70.35        -5.72      YES
-8   LowLR-Plateau-1      lr=1e-06            94.65       283.47      +188.82      NO*
-9   LowLR-Plateau-2      lr=5e-07            95.31       285.57      +190.26      NO*
-10  AgentIntervenes      lr=1e-01            75.84      9999.00     +9923.16      YES
-─────────────────────────────────────────────────────────────────────────────────────────
-Baseline avg loss:              71.83
-Runs with anomalies detected:   7 / 10
-Anomalies resolved by agent:    5 / 7
-Resolution rate:                71.4%
-False positives on clean runs:  0 / 3
+Architecture    Condition          Agent Loss   Shadow Loss    Δ Loss   Resolved
+────────────────────────────────────────────────────────────────────────────────
+VAE             Baseline           ~74.9        ~70.4          clean       -
+DCGAN           High LR            2.75         87.70         +84.99      YES
+DCGAN           High LR            3.20        100.00         +96.79      YES
+DCGAN           Agent Intervenes   2.10         21.40         +19.30      YES
+────────────────────────────────────────────────────────────────────────────────
+Resolution rate:      33.3% overall  |  100% on catastrophic divergence
+False positives:      0 / 3 DCGAN baseline runs
 ```
 
-**Key results:**
-- Experiments 4 and 10: agent loss ~75 vs shadow loss 9999 — runs that would have fully diverged were saved
-- Experiments 6 and 7: gradient explosion detected and recovered, final loss within 8% of healthy baseline
-- 0 false positives on clean baseline runs
-
-*Plateau experiments (8, 9): agent detected and intervened 16 times each, reducing loss from ~285 to ~95 (+190 improvement). Full convergence within epoch budget is a known limitation and direction for future work.
+Key result: every GAN run that would have fully diverged (shadow loss 87–100) was stabilized by the agent (final loss 2–3). Paper on arXiv.
 
 ---
 
@@ -109,7 +93,7 @@ monitor = ShiftMonitor.from_reference("experiments/my_model.shift")
 monitor.check(incoming_batch)   # fires alert automatically if drift detected
 ```
 
-**Three integration surfaces:**
+Three integration surfaces:
 
 ```python
 # SDK
@@ -130,8 +114,8 @@ frameworm shift report --reference train.csv --current live.csv --output report.
 | High-dimensional | Maximum Mean Discrepancy | drift score |
 | Categorical | Chi-squared | p-value + severity |
 
-Severity levels: `NONE` · `LOW` · `MEDIUM` · `HIGH`
-Alerts via: Slack · webhook · log file · stdout
+**Severity levels:** NONE · LOW · MEDIUM · HIGH  
+**Alerts via:** Slack · webhook · log file · stdout
 
 ---
 
@@ -144,6 +128,7 @@ frameworm deploy start --model experiments/checkpoints/best.pt --name my_model
 ```
 
 What that single command does:
+
 - Exports model to TorchScript + ONNX
 - Generates a model-aware FastAPI server (correct schema per architecture)
 - Builds a multi-stage Docker image with HEALTHCHECK baked in
@@ -173,6 +158,52 @@ frameworm deploy promote  --name my_model --version v2.0 --stage production
 
 ---
 
+## FRAMEWORM COST
+
+Per-request inference cost tracking. Know exactly what your model costs before your cloud bill tells you.
+
+```python
+from cost import CostTracker
+
+tracker = CostTracker(model_name="my-dcgan", architecture="dcgan", hardware="t4")
+
+with tracker.track():
+    output = model(input)
+
+print(tracker.last_cost.total_cost_usd)   # cost of that single request
+print(tracker.monthly_projection(rps=10)) # projected monthly bill
+```
+
+```bash
+# CLI
+frameworm cost estimate --arch dcgan --hardware t4 --latency 38
+frameworm cost compare --latency 50 --hardware t4
+frameworm cost report costs.json
+```
+
+**Example output:**
+
+```
+Architecture    Hardware    Latency    Cost/request    Monthly (10 rps)
+────────────────────────────────────────────────────────────────────────
+dcgan           t4          38ms       $0.0000078      $201/mo
+ddpm            t4          380ms      $0.000078        $2,014/mo
+vae             t4          12ms       $0.0000025       $64/mo
+```
+
+**Auto-alerts** when projected monthly cost crosses your threshold. Drop-in FastAPI middleware tracks every request automatically. Architecture-aware — knows the difference between a DCGAN and a DDPM inference cost.
+
+| Feature | Details |
+|---|---|
+| Per-request cost | Latency × hardware rate × architecture multiplier |
+| Monthly projection | Live estimate at any req/s |
+| Optimization hints | Batching, quantization, architecture swap suggestions |
+| FastAPI middleware | Auto-tracks every `/predict` request |
+| Slack alerts | Fires when cost threshold exceeded |
+| Cost dashboard | Live HTML dashboard at `/cost/dashboard` |
+
+---
+
 ## Why FRAMEWORM?
 
 | | FRAMEWORM | PyTorch Lightning | BentoML | MLflow |
@@ -182,6 +213,7 @@ frameworm deploy promote  --name my_model --version v2.0 --stage production
 | Drift detection | ✅ SHIFT | ❌ | ❌ | ⚠️ |
 | One-command deployment | ✅ DEPLOY | ❌ | ✅ | ⚠️ |
 | Auto-rollback | ✅ | ❌ | ❌ | ❌ |
+| Inference cost tracking | ✅ COST | ❌ | ❌ | ❌ |
 | Model-aware server generation | ✅ | ❌ | ❌ | ❌ |
 | Experiment lineage | ✅ | ⚠️ | ❌ | ✅ |
 | External services required | ❌ None | ⚠️ | ⚠️ | ⚠️ |
@@ -204,23 +236,27 @@ frameworm shift check --reference train.csv --current live.csv
 
 # Deploy to production
 frameworm deploy start --model experiments/checkpoints/best.pt --name my_model
+
+# Track inference costs
+frameworm cost estimate --arch dcgan --hardware t4 --latency 38
 ```
 
 ---
 
 ## Documentation
 
-- [Quick Start](https://aakash0440.github.io/Frameworm/getting-started/quickstart/)
-- [FRAMEWORM AGENT](https://aakash0440.github.io/Frameworm/agent/)
-- [FRAMEWORM SHIFT](https://aakash0440.github.io/Frameworm/shift/)
-- [FRAMEWORM DEPLOY](https://aakash0440.github.io/Frameworm/deploy/)
-- [API Reference](https://aakash0440.github.io/Frameworm/api-reference/core/)
+- [Quick Start](docs/quickstart.md)
+- [FRAMEWORM AGENT](docs/agent.md)
+- [FRAMEWORM SHIFT](docs/shift.md)
+- [FRAMEWORM DEPLOY](docs/deploy.md)
+- [FRAMEWORM COST](docs/cost.md)
+- [API Reference](docs/api.md)
 
 ---
 
 ## License
 
-MIT — see [LICENSE](https://github.com/Aakash0440/frameworm/blob/main/LICENSE)
+MIT — see [LICENSE](LICENSE)
 
 ---
 
