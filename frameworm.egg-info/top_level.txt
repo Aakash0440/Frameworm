@@ -1,6 +1,7 @@
 agent
 cli
 core
+cost
 data
 deploy
 deployment

@@ -48,6 +48,7 @@ cli/evaluate.py
 cli/export.py
 cli/logger.py
 cli/main.py
+cli/main_old.py
 cli/monitor.py
 cli/pipeline.py
 cli/search_cli.py
@@ -61,6 +62,16 @@ core/exceptions.py
 core/registry.py
 core/testconfig.py
 core/types.py
+cost/__init__.py
+cost/alerter.py
+cost/calculator.py
+cost/cli.py
+cost/dashboard.py
+cost/deploy_integration.py
+cost/middleware.py
+cost/report.py
+cost/store.py
+cost/tracker.py
 data/__init__.py
 deploy/__init__.py
 deploy/cli/__init__.py
