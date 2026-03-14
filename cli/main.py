@@ -2,19 +2,22 @@
 FRAMEWORM CLI — Production-grade ML framework interface.
 """
 
-import sys, os, time
+import os
+import sys
+import time
 from pathlib import Path
+
 import click
+from rich import box
+from rich.align import Align
 from rich.console import Console
+from rich.padding import Padding
 from rich.panel import Panel
-from rich.table import Table
-from rich.text import Text
 from rich.prompt import Prompt
 from rich.rule import Rule
 from rich.syntax import Syntax
-from rich.align import Align
-from rich.padding import Padding
-from rich import box
+from rich.table import Table
+from rich.text import Text
 
 if __name__ == "__main__" and __package__ is None:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -193,10 +196,11 @@ def shell():
 def train(config, resume, gpus):
     """Train a model using a config file."""
     import torch
+    from torch.utils.data import DataLoader, TensorDataset
+
     from core.config import Config
     from core.registry import get_model
     from training.trainer import Trainer
-    from torch.utils.data import DataLoader, TensorDataset
 
     section("FRAMEWORM TRAIN")
     info(f"Config: {config}")
@@ -238,7 +242,8 @@ def serve(checkpoint, port, host):
     section("FRAMEWORM SERVE")
     info(f"Checkpoint: {checkpoint}")
     try:
-        import torch, uvicorn
+        import torch
+        import uvicorn
         from fastapi import FastAPI
 
         torch.load(checkpoint, map_location="cpu", weights_only=False)
@@ -414,8 +419,8 @@ def cost_compare(latency, hardware):
 @click.argument("file", type=click.Path(exists=True))
 def cost_report(file):
     """Generate cost report from saved records."""
-    from cost.store import CostStore
     from cost.report import CostReport
+    from cost.store import CostStore
 
     section("FRAMEWORM COST · Report")
     CostReport(CostStore(path=file)).print()
