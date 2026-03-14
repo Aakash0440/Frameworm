@@ -5,12 +5,13 @@ In-memory by default. Pass a path for JSON persistence.
 """
 
 from __future__ import annotations
+
 import json
-import time
 import threading
+import time
+from collections import deque
 from pathlib import Path
 from typing import Optional
-from collections import deque
 
 from cost.calculator import CostBreakdown
 

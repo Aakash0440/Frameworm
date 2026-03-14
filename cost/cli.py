@@ -7,10 +7,11 @@ Commands:
     frameworm-cost compare --latency 38 --hardware t4
 """
 
-import typer
 import json
 from pathlib import Path
 from typing import Optional
+
+import typer
 
 app = typer.Typer(
     name="frameworm-cost",
@@ -24,8 +25,8 @@ def report(
     file: Path = typer.Argument(..., help="Path to cost records JSON file"),
 ):
     """Generate a cost report from a saved records file."""
-    from cost.store import CostStore
     from cost.report import CostReport
+    from cost.store import CostStore
 
     if not file.exists():
         typer.echo(f"File not found: {file}", err=True)
@@ -55,9 +56,9 @@ def estimate(
     cost = calc.calculate(latency, batch_size=batch)
 
     try:
+        from rich import box
         from rich.console import Console
         from rich.table import Table
-        from rich import box
 
         console = Console()
         t = Table(box=box.SIMPLE, show_header=False)
@@ -86,15 +87,15 @@ def compare(
     hardware: str = typer.Option("default", "--hardware", help="Hardware type"),
 ):
     """Compare cost across all supported architectures at a given latency."""
-    from cost.calculator import CostCalculator, ARCH_COMPLEXITY
+    from cost.calculator import ARCH_COMPLEXITY, CostCalculator
 
     calc = CostCalculator(hardware=hardware)
     results = calc.compare_architectures(latency)
 
     try:
+        from rich import box
         from rich.console import Console
         from rich.table import Table
-        from rich import box
 
         console = Console()
         t = Table(title="Architecture Cost Comparison", box=box.SIMPLE)

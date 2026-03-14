@@ -10,8 +10,10 @@ Formula:
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Optional
+
 import psutil
 
 # ── Default hardware pricing ($/hr, on-demand) ───────────────────────────────

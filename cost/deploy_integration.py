@@ -6,6 +6,7 @@ Used by FRAMEWORM-DEPLOY when generating the deployment server.
 """
 
 from __future__ import annotations
+
 from typing import Optional
 
 # ── Architecture → parameter count lookup ────────────────────────────────────

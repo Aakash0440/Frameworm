@@ -17,12 +17,14 @@ Usage:
 """
 
 from __future__ import annotations
+
 import json
-import time
 import threading
+import time
 import urllib.request
-from typing import Optional, Callable
 from dataclasses import dataclass
+from typing import Callable, Optional
+
 from cost.calculator import CostBreakdown
 
 

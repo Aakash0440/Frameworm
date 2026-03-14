@@ -9,6 +9,7 @@ Then visit http://localhost:8000/cost/dashboard
 """
 
 from __future__ import annotations
+
 from typing import Optional
 
 DASHBOARD_HTML = """<!DOCTYPE html>
@@ -246,8 +247,8 @@ def mount_dashboard(app, store, alerter=None) -> None:
 
     Visit: http://localhost:8000/cost/dashboard
     """
-    from starlette.responses import HTMLResponse, JSONResponse
     from starlette.requests import Request
+    from starlette.responses import HTMLResponse, JSONResponse
 
     @app.get("/cost/dashboard", response_class=HTMLResponse, include_in_schema=False)
     def dashboard():

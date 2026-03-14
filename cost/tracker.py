@@ -12,11 +12,12 @@ Usage:
 """
 
 from __future__ import annotations
+
 import time
 from contextlib import contextmanager
-from typing import Optional, Generator
+from typing import Generator, Optional
 
-from cost.calculator import CostCalculator, CostBreakdown
+from cost.calculator import CostBreakdown, CostCalculator
 from cost.store import CostStore
 
 

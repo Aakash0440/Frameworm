@@ -3,9 +3,11 @@ CostReport: generates cost analysis reports with savings recommendations.
 """
 
 from __future__ import annotations
+
 from typing import Optional
+
+from cost.calculator import ARCH_COMPLEXITY, CostCalculator
 from cost.store import CostStore
-from cost.calculator import CostCalculator, ARCH_COMPLEXITY
 
 
 class CostReport:
@@ -94,10 +96,10 @@ class CostReport:
     def print(self) -> None:
         """Print a rich terminal report."""
         try:
-            from rich.console import Console
-            from rich.table import Table
-            from rich.panel import Panel
             from rich import box
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.table import Table
         except ImportError:
             print(self._plain_text())
             return
