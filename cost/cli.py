@@ -58,6 +58,7 @@ def estimate(
         from rich.console import Console
         from rich.table import Table
         from rich import box
+
         console = Console()
         t = Table(box=box.SIMPLE, show_header=False)
         t.add_column("Metric", style="dim")
@@ -69,9 +70,9 @@ def estimate(
         t.add_row("Cost / request", f"[orange1]${cost.total_cost_usd:.8f}[/orange1]")
         t.add_row("Cost / 1k requests", f"${cost.cost_per_1k_requests:.4f}")
         monthly = cost.monthly_cost_at_rps
-        t.add_row("Monthly (1 rps)",    f"${monthly['1_rps']:,.2f}")
-        t.add_row("Monthly (10 rps)",   f"[bold red]${monthly['10_rps']:,.2f}[/bold red]")
-        t.add_row("Monthly (100 rps)",  f"[bold red]${monthly['100_rps']:,.2f}[/bold red]")
+        t.add_row("Monthly (1 rps)", f"${monthly['1_rps']:,.2f}")
+        t.add_row("Monthly (10 rps)", f"[bold red]${monthly['10_rps']:,.2f}[/bold red]")
+        t.add_row("Monthly (100 rps)", f"[bold red]${monthly['100_rps']:,.2f}[/bold red]")
         if cost.optimization_hint:
             t.add_row("💡 Hint", f"[yellow]{cost.optimization_hint}[/yellow]")
         console.print(t)
@@ -94,6 +95,7 @@ def compare(
         from rich.console import Console
         from rich.table import Table
         from rich import box
+
         console = Console()
         t = Table(title="Architecture Cost Comparison", box=box.SIMPLE)
         t.add_column("Architecture", style="bold")

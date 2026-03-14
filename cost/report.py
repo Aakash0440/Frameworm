@@ -43,45 +43,51 @@ class CostReport:
         # Batching opportunity
         if avg_latency > 30:
             batch_saving = monthly * 0.65
-            opportunities.append({
-                "type": "batching",
-                "title": "Enable request batching",
-                "description": (
-                    f"Grouping 8 requests per batch could reduce cost/request by ~65%. "
-                    f"Estimated saving: ${batch_saving:,.0f}/month at 10 req/s."
-                ),
-                "estimated_monthly_saving_usd": round(batch_saving, 2),
-                "effort": "low",
-            })
+            opportunities.append(
+                {
+                    "type": "batching",
+                    "title": "Enable request batching",
+                    "description": (
+                        f"Grouping 8 requests per batch could reduce cost/request by ~65%. "
+                        f"Estimated saving: ${batch_saving:,.0f}/month at 10 req/s."
+                    ),
+                    "estimated_monthly_saving_usd": round(batch_saving, 2),
+                    "effort": "low",
+                }
+            )
 
         # Quantization opportunity
         if avg_latency > 80:
             quant_saving = monthly * 0.55
-            opportunities.append({
-                "type": "quantization",
-                "title": "INT8 quantization",
-                "description": (
-                    f"High latency detected ({avg_latency:.0f}ms avg). INT8 quantization "
-                    f"typically gives 2-4x speedup with <1% accuracy loss. "
-                    f"Estimated saving: ${quant_saving:,.0f}/month."
-                ),
-                "estimated_monthly_saving_usd": round(quant_saving, 2),
-                "effort": "medium",
-            })
+            opportunities.append(
+                {
+                    "type": "quantization",
+                    "title": "INT8 quantization",
+                    "description": (
+                        f"High latency detected ({avg_latency:.0f}ms avg). INT8 quantization "
+                        f"typically gives 2-4x speedup with <1% accuracy loss. "
+                        f"Estimated saving: ${quant_saving:,.0f}/month."
+                    ),
+                    "estimated_monthly_saving_usd": round(quant_saving, 2),
+                    "effort": "medium",
+                }
+            )
 
         # Architecture comparison
         if avg_cost > 0.001:
-            opportunities.append({
-                "type": "architecture",
-                "title": "Consider a lighter architecture",
-                "description": (
-                    f"Current avg cost is ${avg_cost:.6f}/request. "
-                    f"A simpler architecture (e.g. VAE vs DDPM) can be 8-9x cheaper "
-                    f"depending on your quality requirements."
-                ),
-                "estimated_monthly_saving_usd": round(monthly * 0.7, 2),
-                "effort": "high",
-            })
+            opportunities.append(
+                {
+                    "type": "architecture",
+                    "title": "Consider a lighter architecture",
+                    "description": (
+                        f"Current avg cost is ${avg_cost:.6f}/request. "
+                        f"A simpler architecture (e.g. VAE vs DDPM) can be 8-9x cheaper "
+                        f"depending on your quality requirements."
+                    ),
+                    "estimated_monthly_saving_usd": round(monthly * 0.7, 2),
+                    "effort": "high",
+                }
+            )
 
         return sorted(opportunities, key=lambda x: -x["estimated_monthly_saving_usd"])
 
@@ -101,10 +107,12 @@ class CostReport:
         summary = data["summary"]
 
         console.print()
-        console.print(Panel(
-            f"[bold orange1]FRAMEWORM COST[/bold orange1]  ·  Cost Analysis Report",
-            border_style="orange1",
-        ))
+        console.print(
+            Panel(
+                f"[bold orange1]FRAMEWORM COST[/bold orange1]  ·  Cost Analysis Report",
+                border_style="orange1",
+            )
+        )
 
         # Summary table
         t = Table(box=box.SIMPLE, show_header=True, header_style="bold dim")
@@ -114,7 +122,10 @@ class CostReport:
         t.add_row("Total cost", f"${summary.get('total_cost_usd', 0):.6f}")
         t.add_row("Avg cost / request", f"${summary.get('avg_cost_usd', 0):.8f}")
         t.add_row("Cost per 1k requests", f"${summary.get('cost_per_1k_usd', 0):.4f}")
-        t.add_row("Projected monthly (10 rps)", f"[bold red]${summary.get('projected_monthly_10rps_usd', 0):,.2f}[/bold red]")
+        t.add_row(
+            "Projected monthly (10 rps)",
+            f"[bold red]${summary.get('projected_monthly_10rps_usd', 0):,.2f}[/bold red]",
+        )
         t.add_row("Avg latency", f"{summary.get('avg_latency_ms', 0):.1f}ms")
         t.add_row("p95 latency", f"{summary.get('p95_latency_ms', 0):.1f}ms")
         console.print(t)
@@ -124,10 +135,16 @@ class CostReport:
         if savings:
             console.print("\n[bold orange1]💡 Savings Opportunities[/bold orange1]")
             for s in savings:
-                effort_color = {"low": "green", "medium": "yellow", "high": "red"}.get(s["effort"], "white")
-                console.print(f"\n  [bold]{s['title']}[/bold]  [{effort_color}]({s['effort']} effort)[/{effort_color}]")
+                effort_color = {"low": "green", "medium": "yellow", "high": "red"}.get(
+                    s["effort"], "white"
+                )
+                console.print(
+                    f"\n  [bold]{s['title']}[/bold]  [{effort_color}]({s['effort']} effort)[/{effort_color}]"
+                )
                 console.print(f"  {s['description']}")
-                console.print(f"  [green]Est. saving: ${s['estimated_monthly_saving_usd']:,.0f}/month[/green]")
+                console.print(
+                    f"  [green]Est. saving: ${s['estimated_monthly_saving_usd']:,.0f}/month[/green]"
+                )
 
         # Hints
         hints = data["hints"]
@@ -151,5 +168,7 @@ class CostReport:
             "=== SAVINGS OPPORTUNITIES ===",
         ]
         for opp in data["savings_opportunities"]:
-            lines.append(f"• {opp['title']}: save ${opp['estimated_monthly_saving_usd']:,.0f}/month")
+            lines.append(
+                f"• {opp['title']}: save ${opp['estimated_monthly_saving_usd']:,.0f}/month"
+            )
         return "\n".join(lines)

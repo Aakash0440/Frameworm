@@ -14,18 +14,17 @@ from dataclasses import dataclass, field
 from typing import Optional
 import psutil
 
-
 # ── Default hardware pricing ($/hr, on-demand) ───────────────────────────────
 HARDWARE_RATES = {
     # GPU instances (AWS equivalent)
-    "a10g":    1.006,   # g5.xlarge
-    "a100":    3.928,   # p4d.24xlarge per GPU
-    "t4":      0.526,   # g4dn.xlarge
-    "v100":    3.06,    # p3.2xlarge
+    "a10g": 1.006,  # g5.xlarge
+    "a100": 3.928,  # p4d.24xlarge per GPU
+    "t4": 0.526,  # g4dn.xlarge
+    "v100": 3.06,  # p3.2xlarge
     # CPU instances
-    "cpu_small":  0.096,   # c5.large
-    "cpu_medium": 0.192,   # c5.xlarge
-    "cpu_large":  0.384,   # c5.2xlarge
+    "cpu_small": 0.096,  # c5.large
+    "cpu_medium": 0.192,  # c5.xlarge
+    "cpu_large": 0.384,  # c5.2xlarge
     # Default fallback
     "default": 0.526,
 }
@@ -33,21 +32,22 @@ HARDWARE_RATES = {
 # ── Architecture complexity multipliers ───────────────────────────────────────
 # Relative to a simple VAE (1.0x baseline)
 ARCH_COMPLEXITY = {
-    "vae":       1.0,
-    "dcgan":     1.4,
-    "ddpm":      8.5,   # diffusion is expensive
-    "cfg_ddpm":  9.2,
-    "vqvae2":    2.1,
-    "vit_gan":   3.8,
+    "vae": 1.0,
+    "dcgan": 1.4,
+    "ddpm": 8.5,  # diffusion is expensive
+    "cfg_ddpm": 9.2,
+    "vqvae2": 2.1,
+    "vit_gan": 3.8,
     "transformer": 5.0,
-    "resnet":    1.2,
-    "unknown":   1.5,
+    "resnet": 1.2,
+    "unknown": 1.5,
 }
 
 
 @dataclass
 class CostBreakdown:
     """Full cost breakdown for a single inference request."""
+
     model_name: str
     architecture: str
     latency_ms: float
@@ -68,10 +68,7 @@ class CostBreakdown:
         """Estimated monthly cost at various request rates."""
         month_seconds = 30 * 24 * 3600
         rps_rates = [1, 10, 100, 1000]
-        return {
-            f"{rps}_rps": self.total_cost_usd * rps * month_seconds
-            for rps in rps_rates
-        }
+        return {f"{rps}_rps": self.total_cost_usd * rps * month_seconds for rps in rps_rates}
 
     def to_dict(self) -> dict:
         return {

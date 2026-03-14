@@ -254,6 +254,7 @@ def mount_dashboard(app, store, alerter=None) -> None:
         return HTMLResponse(DASHBOARD_HTML)
 
     if alerter:
+
         @app.get("/cost/alerts")
         def alerts_endpoint():
             data = alerter.summary()

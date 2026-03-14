@@ -122,7 +122,5 @@ class CostTracker:
             "total_cost_usd": round(self._total_cost, 6),
             "average_cost_usd": round(self.average_cost, 8),
             "cost_per_1k_usd": round(self.average_cost * 1000, 4),
-            "projected_monthly_10rps_usd": round(
-                self.average_cost * 10 * 30 * 24 * 3600, 2
-            ),
+            "projected_monthly_10rps_usd": round(self.average_cost * 10 * 30 * 24 * 3600, 2),
         }

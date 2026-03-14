@@ -28,8 +28,8 @@ from cost.calculator import CostBreakdown
 
 @dataclass
 class Alert:
-    level: str          # "warning" | "critical"
-    type: str           # "cost_spike" | "latency_spike" | "monthly_projection"
+    level: str  # "warning" | "critical"
+    type: str  # "cost_spike" | "latency_spike" | "monthly_projection"
     message: str
     value: float
     threshold: float
@@ -53,18 +53,24 @@ class Alert:
         emoji = "🔴" if self.level == "critical" else "🟡"
         return {
             "text": f"{emoji} *FRAMEWORM-COST ALERT* [{model_name}]",
-            "attachments": [{
-                "color": "#cc4444" if self.level == "critical" else "#cc8800",
-                "fields": [
-                    {"title": "Type",      "value": self.type,              "short": True},
-                    {"title": "Level",     "value": self.level.upper(),     "short": True},
-                    {"title": "Value",     "value": str(round(self.value, 6)),   "short": True},
-                    {"title": "Threshold", "value": str(round(self.threshold, 6)), "short": True},
-                    {"title": "Message",   "value": self.message,           "short": False},
-                ],
-                "footer": "FRAMEWORM-COST",
-                "ts": int(self.timestamp),
-            }]
+            "attachments": [
+                {
+                    "color": "#cc4444" if self.level == "critical" else "#cc8800",
+                    "fields": [
+                        {"title": "Type", "value": self.type, "short": True},
+                        {"title": "Level", "value": self.level.upper(), "short": True},
+                        {"title": "Value", "value": str(round(self.value, 6)), "short": True},
+                        {
+                            "title": "Threshold",
+                            "value": str(round(self.threshold, 6)),
+                            "short": True,
+                        },
+                        {"title": "Message", "value": self.message, "short": False},
+                    ],
+                    "footer": "FRAMEWORM-COST",
+                    "ts": int(self.timestamp),
+                }
+            ],
         }
 
 
@@ -184,18 +190,18 @@ class CostAlerter:
 
         # Slack
         if self.slack_webhook:
-            self._post_webhook(
-                self.slack_webhook,
-                alert.to_slack_payload(self.model_name)
-            )
+            self._post_webhook(self.slack_webhook, alert.to_slack_payload(self.model_name))
 
         # Generic webhook
         if self.webhook_url:
-            self._post_webhook(self.webhook_url, {
-                "source": "frameworm-cost",
-                "model": self.model_name,
-                "alert": alert.to_dict(),
-            })
+            self._post_webhook(
+                self.webhook_url,
+                {
+                    "source": "frameworm-cost",
+                    "model": self.model_name,
+                    "alert": alert.to_dict(),
+                },
+            )
 
         # Always log to console
         level_str = "🔴 CRITICAL" if alert.level == "critical" else "🟡 WARNING"
@@ -205,7 +211,8 @@ class CostAlerter:
         try:
             data = json.dumps(payload).encode("utf-8")
             req = urllib.request.Request(
-                url, data=data,
+                url,
+                data=data,
                 headers={"Content-Type": "application/json"},
                 method="POST",
             )
